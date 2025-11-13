@@ -1,0 +1,35 @@
+# Ignore bundler config
+/.bundle
+
+# Ignore logs, temp files, and pid files
+.keep
+/log/*
+/tmp/*
+/log/.keep
+/tmp/.keep
+
+# Ignore uploaded files in development
+/storage/*
+/storage/.keep
+
+# Ignore master key for decrypting credentials
+/config/master.key
+
+# Ignore pidfiles, and anything else Rails generates
+/tmp/pids/*
+/tmp/cache/*
+/tmp/sockets/*
+/tmp/storage/*
+
+# Ignore byebug command history file.
+.byebug_history
+
+# Ignore node_modules if using webpack or jsbundling
+/node_modules
+
+# Ignore yarn error files
+yarn-error.log
+
+# Ignore dotenv environment variables
+.env
+.env.*

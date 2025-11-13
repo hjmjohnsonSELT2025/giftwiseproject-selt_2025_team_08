@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GiftWiseApp</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  </head>
+
+  <body>
+    <header>
+      <% if defined?(current_user) && current_user %>
+        <nav>
+          Signed in as <%= current_user.email %> |
+          <%= button_to "Log out", session_path, method: :delete %>
+        </nav>
+      <% else %>
+        <nav>
+          <%= link_to "Log in", new_session_path %> |
+          <%= link_to "Sign up", new_registration_path %>
+        </nav>
+      <% end %>
+    </header>
+
+    <% flash.each do |k, v| %>
+      <div class="flash <%= k %>"><%= v %></div>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>
