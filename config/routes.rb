@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Authentication
-  resource :session, only: [:new, :create, :destroy]
+  resource :session, only: [:create, :destroy]
+  get '/login', to: 'sessions#new', as: :login
   resources :registrations, only: [:new, :create]
 
   # Home
