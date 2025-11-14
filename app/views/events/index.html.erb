@@ -1,0 +1,9 @@
+<h1>Events</h1>
+
+<div class="events-toolbar">
+  <%= form_with url: events_path, method: :get, local: true do |f| %>
+    <%= f.text_field :q, placeholder: "Search Events", class: "events-search" %>
+  <% end %>
+
+  <%= link_to "Add Event", new_event_path, class: "button add-event" %>
+</div>

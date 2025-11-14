@@ -11,4 +11,7 @@ Rails.application.routes.draw do
 
   # Home
   root to: "home#index"
+
+  # Events
+  resources :events, only: [:index, :new]
 end
