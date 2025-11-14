@@ -9,12 +9,12 @@ class SessionsController < ApplicationController
       redirect_to root_path, notice: "Signed in successfully"
     else
       flash.now[:alert] = "Invalid email or password"
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
   def destroy
     reset_session
-    redirect_to new_session_path, notice: "Signed out successfully"
+    redirect_to login_path, notice: "Signed out successfully"
   end
 end
