@@ -1,0 +1,9 @@
+<h1>Contacts</h1>
+
+<div class="contacts-toolbar">
+  <%= form_with url: contacts_path, method: :get, local: true do |f| %>
+    <%= f.text_field :q, placeholder: "Search Contacts", class: "contacts-search" %>
+  <% end %>
+
+  <%= button_to "Add Contact", new_contact_path, class: "button add-contact", method: :get %>
+</div>

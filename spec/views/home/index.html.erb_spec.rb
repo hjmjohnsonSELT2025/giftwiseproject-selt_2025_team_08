@@ -38,4 +38,10 @@ RSpec.describe 'home/index.html.erb', type: :view do
       expect(rendered).not_to include("Hello, #{user.first_name}!")
     end
   end
+
+  it 'includes a Contacts link in the navigation when logged in' do
+    render template: 'home/index', layout: 'layouts/application'
+    expect(rendered).to include('Contacts')
+    expect(rendered).to include(contacts_path)
+  end
 end
