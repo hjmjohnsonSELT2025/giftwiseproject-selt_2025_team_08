@@ -6,6 +6,7 @@ RSpec.describe 'home/index.html.erb', type: :view do
   before do
     assign(:current_user, user)
     allow(view).to receive(:current_user).and_return(user)
+    allow(view).to receive(:logged_in?).and_return(true)
   end
 
   it 'renders the welcome heading' do

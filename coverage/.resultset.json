@@ -1,0 +1,264 @@
+{
+  "RSpec": {
+    "coverage": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/helpers/application_helper.rb": {
+        "lines": [
+          1,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/contacts_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/application_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          148,
+          94,
+          59,
+          null,
+          35,
+          null,
+          null,
+          null,
+          1,
+          127,
+          null,
+          null,
+          1,
+          71,
+          18,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/events_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/home_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/user.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          107,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          106,
+          null,
+          null,
+          1,
+          106,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/application_record.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/sessions_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          null,
+          1,
+          42,
+          42,
+          41,
+          41,
+          41,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          1,
+          4,
+          4,
+          4,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/registrations_controller.rb": {
+        "lines": [
+          1,
+          1,
+          2,
+          null,
+          null,
+          1,
+          18,
+          18,
+          5,
+          null,
+          13,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          18,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/settings_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          1,
+          4,
+          null,
+          null,
+          1,
+          5,
+          5,
+          3,
+          3,
+          null,
+          2,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/channel.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {
+        }
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/connection.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {
+        }
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/errors_controller.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {
+        }
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/jobs/application_job.rb": {
+        "lines": [
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0
+        ],
+        "branches": {
+        }
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/application_mailer.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {
+        }
+      }
+    },
+    "timestamp": 1763185272
+  }
+}

@@ -45,6 +45,8 @@ group :test do
   gem "simplecov", require: false
   gem "rails-controller-testing"
   gem "database_cleaner-active_record"
+  gem "cucumber-rails", require: false
+  gem "cucumber"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

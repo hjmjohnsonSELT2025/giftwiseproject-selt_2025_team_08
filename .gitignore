@@ -33,9 +33,3 @@ yarn-error.log
 # Ignore dotenv environment variables
 .env
 .env.*
-
-# Ignore SimpleCov coverage files
-.last_run.json
-.resultset.json
-coverage/
-
