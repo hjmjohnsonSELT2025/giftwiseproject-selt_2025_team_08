@@ -6,8 +6,7 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(user_params)
     if @user.save
-      session[:user_id] = @user.id
-      redirect_to root_path, notice: "Welcome! You have signed up successfully."
+      redirect_to login_path, notice: "Account created successfully! Please log in with your credentials."
     else
       render :new, status: :unprocessable_entity
     end
@@ -16,6 +15,11 @@ class RegistrationsController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation)
+    params.require(:user).permit(
+      :email, :password, :password_confirmation,
+      :first_name, :last_name, :date_of_birth, :gender, :occupation,
+      :hobbies, :likes, :dislikes,
+      :street, :city, :state, :zip_code, :country
+    )
   end
 end

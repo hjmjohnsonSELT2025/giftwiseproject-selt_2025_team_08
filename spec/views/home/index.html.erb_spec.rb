@@ -1,0 +1,41 @@
+require 'rails_helper'
+
+RSpec.describe 'home/index.html.erb', type: :view do
+  let(:user) { create_user(email: 'testview@example.com', password: 'test123') }
+
+  before do
+    assign(:current_user, user)
+    allow(view).to receive(:current_user).and_return(user)
+  end
+
+  it 'renders the welcome heading' do
+    render
+    expect(rendered).to include('Welcome to Gift Wise')
+  end
+
+  it 'displays the user greeting with first name' do
+    render
+    expect(rendered).to include("Hello, #{user.first_name}!")
+  end
+
+  it 'renders the gift ideas section heading' do
+    render
+    expect(rendered).to include('Your gift ideas')
+  end
+
+  it 'displays the coming soon message' do
+    render
+    expect(rendered).to include('Coming soon...')
+  end
+
+  context 'with different user first names' do
+    it 'displays the correct first name for a different user' do
+      other_user = create_user(email: 'other@example.com', password: 'other123', first_name: 'Jane')
+      allow(view).to receive(:current_user).and_return(other_user)
+      
+      render
+      expect(rendered).to include("Hello, Jane!")
+      expect(rendered).not_to include("Hello, #{user.first_name}!")
+    end
+  end
+end

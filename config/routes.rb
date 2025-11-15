@@ -5,8 +5,13 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Error pages
+  get "404", to: "errors#not_found", as: :not_found_error
+  get "500", to: "errors#internal_server_error", as: :internal_server_error
+
   # Authentication
-  resource :session, only: [:new, :create, :destroy]
+  resource :session, only: [:create, :destroy]
+  get '/login', to: 'sessions#new', as: :login
   resources :registrations, only: [:new, :create]
 
   # Home
@@ -14,4 +19,7 @@ Rails.application.routes.draw do
 
   # Events
   resources :events, only: [:index, :new]
+
+  # Catch all undefined routes
+  match "*path", to: "errors#not_found", via: :all
 end
