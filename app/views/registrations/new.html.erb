@@ -53,7 +53,7 @@
 
     <div>
       <%= f.label :gender %><br />
-      <%= f.select :gender, ["Male", "Female", "Non-binary", "Prefer not to say"], { prompt: "Select gender" }, required: true %>
+      <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true %>
     </div>
 
     <div>
