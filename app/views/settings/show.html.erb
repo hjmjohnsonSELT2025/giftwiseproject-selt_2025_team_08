@@ -1,0 +1,108 @@
+<div class="settings-container">
+  <h1>Settings</h1>
+
+  <div class="settings-content">
+    <%= form_with model: @user, url: settings_path, method: :patch, local: true do |f| %>
+      <% if @user.errors.any? %>
+        <div id="error_explanation">
+          <h2><%= pluralize(@user.errors.count, "error") %> prohibited changes from being saved:</h2>
+          <ul>
+            <% @user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Personal Information -->
+      <fieldset>
+        <legend>Personal Information</legend>
+
+        <div>
+          <%= f.label :first_name %><br />
+          <%= f.text_field :first_name, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :last_name %><br />
+          <%= f.text_field :last_name, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :date_of_birth %><br />
+          <%= f.date_field :date_of_birth, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :gender %><br />
+          <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :occupation %><br />
+          <%= f.text_field :occupation, required: true %>
+        </div>
+      </fieldset>
+
+      <!-- Interests -->
+      <fieldset>
+        <legend>Interests</legend>
+
+        <div>
+          <%= f.label :hobbies, "Hobbies (comma separated)" %><br />
+          <%= f.text_area :hobbies, rows: 3, placeholder: "e.g., Reading, Painting, Gaming" %>
+        </div>
+
+        <div>
+          <%= f.label :likes, "Likes (comma separated)" %><br />
+          <%= f.text_area :likes, rows: 3, placeholder: "e.g., Coffee, Hiking, Music" %>
+        </div>
+
+        <div>
+          <%= f.label :dislikes, "Dislikes (comma separated)" %><br />
+          <%= f.text_area :dislikes, rows: 3, placeholder: "e.g., Crowds, Spicy food, Delays" %>
+        </div>
+      </fieldset>
+
+      <!-- Address -->
+      <fieldset>
+        <legend>Address</legend>
+
+        <div>
+          <%= f.label :street %><br />
+          <%= f.text_field :street, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :city %><br />
+          <%= f.text_field :city, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :state %><br />
+          <%= f.text_field :state, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :zip_code %><br />
+          <%= f.text_field :zip_code, required: true %>
+        </div>
+
+        <div>
+          <%= f.label :country %><br />
+          <%= f.text_field :country, required: true %>
+        </div>
+      </fieldset>
+
+      <!-- Form Actions -->
+      <div class="settings-actions">
+        <%= f.submit "Save Changes", class: "button save-button" %>
+        <%= link_to "Cancel", root_path, class: "button cancel-button" %>
+      </div>
+    <% end %>
+
+    <!-- TODO: Add sections for email and password below -->
+    <!-- Password Change Section (to be implemented) -->
+    <!-- Email Change Section (to be implemented) -->
+  </div>
+</div>

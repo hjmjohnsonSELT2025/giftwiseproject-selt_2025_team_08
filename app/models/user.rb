@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_secure_password
 
+  GENDERS = ["Male", "Female", "Non-binary", "Prefer not to say"].freeze
+
   before_validation :downcase_email
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }, length: { maximum: 255 }
@@ -9,7 +11,7 @@ class User < ApplicationRecord
 
   validates :first_name, :last_name, presence: true, length: { minimum: 1, maximum: 100 }
   validates :date_of_birth, presence: true
-  validates :gender, presence: true
+  validates :gender, presence: true, inclusion: { in: GENDERS, message: "is not a valid gender" }
   validates :occupation, presence: true, length: { minimum: 1, maximum: 100 }
   validates :street, :city, :state, :country, presence: true, length: { minimum: 1, maximum: 255 }
   validates :zip_code, presence: true, length: { minimum: 1, maximum: 20 }

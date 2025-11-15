@@ -14,6 +14,9 @@ Rails.application.routes.draw do
   get '/login', to: 'sessions#new', as: :login
   resources :registrations, only: [:new, :create]
 
+  # Settings
+  resource :settings, only: [:show, :update]
+
   # Home
   root to: "home#index"
 
