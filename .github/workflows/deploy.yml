@@ -1,0 +1,35 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: 
+
+jobs:
+  # Run tests before deploying
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3.8'
+        bundler-cache: true
+    
+    - name: Create storage directory
+      run: mkdir -p storage
+    
+    - name: Set up database
+      env:
+        RAILS_ENV: test
+      run: |
+        bundle exec rails db:prepare
+    
+    - name: Run tests
+      env:
+        RAILS_ENV: test
+      run: bundle exec rspec
+
