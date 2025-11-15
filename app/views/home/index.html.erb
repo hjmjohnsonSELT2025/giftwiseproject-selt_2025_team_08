@@ -1,14 +1,11 @@
-<h1>Welcome to Gift Wise</h1>
+<div class="home-container">
+  <div class="home-header">
+    <h1>Welcome to Gift Wise</h1>
+    <p>Hello, <%= current_user&.first_name %>!</p>
+  </div>
 
-<p>Hello, <%= current_user.email %>!</p>
-
-<%= button_to "Log out", session_path, method: :delete %>
-
-<p>
-  <%= link_to "Events", events_path, class: "button events-link" %>
-</p>
-
-<section>
-  <h2>Your gift ideas</h2>
-  <p>Coming soon... we'll generate thoughtful gift ideas for friends and family.</p>
-</section>
+  <div class="home-content">
+    <h2>Your gift ideas</h2>
+    <p>Coming soon... we'll generate thoughtful gift ideas for friends and family.</p>
+  </div>
+</div>

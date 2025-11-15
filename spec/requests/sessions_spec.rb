@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "Logging in", type: :request do
-  let!(:user) { User.create!(email: "test@example.com", password: "password123", password_confirmation: "password123") }
+  let!(:user) { create_user(email: "test@example.com", password: "password123") }
 
   it "renders the login page" do
     get login_path

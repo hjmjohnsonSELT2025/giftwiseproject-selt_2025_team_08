@@ -1,7 +1,144 @@
 {
   "RSpec": {
     "coverage": {
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/channels/application_cable/channel.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/helpers/application_helper.rb": {
+        "lines": [
+          1,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/home_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/application_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          55,
+          39,
+          16,
+          null,
+          23,
+          null,
+          null,
+          null,
+          1,
+          45,
+          null,
+          null,
+          1,
+          18,
+          5,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/user.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          61,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          60,
+          null,
+          null,
+          1,
+          60,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/application_record.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/sessions_controller.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          null,
+          1,
+          10,
+          10,
+          9,
+          9,
+          9,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          1,
+          2,
+          2,
+          2,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/registrations_controller.rb": {
+        "lines": [
+          1,
+          1,
+          2,
+          null,
+          null,
+          1,
+          18,
+          18,
+          5,
+          null,
+          13,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          18,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/channel.rb": {
         "lines": [
           0,
           0,
@@ -11,7 +148,7 @@
         "branches": {
         }
       },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/channels/application_cable/connection.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/connection.rb": {
         "lines": [
           0,
           0,
@@ -21,65 +158,11 @@
         "branches": {
         }
       },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/controllers/application_controller.rb": {
-        "lines": [
-          0,
-          0,
-          null,
-          0,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          null,
-          0,
-          0,
-          0,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {
-        }
-      },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/controllers/home_controller.rb": {
-        "lines": [
-          0,
-          0,
-          null,
-          0,
-          0,
-          0
-        ],
-        "branches": {
-        }
-      },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/controllers/registrations_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/errors_controller.rb": {
         "lines": [
           0,
           0,
           0,
-          0,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          null,
           0,
           null,
           0,
@@ -90,41 +173,24 @@
         "branches": {
         }
       },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/controllers/sessions_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/events_controller.rb": {
         "lines": [
           0,
           0,
+          null,
           0,
           null,
           0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
           null,
           0,
-          0,
-          0,
+          null,
           0,
           0
         ],
         "branches": {
         }
       },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/helpers/application_helper.rb": {
-        "lines": [
-          0,
-          0
-        ],
-        "branches": {
-        }
-      },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/jobs/application_job.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/jobs/application_job.rb": {
         "lines": [
           0,
           null,
@@ -137,37 +203,8 @@
         "branches": {
         }
       },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/mailers/application_mailer.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/application_mailer.rb": {
         "lines": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {
-        }
-      },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/models/application_record.rb": {
-        "lines": [
-          0,
-          0,
-          0
-        ],
-        "branches": {
-        }
-      },
-      "C:/Users/biggu/OneDrive/Desktop/Ruby/gift-wise-app/app/models/user.rb": {
-        "lines": [
-          0,
-          0,
-          null,
-          0,
-          null,
-          0,
-          0,
-          null,
-          0,
-          null,
           0,
           0,
           0,
@@ -177,6 +214,6 @@
         }
       }
     },
-    "timestamp": 1763073237
+    "timestamp": 1763173709
   }
 }

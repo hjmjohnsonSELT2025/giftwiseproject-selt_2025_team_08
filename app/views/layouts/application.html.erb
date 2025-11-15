@@ -11,21 +11,18 @@
 
   <body>
     <header>
-      <% if defined?(current_user) && current_user %>
+      <% if logged_in? %>
         <nav>
-          Signed in as <%= current_user.email %> |
-          <%= button_to "Log out", session_path, method: :delete %>
-        </nav>
-      <% else %>
-        <nav>
-          <%= link_to "Log in", login_path %> |
-          <%= link_to "Sign up", new_registration_path %>
+          <%= link_to "Home", root_path %> |
+          <%= link_to "Events", events_path %> |
+          <%= link_to "Settings", "#" %> |
+          <%= button_to "Logout", session_path, method: :delete %>
         </nav>
       <% end %>
     </header>
 
     <% flash.each do |k, v| %>
-      <div class="flash <%= k %>"><%= v %></div>
+      <div><%= v %></div>
     <% end %>
 
     <%= yield %>
