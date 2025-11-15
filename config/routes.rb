@@ -23,6 +23,9 @@ Rails.application.routes.draw do
   # Events
   resources :events, only: [:index, :new]
 
+  # Contacts
+  resources :contacts, only: [:index, :new]
+
   # Catch all undefined routes
   match "*path", to: "errors#not_found", via: :all
 end
