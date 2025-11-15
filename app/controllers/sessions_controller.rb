@@ -11,7 +11,7 @@ class SessionsController < ApplicationController
     else
       Rails.logger.warn("Failed login attempt for email: #{params[:email]}")
       flash.now[:alert] = "Invalid email or password"
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
