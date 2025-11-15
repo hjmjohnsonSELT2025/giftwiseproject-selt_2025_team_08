@@ -14,6 +14,7 @@
       <% if logged_in? %>
         <nav>
           <%= link_to "Home", root_path %> |
+          <%= link_to "Contacts", contacts_path %> |
           <%= link_to "Events", events_path %> |
           <%= link_to "Settings", settings_path %> |
           <%= button_to "Logout", session_path, method: :delete %>
