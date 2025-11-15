@@ -198,3 +198,15 @@ Then('the page should have links for authenticated user') do
   expect(page).to have_link('Settings')
   expect(page).to have_button('Logout')
 end
+
+Then('I should see the search bar') do
+  expect(page).to have_field('q')
+end
+
+Then('I should see {string} button') do |button_name|
+  expect(page).to have_button(button_name)
+end
+
+Then('I should see the new contact form') do
+  expect(page).to have_selector('form')
+end
