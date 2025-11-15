@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      # No database service needed for SQLite
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.3.8'
+        bundler-cache: true # runs 'bundle install' and caches gems automatically
+    
+    - name: Create storage directory
+      run: mkdir -p storage
+    
+    - name: Set up database
+      env:
+        RAILS_ENV: test
+      run: |
+        bundle exec rails db:prepare
+    
+    - name: Run tests
+      env:
+        RAILS_ENV: test
+      run: bundle exec rspec
+    
+    - name: Upload coverage reports (if generated)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage/
+        retention-days: 7
+
