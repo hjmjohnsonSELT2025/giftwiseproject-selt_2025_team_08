@@ -1,0 +1,69 @@
+<h1>Add Contact</h1>
+
+<div class="add-contact-form">
+  <div class="search-section">
+    <h3>Search for a person to add as a contact</h3>
+    <%= form_with url: new_contact_path, method: :get, local: true, id: "users-search-form" do |search_f| %>
+      <%= search_f.text_field :q, placeholder: "Search by first or last name", class: "search-input", id: "users-search-input", value: params[:q] %>
+    <% end %>
+  </div>
+
+  <% if @users.any? %>
+    <div class="users-list">
+      <h3><%= params[:q].present? ? "Search Results:" : "All Available Users:" %></h3>
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Occupation</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="users-list">
+          <% @users.each do |user| %>
+            <tr class="user-row" data-user-name="<%= (user.first_name + ' ' + user.last_name).downcase %>">
+              <td><%= user.first_name %></td>
+              <td><%= user.last_name %></td>
+              <td><%= user.email %></td>
+              <td><%= user.occupation %></td>
+              <td>
+                <%= button_to "Add Contact", contacts_path, method: :post, params: { contact_user_id: user.id }, class: "button add-btn" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% elsif params[:q].present? %>
+    <p class="no-results-message">No users found matching "<%= params[:q] %>"</p>
+  <% end %>
+
+  <%= link_to "Back to Contacts", contacts_path, class: "button cancel-button" %>
+</div>
+
+<script>
+  const searchInput = document.getElementById('users-search-input');
+  const usersList = document.querySelector('.users-list');
+  const noResults = document.querySelector('.no-results-message');
+  
+  if (searchInput) {
+    searchInput.addEventListener('keyup', function(e) {
+      const query = e.target.value.toLowerCase();
+      const rows = document.querySelectorAll('.user-row');
+      let visibleCount = 0;
+      
+      rows.forEach(row => {
+        const name = row.getAttribute('data-user-name');
+        const isVisible = name.includes(query);
+        row.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
+      });
+      
+      // Show/hide results message
+      if (usersList) usersList.style.display = visibleCount > 0 ? '' : 'none';
+      if (noResults) noResults.style.display = query && visibleCount === 0 ? '' : 'none';
+    });
+  }
+</script>
