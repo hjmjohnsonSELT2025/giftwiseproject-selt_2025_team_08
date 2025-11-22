@@ -1,68 +1,9 @@
 <h1>Contacts</h1>
 
 <div class="contacts-toolbar">
-  <%= form_with url: contacts_path, method: :get, local: true, id: "contacts-search-form" do |f| %>
-    <%= f.text_field :q, placeholder: "Search Contacts", class: "contacts-search", id: "contacts-search-input", value: params[:q] %>
+  <%= form_with url: contacts_path, method: :get, local: true do |f| %>
+    <%= f.text_field :q, placeholder: "Search Contacts", class: "contacts-search" %>
   <% end %>
 
   <%= button_to "Add Contact", new_contact_path, class: "button add-contact", method: :get %>
 </div>
-
-<div id="note-modal" style="display: none;">
-  <!-- Modal will be populated by edit_note action -->
-</div>
-
-<% if @contacts.any? %>
-  <table class="contacts-table">
-    <thead>
-      <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Occupation</th>
-        <th>Age</th>
-        <th>Hobbies</th>
-        <th>Likes</th>
-        <th>Dislikes</th>
-        <th>Note</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="contacts-list">
-      <% @contacts.each do |contact| %>
-        <% contact_info = @contact_map[contact.id] %>
-        <tr class="contact-row" data-contact-name="<%= (contact.first_name + ' ' + contact.last_name).downcase %>">
-          <td><%= contact.first_name %></td>
-          <td><%= contact.last_name %></td>
-          <td><%= contact.occupation %></td>
-          <td><%= calculate_age(contact.date_of_birth) %></td>
-          <td><%= contact.hobbies || "N/A" %></td>
-          <td><%= contact.likes || "N/A" %></td>
-          <td><%= contact.dislikes || "N/A" %></td>
-          <td><span id="note-<%= contact_info.id %>"><%= contact_info.note || "No note" %></span></td>
-          <td>
-            <%= link_to "Edit Note", edit_note_contact_path(contact_info), remote: true, class: "button edit-note" %>
-            <%= button_to "Delete", contact_path(contact_info), method: :delete, data: { confirm: "Are you sure?" }, class: "button delete-contact" %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>No contacts yet. <%= link_to "Add one", new_contact_path %></p>
-<% end %>
-
-<script>
-  const searchInput = document.getElementById('contacts-search-input');
-  
-  if (searchInput) {
-    searchInput.addEventListener('keyup', function(e) {
-      const query = e.target.value.toLowerCase();
-      const rows = document.querySelectorAll('.contact-row');
-      
-      rows.forEach(row => {
-        const name = row.getAttribute('data-contact-name');
-        row.style.display = name.includes(query) ? '' : 'none';
-      });
-    });
-  }
-</script>

@@ -1,7 +1,0 @@
-document.getElementById('note-modal').innerHTML = '<%= escape_javascript(render(partial: "edit_note_form", locals: { contact: @contact })) %>';
-document.getElementById('note-modal').style.display = 'block';
-
-function closeNoteModal() {
-  document.getElementById('note-modal').style.display = 'none';
-  document.getElementById('note-modal').innerHTML = '';
-}

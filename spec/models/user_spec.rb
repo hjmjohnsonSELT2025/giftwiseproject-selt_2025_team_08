@@ -116,39 +116,4 @@ RSpec.describe User, type: :model do
       expect(user.city).to eq('Springfield')
     end
   end
-
-  describe '.available_for_contact' do
-    let(:user) { create_user(email: 'user@example.com') }
-    let(:contact1) { create_user(email: 'contact1@example.com') }
-    let(:contact2) { create_user(email: 'contact2@example.com') }
-    let(:contact3) { create_user(email: 'contact3@example.com') }
-
-    before do
-      user.contacts.create(contact_user: contact1)
-    end
-
-    it 'returns users available to add as contacts' do
-      available = User.available_for_contact(user)
-      expect(available).to include(contact2, contact3)
-      expect(available).not_to include(user)
-      expect(available).not_to include(contact1)
-    end
-
-    it 'excludes the user themselves' do
-      available = User.available_for_contact(user)
-      expect(available).not_to include(user)
-    end
-
-    it 'excludes already added contacts' do
-      available = User.available_for_contact(user)
-      expect(available).not_to include(contact1)
-    end
-
-    it 'returns empty scope when all other users are already contacts' do
-      user.contacts.create(contact_user: contact2)
-      user.contacts.create(contact_user: contact3)
-      available = User.available_for_contact(user)
-      expect(available.count).to eq(0)
-    end
-  end
 end
