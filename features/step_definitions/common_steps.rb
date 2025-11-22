@@ -43,6 +43,29 @@ Given('a user exists with email {string} and password {string}') do |email, pass
   end
 end
 
+Given('a user exists with first name {string} and last name {string} and email {string} and password {string}') do |first_name, last_name, email, password|
+  User.find_or_create_by(email: email) do |user|
+    user.password = password
+    user.password_confirmation = password
+    user.first_name = first_name
+    user.last_name = last_name
+    user.date_of_birth = '1990-01-15'
+    user.gender = 'Male'
+    user.occupation = 'Developer'
+    user.street = '123 Main St'
+    user.city = 'Springfield'
+    user.state = 'IL'
+    user.country = 'USA'
+    user.zip_code = '62701'
+  end
+end
+
+Given('I add {string} as a contact') do |email|
+  contact_user = User.find_by(email: email)
+  current_user = User.find_by(email: @current_user_email) || User.last
+  current_user.contacts.create(contact_user: contact_user) unless current_user.contacts.exists?(contact_user: contact_user)
+end
+
 Given('I am on the home page') do
   visit '/'
 end
@@ -51,8 +74,12 @@ When('I navigate to {string}') do |path|
   visit path
 end
 
-When('I click on {string}') do |link_text|
-  click_link(link_text)
+When('I click on {string}') do |link_or_button_text|
+  begin
+    click_link(link_or_button_text)
+  rescue Capybara::ElementNotFound
+    click_button(link_or_button_text)
+  end
 end
 
 When('I click {string}') do |button_text|
@@ -60,6 +87,7 @@ When('I click {string}') do |button_text|
 end
 
 Given('I am signed in as {string} with password {string}') do |email, password|
+  @current_user_email = email
   visit '/login'
   fill_in 'email', with: email
   fill_in 'password', with: password
@@ -209,4 +237,61 @@ end
 
 Then('I should see the new contact form') do
   expect(page).to have_selector('form')
+end
+
+Then('I should see {string} heading') do |heading|
+  expect(page).to have_selector('h1', text: heading)
+end
+
+Then('I should be on the contacts page') do
+  expect(page).to have_current_path('/contacts')
+end
+
+When('I click the {string} button for {string}') do |button_text, email|
+  row = find('tr', text: email)
+  within(row) do
+    click_button(button_text)
+  end
+end
+
+Then('I should see the contact with email {string} in the table') do |email|
+  contact_user = User.find_by(email: email)
+  expect(page).to have_selector('table')
+  expect(page).to have_content(contact_user.first_name)
+  expect(page).to have_content(contact_user.last_name)
+end
+
+Then('I should not see {string} in the available users list') do |email|
+  expect(page).not_to have_selector('tr', text: email)
+end
+
+Then('I should not see my own email in the available users list') do
+  current_user = User.find_by(email: @current_user_email)
+  expect(page).not_to have_content(current_user.email)
+end
+
+When('I delete the contact with email {string}') do |email|
+  contact_user = User.find_by(email: email)
+  row = find('tr', text: contact_user.first_name)
+  within(row) do
+    click_button('Delete')
+  end
+  begin
+    page.driver.browser.switch_to.alert.accept
+  rescue
+  end
+  sleep 0.5
+end
+
+When('I search for {string} in the contacts search') do |query|
+  fill_in('contacts-search-input', with: query)
+  begin
+    page.execute_script("document.getElementById('contacts-search-input').dispatchEvent(new Event('keyup', { bubbles: true }))")
+  rescue Capybara::NotSupportedByDriverError
+  end
+  sleep 0.5
+end
+
+Then('I should not see {string} in the contacts table') do |name|
+  expect(page).not_to have_content(name)
 end
