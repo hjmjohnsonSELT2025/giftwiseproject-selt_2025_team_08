@@ -1,7 +1,11 @@
 class User < ApplicationRecord
   has_secure_password
+  has_many :contacts, dependent: :destroy
+  has_many :contact_users, through: :contacts, source: :contact_user
 
   GENDERS = ["Male", "Female", "Non-binary", "Prefer not to say"].freeze
+
+  scope :available_for_contact, ->(user) { where.not(id: [user.id] + user.contact_users.pluck(:id)) }
 
   before_validation :downcase_email
 

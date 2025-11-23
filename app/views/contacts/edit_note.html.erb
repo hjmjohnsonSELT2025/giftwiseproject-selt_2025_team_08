@@ -1,0 +1,38 @@
+<div id="note-modal-content" class="modal">
+  <h2>Edit Note for <%= @contact.contact_user.first_name %> <%= @contact.contact_user.last_name %></h2>
+
+  <%= form_with model: @contact, local: true, url: update_note_contact_path(@contact), method: :patch, remote: true do |f| %>
+    <% if @contact.errors.any? %>
+      <div id="error_explanation">
+        <h3><%= pluralize(@contact.errors.count, "error") %> prohibited this contact from being saved:</h3>
+        <ul>
+          <% @contact.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :note %>
+      <%= f.text_area :note, rows: 6, placeholder: "Add a note about this contact..." %>
+    </div>
+
+    <div class="actions">
+      <%= f.submit "Update Note", class: "button" %>
+      <button type="button" class="button cancel-button" onclick="closeNoteModal()">Cancel</button>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  function closeNoteModal() {
+    document.getElementById('note-modal').style.display = 'none';
+    document.getElementById('note-modal').innerHTML = '';
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('note-modal').style.display = 'block';
+  });
+</script>
+
