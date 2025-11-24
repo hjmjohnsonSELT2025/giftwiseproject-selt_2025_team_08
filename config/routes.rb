@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   # Events
-  resources :events, only: [:index, :new]
+  resources :events, only: [:index, :new, :create, :edit, :update]
 
   # Contacts
   resources :contacts, only: [:index, :new, :create, :destroy] do

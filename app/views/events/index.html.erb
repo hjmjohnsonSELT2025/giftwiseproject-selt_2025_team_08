@@ -6,10 +6,33 @@
       <%= f.text_field :q, placeholder: "Search Events", class: "events-search" %>
     <% end %>
 
-    <%= link_to "Add Event", new_event_path, class: "button add-event" %>
+    <%= button_to "Add Event", new_event_path, method: :get, class: "button add-event" %>
   </div>
 
   <div class="events-list">
-    <!-- Events will be listed here -->
+    <% if @events.present? %>
+      <ul>
+        <% @events.each do |event| %>
+          <li class="event-item">
+            <strong><%= event.name %></strong>
+            <% if event.start_at && event.end_at %>
+              <span class="event-dates">(
+                <%= l(event.start_at, format: :short) %> -
+                <%= l(event.end_at, format: :short) %>
+              )</span>
+            <% end %>
+            <% if event.location.present? %>
+              <span class="event-location">@ <%= event.location %></span>
+            <% end %>
+            <% if event.description.present? %>
+              <div class="event-description"><%= simple_format(h(event.description)) %></div>
+            <% end %>
+            <%= button_to 'Edit', edit_event_path(event), method: :get, class: 'button edit-event' %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="no-events">No events yet.</p>
+    <% end %>
   </div>
 </div>
