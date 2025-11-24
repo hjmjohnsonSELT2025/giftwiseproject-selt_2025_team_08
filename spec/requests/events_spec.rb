@@ -63,9 +63,12 @@ RSpec.describe 'Events', type: :request do
         expect(response.body).to include('New Event')
       end
 
-      it 'displays event creation form placeholder text' do
+      it 'shows the event creation form fields' do
         get new_event_path
-        expect(response.body).to include('Event creation form coming soon')
+        expect(response.body).to include('Event Name')
+        expect(response.body).to include('Start date and time')
+        expect(response.body).to include('End date and time')
+        expect(response.body).to include('location')
       end
 
       it 'displays a back link to events page' do
@@ -106,6 +109,65 @@ RSpec.describe 'Events', type: :request do
         expect(response.body).to include(events_path)
       end
     end
+
+    describe 'creating and listing events' do
+      it 'allows creating an event and shows it on the index with Edit button' do
+        # Create event
+        post events_path, params: {
+          event: {
+            name: 'Birthday Party',
+            description: 'Fun time',
+            start_at: '2025-12-01T18:00',
+            end_at: '2025-12-01T21:00',
+            location: 'Community Hall'
+          }
+        }
+        expect(response).to redirect_to(events_path)
+
+        follow_redirect!
+        expect(response.body).to include('Birthday Party')
+        expect(response.body).to include('Fun time')
+        expect(response.body).to include('Community Hall')
+        expect(response.body).to include('Edit')
+      end
+
+      it 'shows an Edit page that allows updating the event' do
+        # Seed an event first
+        post events_path, params: { event: { name: 'Temp', description: '', start_at: '2025-12-02T10:00', end_at: '2025-12-02T11:00', location: '' } }
+        follow_redirect!
+        event = Event.last
+
+        get edit_event_path(event)
+        expect(response).to be_successful
+        expect(response.body).to include('Edit Event')
+
+        patch event_path(event), params: { event: { name: 'Updated Name' } }
+        expect(response).to redirect_to(events_path)
+        follow_redirect!
+        expect(response.body).to include('Updated Name')
+      end
+
+      it "does not render a description block when an event doesn't have a description" do
+        # Create an event without a description
+        post events_path, params: {
+          event: {
+            name: 'No Desc Event',
+            description: '',
+            start_at: '2025-12-10T09:00',
+            end_at: '2025-12-10T10:00',
+            location: 'Somewhere'
+          }
+        }
+        expect(response).to redirect_to(events_path)
+
+        follow_redirect!
+        # Should show the event name and location
+        expect(response.body).to include('No Desc Event')
+        expect(response.body).to include('Somewhere')
+        # Should not render the description container when description is blank
+        expect(response.body).not_to include('event-description')
+      end
+    end
   end
 
   describe 'Events controller actions' do
@@ -134,6 +196,8 @@ RSpec.describe 'Events', type: :request do
       expect(response).to redirect_to(login_path)
       
       get new_event_path
+      expect(response).to redirect_to(login_path)
+      post events_path, params: { event: { name: 'X', start_at: '2025-12-01T10:00', end_at: '2025-12-01T11:00' } }
       expect(response).to redirect_to(login_path)
     end
   end
