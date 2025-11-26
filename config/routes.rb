@@ -21,10 +21,27 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   # Events
-  resources :events, only: [:index, :new, :create, :edit, :update]
+  resources :events, only: [:index, :new, :create, :edit, :update, :show] do
+    resources :recipients, only: [:create]
+    resources :attendees, only: [:create, :destroy], controller: 'event_attendees'
+  end
 
-  # Contacts
+  # Recipients
+  resources :recipients, only: [:destroy] do
+    member do
+      get :data
+      post :generate_ideas
+      post :gift_ideas
+      post :gifts_for_recipients
+    end
+  end
+
+  # Gift Ideas
+  resources :gift_ideas, only: [:show, :update]
   resources :contacts, only: [:index, :new, :create, :destroy] do
+    collection do
+      get :search
+    end
     member do
       get :edit_note
       patch :update_note

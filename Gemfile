@@ -47,6 +47,12 @@ group :test do
   gem "database_cleaner-active_record"
   gem "cucumber-rails", require: false
   gem "cucumber"
+  gem "factory_bot_rails"
+  gem "shoulda-matchers", "~> 5.0"
+end
+
+group :development, :test do
+  gem "factory_bot_rails"
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

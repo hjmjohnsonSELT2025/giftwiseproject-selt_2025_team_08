@@ -48,7 +48,7 @@ class ContactsController < ApplicationController
     else
       respond_to do |format|
         format.js
-        format.html { render :edit_note, layout: false, status: :unprocessable_entity }
+        format.html { render :edit_note, layout: false, status: :unprocessable_content }
       end
     end
   end
@@ -56,6 +56,13 @@ class ContactsController < ApplicationController
   def destroy
     @contact.destroy
     redirect_to contacts_path, notice: "Contact removed successfully"
+  end
+
+  def search
+    query = params[:q].to_s.downcase
+    contacts = current_user.contact_users.where("LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ?", "%#{query}%", "%#{query}%")
+    
+    render json: { contacts: contacts.map { |u| u.attributes.slice('id', 'first_name', 'last_name', 'occupation', 'hobbies', 'likes', 'dislikes', 'date_of_birth').merge(contact_user_id: u.id) } }
   end
 
   private

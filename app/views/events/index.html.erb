@@ -27,7 +27,12 @@
             <% if event.description.present? %>
               <div class="event-description"><%= simple_format(h(event.description)) %></div>
             <% end %>
-            <%= button_to 'Edit', edit_event_path(event), method: :get, class: 'button edit-event' %>
+            <div class="event-actions">
+              <%= button_to 'View', event_path(event), method: :get, class: 'button view-event' %>
+              <% if event.creator_id == current_user.id %>
+                <%= button_to 'Edit', edit_event_path(event), method: :get, class: 'button edit-event' %>
+              <% end %>
+            </div>
           </li>
         <% end %>
       </ul>

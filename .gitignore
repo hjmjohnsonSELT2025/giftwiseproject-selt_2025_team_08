@@ -33,3 +33,4 @@ yarn-error.log
 # Ignore dotenv environment variables
 .env
 .env.*
+!.env.example

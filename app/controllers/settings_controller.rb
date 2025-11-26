@@ -14,7 +14,7 @@ class SettingsController < ApplicationController
       Rails.logger.info("User #{@user.id} updated their settings")
       redirect_to settings_path, notice: "Settings updated successfully"
     else
-      render :show, status: :unprocessable_entity
+      render :show, status: :unprocessable_content
     end
   end
 

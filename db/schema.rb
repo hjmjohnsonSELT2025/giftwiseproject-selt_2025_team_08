@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_24_010000) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -22,6 +22,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_010000) do
     t.index ["user_id"], name: "index_contacts_on_user_id"
   end
 
+  create_table "event_attendees", force: :cascade do |t|
+    t.integer "event_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "user_id"], name: "index_event_attendees_on_event_id_and_user_id", unique: true
+    t.index ["event_id"], name: "index_event_attendees_on_event_id"
+    t.index ["user_id"], name: "index_event_attendees_on_user_id"
+  end
+
   create_table "events", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
@@ -30,6 +40,45 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_010000) do
     t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "creator_id", null: false
+  end
+
+  create_table "gift_ideas", force: :cascade do |t|
+    t.integer "recipient_id", null: false
+    t.integer "user_id", null: false
+    t.text "idea", null: false
+    t.decimal "estimated_price"
+    t.boolean "favorited", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id"], name: "index_gift_ideas_on_recipient_id"
+    t.index ["user_id"], name: "index_gift_ideas_on_user_id"
+  end
+
+  create_table "gifts_for_recipients", force: :cascade do |t|
+    t.integer "recipient_id", null: false
+    t.integer "user_id", null: false
+    t.text "idea", null: false
+    t.decimal "price"
+    t.date "gift_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id"], name: "index_gifts_for_recipients_on_recipient_id"
+    t.index ["user_id"], name: "index_gifts_for_recipients_on_user_id"
+  end
+
+  create_table "recipients", force: :cascade do |t|
+    t.integer "event_id", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.integer "age"
+    t.string "occupation"
+    t.text "hobbies"
+    t.text "likes"
+    t.text "dislikes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_recipients_on_event_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -39,7 +88,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_010000) do
     t.datetime "updated_at", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
-    t.date "date_of_birth", null: false
+    t.date "date_of_birth"
     t.string "gender", null: false
     t.string "occupation", null: false
     t.text "hobbies"
@@ -55,4 +104,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_24_010000) do
 
   add_foreign_key "contacts", "users"
   add_foreign_key "contacts", "users", column: "contact_user_id"
+  add_foreign_key "event_attendees", "events"
+  add_foreign_key "event_attendees", "users"
+  add_foreign_key "events", "users", column: "creator_id"
+  add_foreign_key "gift_ideas", "recipients"
+  add_foreign_key "gift_ideas", "users"
+  add_foreign_key "gifts_for_recipients", "recipients"
+  add_foreign_key "gifts_for_recipients", "users"
+  add_foreign_key "recipients", "events"
 end

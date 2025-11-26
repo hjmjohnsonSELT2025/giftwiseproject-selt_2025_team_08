@@ -1,0 +1,452 @@
+<div>
+  <h1><%= @event.name %></h1>
+  
+  <div>
+    <% if @event.start_at && @event.end_at %>
+      <div>
+        <strong>Date/Time:</strong>
+        <%= l(@event.start_at, format: :short) %> - <%= l(@event.end_at, format: :short) %>
+      </div>
+    <% end %>
+    
+    <% if @event.location.present? %>
+      <div>
+        <strong>Location:</strong>
+        <%= @event.location %>
+      </div>
+    <% end %>
+    
+    <% if @event.description.present? %>
+      <div>
+        <strong>Description:</strong>
+        <%= @event.description %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @is_creator %>
+    <%= link_to 'Edit', edit_event_path(@event) %>
+  <% end %>
+  <%= link_to 'Back to Events', events_path %>
+</div>
+
+<hr>
+
+<% if @can_see_gift_section %>
+<!-- Recipients Overview - Only visible to creators and attendees -->
+<div style="margin-bottom: 30px;">
+  <h2>Recipients & Gifts</h2>
+  <div id="recipients-overview" style="display: grid; gap: 15px;">
+    <% @event.recipients.each do |recipient| %>
+      <div style="border: 1px solid #ddd; padding: 15px; border-radius: 4px; background-color: #f9f9f9;">
+        <h3><%= "#{recipient.first_name} #{recipient.last_name}" %></h3>
+        <div id="gifts-for-<%= recipient.id %>" style="margin-top: 10px;">
+          <p><em>Loading gifts...</em></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<hr>
+
+<% end %>
+
+<% if @can_see_gift_section %>
+  <div>
+    <h2>Gift Idea Generation</h2>
+    
+    <!-- Select Recipient -->
+    <div>
+      <label for="recipient-select">Select Recipient:</label>
+      <select id="recipient-select">
+        <option value="">-- Choose a recipient --</option>
+        <% @event.recipients.each do |recipient| %>
+          <option value="<%= recipient.id %>"><%= "#{recipient.first_name} #{recipient.last_name}" %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <!-- Recipient Details (shown after selection) -->
+    <div id="recipient-details" style="display:none; margin-top: 20px;">
+      
+      <!-- Previous Gifts (Collapsible) -->
+      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('previous-gifts-section')">
+          <span id="previous-gifts-toggle">▼</span> Previous Gifts for <span id="recipient-name"></span>
+        </div>
+        <div id="previous-gifts-section" style="padding: 15px; display: block;">
+          <div id="previous-gifts-list"></div>
+        </div>
+      </div>
+
+      <!-- Saved Ideas (Collapsible) -->
+      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('favorited-ideas-section')">
+          <span id="favorited-ideas-toggle">▼</span> Saved Gift Ideas for <span id="recipient-name-fav"></span>
+        </div>
+        <div id="favorited-ideas-section" style="padding: 15px; display: block;">
+          <div id="favorited-ideas-list"></div>
+        </div>
+      </div>
+
+      <!-- Generate New Ideas (Collapsible) -->
+      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generate-ideas-section')">
+          <span id="generate-ideas-toggle">▼</span> Generate New Gift Ideas
+        </div>
+        <div id="generate-ideas-section" style="padding: 15px; display: block;">
+          <div style="margin-bottom: 10px;">
+            <label for="price-range">Price Range ($):</label>
+            <input type="number" id="price-min" placeholder="Min" style="width: 80px;" min="0">
+            -
+            <input type="number" id="price-max" placeholder="Max" style="width: 80px;" min="0">
+          </div>
+
+          <div style="margin-bottom: 10px;">
+            <label for="num-ideas">Number of Ideas (1-10):</label>
+            <input type="number" id="num-ideas" value="3" min="1" max="10">
+          </div>
+
+          <button id="generate-ideas-btn">Generate Ideas</button>
+        </div>
+      </div>
+
+      <!-- Generated Ideas (Collapsible) -->
+      <div id="generated-ideas" style="display:none; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generated-ideas-section')">
+          <span id="generated-ideas-toggle">▼</span> Generated Gift Ideas
+        </div>
+        <div id="generated-ideas-section" style="padding: 15px; display: block;">
+          <div id="ideas-list"></div>
+        </div>
+      </div>
+
+      <!-- Manual Entry (Collapsible) -->
+      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('manual-entry-section')">
+          <span id="manual-entry-toggle">▼</span> Manually Add Gift Idea
+        </div>
+        <div id="manual-entry-section" style="padding: 15px; display: block;">
+          <textarea id="manual-idea" placeholder="Enter a gift idea..." style="width: 100%; height: 80px; margin-bottom: 10px;"></textarea>
+          <div style="margin-bottom: 10px;">
+            <label for="manual-price">Price ($):</label>
+            <input type="number" id="manual-price" placeholder="0.00" style="width: 100px;" min="0" step="0.01">
+          </div>
+          <button id="add-manual-idea-btn">Add Idea</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+  <div>
+    <h2>Discussion Thread</h2>
+    <div>
+      <p><em>Discussion thread feature coming soon...</em></p>
+    </div>
+  </div>
+<% end %>
+
+<script>
+  window.toggleSection = function(sectionId) {
+    const section = document.getElementById(sectionId);
+    const toggleSpan = document.getElementById(sectionId.replace('-section', '-toggle'));
+    
+    if (section.style.display === 'none') {
+      section.style.display = 'block';
+      toggleSpan.textContent = '▼';
+    } else {
+      section.style.display = 'none';
+      toggleSpan.textContent = '▶';
+    }
+  };
+
+  function loadAllCurrentGifts() {
+    const recipientsOverview = document.getElementById('recipients-overview');
+    if (!recipientsOverview) return;
+
+    const recipientDivs = recipientsOverview.querySelectorAll('[id^="gifts-for-"]');
+    recipientDivs.forEach(div => {
+      const recipientId = div.id.replace('gifts-for-', '');
+      fetch(`/recipients/${recipientId}/data.json`)
+        .then(response => response.json())
+        .then(data => {
+          const currentGift = data.previous_gifts && data.previous_gifts.length > 0 
+            ? data.previous_gifts[data.previous_gifts.length - 1]
+            : null;
+          
+          if (currentGift) {
+            div.innerHTML = `
+              <strong>Current Gift:</strong> ${currentGift.idea}
+              <div style="font-size: 0.9em; color: #666;">
+                Date: ${currentGift.gift_date || 'N/A'}
+              </div>
+            `;
+          } else {
+            div.innerHTML = '<em style="color: #999;">No gift recorded yet</em>';
+          }
+        })
+        .catch(error => {
+          console.error('Error loading gifts:', error);
+          div.innerHTML = '<em style="color: #999;">Unable to load gift</em>';
+        });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    loadAllCurrentGifts();
+
+    const recipientSelect = document.getElementById('recipient-select');
+    const recipientDetails = document.getElementById('recipient-details');
+    const generateIdeasBtn = document.getElementById('generate-ideas-btn');
+    const addManualIdeaBtn = document.getElementById('add-manual-idea-btn');
+    const manualIdeaInput = document.getElementById('manual-idea');
+    const recipientNameSpans = document.querySelectorAll('#recipient-name, #recipient-name-fav');
+    let selectedRecipient = null;
+
+    recipientSelect.addEventListener('change', function() {
+      if (this.value) {
+        selectedRecipient = this.value;
+        recipientNameSpans.forEach(span => {
+          span.textContent = this.options[this.selectedIndex].text;
+        });
+        recipientDetails.style.display = 'block';
+        loadRecipientData(selectedRecipient);
+      } else {
+        recipientDetails.style.display = 'none';
+        selectedRecipient = null;
+      }
+    });
+
+    function loadRecipientData(recipientId) {
+      fetch(`/recipients/${recipientId}/data.json`)
+        .then(response => response.json())
+        .then(data => {
+          displayPreviousGifts(data.previous_gifts);
+          displayFavoritedIdeas(data.favorited_ideas);
+        })
+        .catch(error => console.error('Error loading recipient data:', error));
+    }
+
+    function displayPreviousGifts(gifts) {
+      const list = document.getElementById('previous-gifts-list');
+      if (gifts.length === 0) {
+        list.innerHTML = '<p>No previous gifts recorded.</p>';
+      } else {
+        list.innerHTML = gifts.map(gift => `
+          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd;">
+            <p><strong>${gift.idea}</strong></p>
+            <p>Price: $${gift.price || 'N/A'}</p>
+            <p>Date: ${gift.gift_date || 'N/A'}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function displayFavoritedIdeas(ideas) {
+      const list = document.getElementById('favorited-ideas-list');
+      if (ideas.length === 0) {
+        list.innerHTML = '<p>No saved ideas yet.</p>';
+      } else {
+        list.innerHTML = ideas.map(idea => `
+          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd;">
+            <p><strong>${idea.idea}</strong></p>
+            <button onclick="addGiftForRecipient(${idea.id}, ${selectedRecipient})">Add as Gift</button>
+            <button onclick="unfavoriteIdea(${idea.id})">Unfavorite</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    generateIdeasBtn.addEventListener('click', function() {
+      if (!selectedRecipient) {
+        alert('Please select a recipient first');
+        return;
+      }
+
+      const priceMin = document.getElementById('price-min').value || 'any';
+      const priceMax = document.getElementById('price-max').value || 'any';
+      const numIdeas = document.getElementById('num-ideas').value;
+
+      generateIdeasBtn.disabled = true;
+      generateIdeasBtn.textContent = 'Generating...';
+
+      fetch(`/recipients/${selectedRecipient}/generate_ideas.json`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          price_min: priceMin,
+          price_max: priceMax,
+          num_ideas: numIdeas
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        displayGeneratedIdeas(data.ideas);
+        document.getElementById('generated-ideas').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error generating ideas');
+      })
+      .finally(() => {
+        generateIdeasBtn.disabled = false;
+        generateIdeasBtn.textContent = 'Generate Ideas';
+      });
+    });
+
+    function displayGeneratedIdeas(ideas) {
+      const list = document.getElementById('ideas-list');
+      list.innerHTML = ideas.map((idea, index) => `
+        <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd;">
+          <p><strong>Idea ${index + 1}:</strong> ${idea}</p>
+          <button onclick="saveIdeaForLater(${selectedRecipient}, '${idea.replace(/'/g, "\\'")}')">Save for Later</button>
+          <button onclick="addGiftDirectly(${selectedRecipient}, '${idea.replace(/'/g, "\\'")}')">Add as Gift</button>
+        </div>
+      `).join('');
+    }
+
+    addManualIdeaBtn.addEventListener('click', function() {
+      if (!selectedRecipient) {
+        alert('Please select a recipient first');
+        return;
+      }
+
+      const idea = manualIdeaInput.value.trim();
+      const price = document.getElementById('manual-price').value;
+      
+      if (!idea) {
+        alert('Please enter a gift idea');
+        return;
+      }
+
+      window.saveManualIdea(selectedRecipient, idea, price);
+      manualIdeaInput.value = '';
+      document.getElementById('manual-price').value = '';
+    });
+
+    window.saveIdeaForLater = function(recipientId, idea) {
+      fetch(`/recipients/${recipientId}/gift_ideas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          gift_idea: {
+            idea: idea,
+            favorited: true
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Idea saved for later!');
+        loadRecipientData(recipientId);
+        loadAllCurrentGifts();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving idea');
+      });
+    };
+
+    window.saveManualIdea = function(recipientId, idea, price) {
+      fetch(`/recipients/${recipientId}/gift_ideas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          gift_idea: {
+            idea: idea,
+            estimated_price: price || null,
+            favorited: true
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Idea saved for later!');
+        loadRecipientData(recipientId);
+        loadAllCurrentGifts();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving idea');
+      });
+    };
+
+    window.addGiftDirectly = function(recipientId, idea, price) {
+      fetch(`/recipients/${recipientId}/gifts_for_recipients`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          gift_for_recipient: {
+            idea: idea,
+            price: price || null,
+            gift_date: new Date().toISOString().split('T')[0]
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert('Gift added!');
+        loadRecipientData(recipientId);
+        loadAllCurrentGifts();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding gift');
+      });
+    };
+
+    window.addGiftForRecipient = function(ideaId, recipientId) {
+      fetch(`/gift_ideas/${ideaId}`)
+        .then(response => response.json())
+        .then(data => {
+          addGiftDirectly(recipientId, data.idea);
+          unfavoriteIdea(ideaId);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error adding gift');
+        });
+    };
+
+    window.unfavoriteIdea = function(ideaId) {
+      fetch(`/gift_ideas/${ideaId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          gift_idea: {
+            favorited: false
+          }
+        })
+      })
+      .then(() => {
+        if (selectedRecipient) {
+          loadRecipientData(selectedRecipient);
+        }
+        loadAllCurrentGifts();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error unfavoriting idea');
+      });
+    };
+  });
+</script>

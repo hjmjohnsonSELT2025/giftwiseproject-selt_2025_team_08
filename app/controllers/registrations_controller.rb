@@ -8,7 +8,7 @@ class RegistrationsController < ApplicationController
     if @user.save
       redirect_to login_path, notice: "Account created successfully! Please log in with your credentials."
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
