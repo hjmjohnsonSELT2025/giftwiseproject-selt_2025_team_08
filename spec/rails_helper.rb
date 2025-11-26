@@ -3,6 +3,14 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../config/environment', __dir__)
 require 'rspec/rails'
 require 'database_cleaner/active_record'
+require 'shoulda/matchers'
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
 
 begin
   ActiveRecord::Migration.maintain_test_schema!
@@ -84,6 +92,8 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  config.include FactoryBot::Syntax::Methods
 
   config.include Module.new {
     def create_user(email: 'test@example.com', password: 'password123', **attrs)

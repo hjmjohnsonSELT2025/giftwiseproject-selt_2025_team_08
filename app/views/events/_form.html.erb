@@ -1,4 +1,4 @@
-<%= form_with model: event, local: true do |f| %>
+<%= form_with model: event, local: true, data: { controller: "event-form", "event-form-event-id": event.id } do |f| %>
   <div class="field">
     <%= f.label :name, 'Event Name' %><br>
     <%= f.text_field :name, required: true %>
@@ -24,7 +24,86 @@
     <%= f.text_field :location %>
   </div>
 
+  <div class="field">
+    <h3>Attendees</h3>
+    <div id="attendees-section">
+      <% if event.persisted? && event.attendees.any? %>
+        <ul id="attendees-list">
+          <% event.attendees.each do |attendee| %>
+            <li data-attendee-id="<%= attendee.id %>" class="attendee-item">
+              <%= "#{attendee.first_name} #{attendee.last_name}" %>
+              <button type="button" class="remove-attendee" data-attendee-id="<%= attendee.id %>">Remove</button>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p id="no-attendees">No attendees added yet.</p>
+      <% end %>
+    </div>
+
+    <div class="attendee-search-section">
+      <label for="attendee-search">Search Contacts to Add as Attendees:</label>
+      <input 
+        type="text" 
+        id="attendee-search" 
+        placeholder="Search contacts..."
+        autocomplete="off"
+      >
+      <div id="attendee-search-results" class="search-results"></div>
+    </div>
+  </div>
+
+  <div class="field">
+    <h3>Recipients</h3>
+    <div id="recipients-section">
+      <% if event.persisted? && event.recipients.any? %>
+        <ul id="recipients-list">
+          <% event.recipients.each do |recipient| %>
+            <li data-recipient-id="<%= recipient.id %>" class="recipient-item">
+              <%= "#{recipient.first_name} #{recipient.last_name}" %>
+              <button type="button" class="remove-recipient" data-recipient-id="<%= recipient.id %>">Remove</button>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p id="no-recipients">No recipients added yet.</p>
+      <% end %>
+    </div>
+
+    <div class="contact-search-section">
+      <label for="contact-search">Search Contacts to Add as Recipients:</label>
+      <input 
+        type="text" 
+        id="contact-search" 
+        placeholder="Search contacts..."
+        autocomplete="off"
+      >
+      <div id="search-results" class="search-results"></div>
+    </div>
+  </div>
+
   <div class="actions">
     <%= f.submit %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const attendeeSearch = document.getElementById('attendee-search');
+    const contactSearch = document.getElementById('contact-search');
+    
+    if (attendeeSearch) {
+      attendeeSearch.addEventListener('input', (e) => {
+        const controller = document.querySelector('[data-controller~="event-form"]')?._eventFormController;
+        if (controller) controller.searchAttendees(e);
+      });
+    }
+    
+    if (contactSearch) {
+      contactSearch.addEventListener('input', (e) => {
+        const controller = document.querySelector('[data-controller~="event-form"]')?._eventFormController;
+        if (controller) controller.searchContacts(e);
+      });
+    }
+  });
+</script>
