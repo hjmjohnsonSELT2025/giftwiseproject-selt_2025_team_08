@@ -26,10 +26,9 @@ RSpec.describe 'Home Page', type: :request do
       expect(response.body).to include("Hello, #{user.first_name}!")
     end
 
-    it 'displays the gift ideas section' do
+    it 'displays the quick gift generator section' do
       get root_path
-      expect(response.body).to include('Your gift ideas')
-      expect(response.body).to include('Coming soon...')
+      expect(response.body).to include('Quick Gift Generation')
     end
 
     it 'renders the correct template' do
@@ -43,6 +42,54 @@ RSpec.describe 'Home Page', type: :request do
         expect(response.body).to include(root_path)
         expect(response.body).to include(events_path)
         expect(response.body).to include('Logout')
+      end
+    end
+
+    describe 'upcoming events this month' do
+      it 'displays upcoming events section' do
+        get root_path
+        expect(response.body).to include('Upcoming Events This Month')
+      end
+
+      it 'shows events where user is the creator' do
+        event = create(:event, creator: user)
+
+        get root_path
+        expect(response.body).to include(event.name)
+      end
+
+      it 'shows events where user is an attendee' do
+        creator = create(:user, email: 'creator@example.com')
+        event = create(:event, creator: creator)
+        create(:event_attendee, event: event, user: user)
+
+        get root_path
+        expect(response.body).to include(event.name)
+      end
+
+      it 'does not show events from other months' do
+        start_time = Time.current - 2.months
+        event = create(:event, creator: user, start_at: start_time, end_at: start_time + 2.hours)
+
+        get root_path
+        expect(response.body).not_to include(event.name)
+      end
+
+      it 'shows no events message when there are no upcoming events' do
+        get root_path
+        expect(response.body).to include('No upcoming events this month.')
+      end
+
+      it 'displays event details correctly' do
+        event = create(:event, 
+          creator: user, 
+          name: 'Birthday Party',
+          location: 'Downtown Hall'
+        )
+
+        get root_path
+        expect(response.body).to include('Birthday Party')
+        expect(response.body).to include('Downtown Hall')
       end
     end
   end
@@ -62,6 +109,23 @@ RSpec.describe 'Home Page', type: :request do
       get root_path
       expect(response.body).to include("Hello, #{user_two.first_name}!")
       expect(response.body).not_to include("Hello, #{user.first_name}!")
+    end
+
+    it 'shows each user only their own events' do
+      event_one = create(:event, creator: user)
+      event_two = create(:event, creator: user_two)
+
+      post session_path, params: { email: user.email, password: 'request123' }
+      get root_path
+      expect(response.body).to include(event_one.name)
+      expect(response.body).not_to include(event_two.name)
+
+      delete session_path
+
+      post session_path, params: { email: user_two.email, password: 'another123' }
+      get root_path
+      expect(response.body).to include(event_two.name)
+      expect(response.body).not_to include(event_one.name)
     end
   end
 end

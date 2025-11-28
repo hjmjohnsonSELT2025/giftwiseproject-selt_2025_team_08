@@ -1,0 +1,30 @@
+<div class="upcoming-events-section">
+  <h2>Upcoming Events This Month</h2>
+  
+  <% if upcoming_events&.any? %>
+    <ul class="events-list">
+      <% upcoming_events.each do |event| %>
+        <li class="event-item">
+          <div class="event-header">
+            <h3><%= link_to event.name, event_path(event) %></h3>
+            <p class="event-date">
+              <%= event.start_at.strftime("%b %d, %Y at %I:%M %p") %>
+            </p>
+          </div>
+          
+          <div class="event-details">
+            <% if event.location.present? %>
+              <p class="event-location">
+                <strong>Location:</strong> <%= event.location %>
+              </p>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="no-events">No upcoming events this month.</p>
+  <% end %>
+</div>
+
+

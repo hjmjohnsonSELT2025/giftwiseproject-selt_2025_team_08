@@ -5,6 +5,7 @@ RSpec.describe 'home/index.html.erb', type: :view do
 
   before do
     assign(:current_user, user)
+    assign(:upcoming_events, [])
     allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:logged_in?).and_return(true)
   end
@@ -21,12 +22,7 @@ RSpec.describe 'home/index.html.erb', type: :view do
 
   it 'renders the gift ideas section heading' do
     render
-    expect(rendered).to include('Your gift ideas')
-  end
-
-  it 'displays the coming soon message' do
-    render
-    expect(rendered).to include('Coming soon...')
+    expect(rendered).to include('Quick Gift Generation')
   end
 
   context 'with different user first names' do

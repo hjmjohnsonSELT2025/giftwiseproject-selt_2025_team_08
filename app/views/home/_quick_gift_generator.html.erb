@@ -1,0 +1,192 @@
+<div class="quick-gift-generator">
+  <!-- Generate Gift Ideas (Collapsible) -->
+  <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+    <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generate-gift-section')">
+      <span id="generate-gift-toggle">▶</span> Quick Gift Generation
+    </div>
+    <div id="generate-gift-section" style="padding: 15px; display: none;">
+      <p style="color: #666; margin-bottom: 1.5rem;">Get personalized gift suggestions with just a few details (all optional)</p>
+      
+      <form id="quick-gift-form" style="display: contents;">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="likes">What do they like?</label>
+            <input type="text" id="likes" name="likes" placeholder="e.g., reading, cooking, travel" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="dislikes">What do they dislike?</label>
+            <input type="text" id="dislikes" name="dislikes" placeholder="e.g., sports, video games" class="form-control">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="occupation">Their job/occupation</label>
+            <input type="text" id="occupation" name="occupation" placeholder="e.g., software engineer, teacher" class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" placeholder="e.g., 25" class="form-control">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="hobbies">Hobbies/Interests</label>
+          <input type="text" id="hobbies" name="hobbies" placeholder="e.g., photography, gardening, fitness" class="form-control">
+        </div>
+        
+        <div class="form-group">
+          <label for="budget">Budget</label>
+          <input type="text" id="budget" name="budget" placeholder="e.g., $50, $100" class="form-control">
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary btn-lg">Generate Gift Ideas</button>
+        </div>
+      </form>
+      
+      <div id="gift-results" style="display: none; margin-top: 2rem;">
+        <h3>Suggested Gift Ideas</h3>
+        <div id="ideas-content" class="ideas-content"></div>
+      </div>
+      
+      <div id="gift-error" style="display: none; margin-top: 1rem; padding: 1rem; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;"></div>
+      
+      <div id="gift-loading" style="display: none; margin-top: 1rem; padding: 1rem; background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; color: #0c5460;">Loading ideas...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const toggleId = sectionId.replace('section', 'toggle');
+    const toggle = document.getElementById(toggleId);
+    
+    if (section.style.display === 'none' || section.style.display === '') {
+      section.style.display = 'block';
+      toggle.textContent = '▼';
+    } else {
+      section.style.display = 'none';
+      toggle.textContent = '▶';
+    }
+  }
+
+  document.getElementById('quick-gift-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    const formData = {
+      likes: document.getElementById('likes').value,
+      dislikes: document.getElementById('dislikes').value,
+      occupation: document.getElementById('occupation').value,
+      age: document.getElementById('age').value,
+      hobbies: document.getElementById('hobbies').value,
+      budget: document.getElementById('budget').value
+    };
+    
+    const resultsDiv = document.getElementById('gift-results');
+    const errorDiv = document.getElementById('gift-error');
+    const loadingDiv = document.getElementById('gift-loading');
+    const ideasContent = document.getElementById('ideas-content');
+    
+    resultsDiv.style.display = 'none';
+    errorDiv.style.display = 'none';
+    errorDiv.textContent = '';
+    loadingDiv.style.display = 'block';
+    
+    console.log('Sending form data:', formData);
+    console.log('CSRF Token:', csrfToken);
+    
+    try {
+      const response = await fetch('<%= quick_gift_ideas_path %>', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfToken,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      console.log('Response status:', response.status);
+      
+      loadingDiv.style.display = 'none';
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Response error:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        ideasContent.innerHTML = `<pre>${data.idea}</pre>`;
+        resultsDiv.style.display = 'block';
+      } else {
+        errorDiv.textContent = data.error || 'Failed to generate gift ideas. Please try again.';
+        errorDiv.style.display = 'block';
+      }
+    } catch (error) {
+      loadingDiv.style.display = 'none';
+      console.error('Error:', error);
+      errorDiv.textContent = 'An error occurred: ' + error.message;
+      errorDiv.style.display = 'block';
+    }
+  });
+</script>
+
+<style>
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+
+  .form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .ideas-content {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 1rem;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
+

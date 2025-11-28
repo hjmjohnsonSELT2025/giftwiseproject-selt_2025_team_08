@@ -19,6 +19,7 @@ Rails.application.routes.draw do
 
   # Home
   root to: "home#index"
+  post "/quick_gift_ideas", to: "home#generate_quick_gift_idea", as: :quick_gift_ideas
 
   # Events
   resources :events, only: [:index, :new, :create, :edit, :update, :show] do

@@ -11,6 +11,18 @@ class Event < ApplicationRecord
 
   validate :end_after_start
 
+  scope :upcoming_this_month, ->(user) {
+    now = Time.current
+    month_start = now.beginning_of_month
+    month_end = now.end_of_month
+
+    joins("LEFT JOIN event_attendees ON events.id = event_attendees.event_id")
+      .where("event_attendees.user_id = ? OR events.creator_id = ?", user.id, user.id)
+      .where("events.start_at >= ? AND events.start_at <= ?", month_start, month_end)
+      .group("events.id")
+      .order("events.start_at")
+  }
+
   private
 
   def end_after_start
