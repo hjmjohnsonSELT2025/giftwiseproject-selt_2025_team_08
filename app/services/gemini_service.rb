@@ -43,7 +43,8 @@ class GeminiService
     
     parse_response(response)
   rescue => e
-    "Error calling Gemini API: #{e.message}"
+    Rails.logger.error("Error calling Gemini API: #{e.class} - #{e.message}")
+    raise e
   end
 
   def parse_response(response)
@@ -52,11 +53,13 @@ class GeminiService
       text = data.dig('candidates', 0, 'content', 'parts', 0, 'text')
       text || "No response received"
     else
-      error_data = JSON.parse(response.body)
+      error_data = JSON.parse(response.body) rescue JSON.parse('{}')
       error_msg = error_data.dig('error', 'message') || response.body
-      "API Error (#{response.code}): #{error_msg}"
+      Rails.logger.error("Gemini API error: #{response.code} - #{error_msg}")
+      raise StandardError.new("API Error (#{response.code}): #{error_msg}")
     end
   rescue JSON::ParserError => e
-    "Error parsing response: #{e.message}"
+    Rails.logger.error("Error parsing response: #{e.message}")
+    raise e
   end
 end

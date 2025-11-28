@@ -4,8 +4,9 @@
     <p>Hello, <%= current_user&.first_name %>!</p>
   </div>
 
+  
   <div class="home-content">
-    <h2>Your gift ideas</h2>
-    <p>Coming soon... we'll generate thoughtful gift ideas for friends and family.</p>
+    <%= render 'upcoming_events', upcoming_events: @upcoming_events %>
+    <%= render 'quick_gift_generator' %>
   </div>
 </div>
