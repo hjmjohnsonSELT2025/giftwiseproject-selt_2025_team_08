@@ -7,5 +7,6 @@
 
   <div class="event-form-actions">
     <%= link_to "Back to Events", events_path, class: "button back-button" %>
+    <%= button_to "Delete Event", event_path(@event), method: :delete, data: { confirm: "Are you sure? This will delete the event for everyone." }, class: "button delete-button" %>
   </div>
 </div>

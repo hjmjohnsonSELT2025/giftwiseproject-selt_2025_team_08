@@ -27,7 +27,7 @@
   <% if @is_creator %>
     <%= link_to 'Edit', edit_event_path(@event) %>
   <% end %>
-  <%= link_to 'Back to Events', events_path %>
+  <%= link_to 'Back to Event List', events_path %>
 </div>
 
 <hr>
@@ -142,13 +142,18 @@
 
 <hr>
 
+<% end %>
+
   <div>
-    <h2>Discussion Thread</h2>
-    <div>
-      <p><em>Discussion thread feature coming soon...</em></p>
+    <h2>Discussion</h2>
+    <div style="display: flex; gap: 15px; margin-top: 15px;">
+      <%= link_to 'All Participants Discussion', event_discussions_path(@event, thread_type: 'public'), style: 'padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer;' %>
+      
+      <% if @is_creator || @is_attendee %>
+        <%= link_to 'Contributors Discussion', event_discussions_path(@event, thread_type: 'contributors_only'), style: 'padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer;' %>
+      <% end %>
     </div>
   </div>
-<% end %>
 
 <script>
   window.toggleSection = function(sectionId) {
@@ -172,7 +177,12 @@
     recipientDivs.forEach(div => {
       const recipientId = div.id.replace('gifts-for-', '');
       fetch(`/recipients/${recipientId}/data.json`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error status: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
           const currentGift = data.previous_gifts && data.previous_gifts.length > 0 
             ? data.previous_gifts[data.previous_gifts.length - 1]
@@ -190,13 +200,18 @@
           }
         })
         .catch(error => {
-          console.error('Error loading gifts:', error);
+          console.error('Error loading gifts for recipient', recipientId, ':', error);
           div.innerHTML = '<em style="color: #999;">Unable to load gift</em>';
         });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', function() {
+  let pageInitialized = false;
+
+  function setupPage() {
+    if (pageInitialized) return;
+    pageInitialized = true;
+
     loadAllCurrentGifts();
 
     const recipientSelect = document.getElementById('recipient-select');
@@ -448,5 +463,8 @@
         alert('Error unfavoriting idea');
       });
     };
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupPage);
+  document.addEventListener('turbo:load', setupPage);
 </script>

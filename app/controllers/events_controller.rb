@@ -1,23 +1,29 @@
 class EventsController < ApplicationController
   before_action :require_login
-  before_action :set_event, only: [:show, :edit, :update]
-  before_action :authorize_creator!, only: [:edit, :update]
+  before_action :set_event, only: [:show, :edit, :update, :destroy]
+  before_action :authorize_creator!, only: [:edit, :update, :destroy]
   before_action :authorize_viewer!, only: [:show]
 
   def index
-    creator_events = Event.where(creator_id: current_user.id)
-    attendee_events = Event.joins(:event_attendees).where(event_attendees: { user_id: current_user.id })
-    recipient_event_ids = Recipient.where(first_name: current_user.first_name, last_name: current_user.last_name).pluck(:event_id)
-    recipient_events = Event.where(id: recipient_event_ids)
-    
-    @events = (creator_events + attendee_events + recipient_events).uniq.sort_by { |e| e.created_at }.reverse
+    @events = Event
+      .left_joins(:event_attendees, :recipients)
+      .where(
+        "events.creator_id = ? OR event_attendees.user_id = ? OR (recipients.first_name = ? AND recipients.last_name = ?)",
+        current_user.id, current_user.id, current_user.first_name, current_user.last_name
+      )
+      .distinct
+      .order(created_at: :desc)
   end
 
   def show
+    @event = Event.includes(:attendees, :recipients).find(params[:id])
     @is_creator = @event.creator_id == current_user.id
     @is_attendee = @event.attendees.include?(current_user)
-    @is_recipient = @event.recipients.any? { |r| r.first_name == current_user.first_name && r.last_name == current_user.last_name }
-    @can_see_gift_section = @is_creator || @is_attendee
+    @is_recipient = @event.recipients.exists?(
+      first_name: current_user.first_name,
+      last_name: current_user.last_name
+    )
+    @can_see_gift_section = @is_creator || @is_attendee || @is_recipient
   end
 
   def new
@@ -46,6 +52,11 @@ class EventsController < ApplicationController
     end
   end
 
+  def destroy
+    @event.destroy
+    redirect_to events_path, notice: 'Event was successfully deleted.'
+  end
+
   private
 
   def set_event
@@ -61,7 +72,10 @@ class EventsController < ApplicationController
   def authorize_viewer!
     is_creator = @event.creator_id == current_user.id
     is_attendee = @event.attendees.include?(current_user)
-    is_recipient = @event.recipients.any? { |r| r.first_name == current_user.first_name && r.last_name == current_user.last_name }
+    is_recipient = @event.recipients.exists?(
+      first_name: current_user.first_name,
+      last_name: current_user.last_name
+    )
     
     unless is_creator || is_attendee || is_recipient
       redirect_to events_path, alert: 'You do not have access to this event'

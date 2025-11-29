@@ -50,18 +50,18 @@ RSpec.describe 'Recipients API', type: :request do
       gift_idea = recipient.gift_ideas.create!(idea: 'A book', user: user1)
       
       expect {
-        delete recipient_path(recipient)
+        delete recipient_path(recipient), headers: { 'Accept' => 'application/json' }
       }.to change(Recipient, :count).by(-1)
         .and change(GiftIdea, :count).by(-1)
 
-      expect(response).to have_http_status(:ok)
+      expect(response).to have_http_status(:no_content)
     end
 
     it 'deletes a recipient and cascades to gifts for recipients' do
       gift = recipient.gifts_for_recipients.create!(idea: 'A watch', user: user1)
       
       expect {
-        delete recipient_path(recipient)
+        delete recipient_path(recipient), headers: { 'Accept' => 'application/json' }
       }.to change(Recipient, :count).by(-1)
         .and change(GiftForRecipient, :count).by(-1)
     end

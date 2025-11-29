@@ -1,0 +1,5 @@
+import "@hotwired/turbo-rails"
+import "@hotwired/stimulus"
+import "@hotwired/stimulus-loading"
+import "./controllers/event_form_controller.js"
+import "./discussion_polling.js"

@@ -3,6 +3,7 @@ class Event < ApplicationRecord
   has_many :recipients, dependent: :destroy
   has_many :event_attendees, dependent: :destroy
   has_many :attendees, through: :event_attendees, source: :user
+  has_many :discussions, dependent: :destroy
 
   validates :name, presence: true
   validates :start_at, presence: true
@@ -17,7 +18,9 @@ class Event < ApplicationRecord
     month_end = now.end_of_month
 
     joins("LEFT JOIN event_attendees ON events.id = event_attendees.event_id")
-      .where("event_attendees.user_id = ? OR events.creator_id = ?", user.id, user.id)
+      .joins("LEFT JOIN recipients ON events.id = recipients.event_id")
+      .where("event_attendees.user_id = ? OR events.creator_id = ? OR (recipients.first_name = ? AND recipients.last_name = ?)", 
+             user.id, user.id, user.first_name, user.last_name)
       .where("events.start_at >= ? AND events.start_at <= ?", month_start, month_end)
       .group("events.id")
       .order("events.start_at")

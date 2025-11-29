@@ -1,6 +1,7 @@
 class RecipientsController < ApplicationController
   before_action :require_login
   before_action :set_recipient, only: [:data, :generate_ideas, :gift_ideas, :gifts_for_recipients, :destroy]
+  before_action :authorize_recipient_access, only: [:data, :generate_ideas, :gift_ideas, :gifts_for_recipients]
   before_action :set_event, only: [:create]
 
   def create
@@ -15,11 +16,16 @@ class RecipientsController < ApplicationController
   def destroy
     begin
       @recipient.destroy
-      render json: { message: 'Recipient deleted' }, status: :ok
-    rescue => e
-      puts "ERROR destroying recipient: #{e.message}"
-      puts e.backtrace.join("\n")
-      render json: { error: e.message }, status: :unprocessable_content
+      respond_to do |format|
+        format.json { render json: { message: 'Recipient deleted' }, status: :no_content }
+        format.html { redirect_to events_path, notice: 'Recipient was successfully deleted.' }
+      end
+    rescue StandardError => e
+      Rails.logger.error("Error destroying recipient: #{e.class} - #{e.message}")
+      respond_to do |format|
+        format.json { render json: { error: 'Unable to delete recipient' }, status: :unprocessable_entity }
+        format.html { redirect_to events_path, alert: 'Unable to delete recipient.' }
+      end
     end
   end
 
@@ -36,15 +42,19 @@ class RecipientsController < ApplicationController
   def generate_ideas
     recipient = @recipient
     
-    # Build prompt with recipient information
     prompt = build_prompt(recipient)
-    
-    # Call Gemini API
-    num_ideas = params[:num_ideas].to_i || 3
+    num_ideas = sanitize_num_ideas(params[:num_ideas])
     ideas_text = GeminiService.new.generate_multiple_ideas(prompt, num_ideas)
     ideas = parse_ideas(ideas_text)
     
-    render json: { ideas: ideas }
+    respond_to do |format|
+      format.json { render json: { ideas: ideas }, status: :ok }
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error generating ideas: #{e.class} - #{e.message}")
+    respond_to do |format|
+      format.json { render json: { error: 'Failed to generate ideas' }, status: :unprocessable_entity }
+    end
   end
 
   def gift_ideas
@@ -79,6 +89,33 @@ class RecipientsController < ApplicationController
     @event = Event.find(params[:event_id])
   end
 
+  def authorize_recipient_access
+    @recipient = Recipient.find(params[:id])
+    event = @recipient.event
+    
+    is_creator = event.creator_id == current_user.id
+    is_attendee = event.attendees.include?(current_user)
+    is_recipient = event.recipients.exists?(
+      first_name: current_user.first_name,
+      last_name: current_user.last_name
+    )
+    
+    return if is_creator || is_attendee || is_recipient
+    
+    Rails.logger.warn("Unauthorized recipient access: user=#{current_user.id}, recipient=#{@recipient.id}, event=#{event.id}")
+    
+    if request.format.json?
+      render json: { error: 'Unauthorized' }, status: :forbidden
+    else
+      redirect_to events_path, alert: 'You do not have access to this recipient.'
+    end
+  end
+
+  def sanitize_num_ideas(param)
+    num = param.to_i
+    [[num, 1].max, 10].min
+  end
+
   def recipient_params
     params.require(:recipient).permit(:first_name, :last_name, :age, :occupation, :hobbies, :likes, :dislikes)
   end
@@ -92,17 +129,26 @@ class RecipientsController < ApplicationController
   end
 
   def build_prompt(recipient)
+    price_min = params[:price_min].to_f.round(2) if params[:price_min].present?
+    price_max = params[:price_max].to_f.round(2) if params[:price_max].present?
+    num_ideas = sanitize_num_ideas(params[:num_ideas])
+    
     prompt = "You are a helpful gift suggestion assistant. Generate thoughtful gift ideas for the following person:\n\n"
-    prompt += "Name: #{recipient.first_name} #{recipient.last_name}\n"
+    prompt += "Name: #{sanitize_for_prompt(recipient.first_name)} #{sanitize_for_prompt(recipient.last_name)}\n"
     prompt += "Age: #{recipient.age}\n" if recipient.age.present?
-    prompt += "Occupation: #{recipient.occupation}\n" if recipient.occupation.present?
-    prompt += "Hobbies: #{recipient.hobbies}\n" if recipient.hobbies.present?
-    prompt += "Likes: #{recipient.likes}\n" if recipient.likes.present?
-    prompt += "Dislikes: #{recipient.dislikes}\n" if recipient.dislikes.present?
-    prompt += "Price Range: $#{params[:price_min]} - $#{params[:price_max]}\n" if params[:price_min].present? || params[:price_max].present?
-    prompt += "\nGenerate #{params[:num_ideas] || 3} unique and thoughtful gift ideas. Return each idea as a separate numbered item."
+    prompt += "Occupation: #{sanitize_for_prompt(recipient.occupation)}\n" if recipient.occupation.present?
+    prompt += "Hobbies: #{sanitize_for_prompt(recipient.hobbies)}\n" if recipient.hobbies.present?
+    prompt += "Likes: #{sanitize_for_prompt(recipient.likes)}\n" if recipient.likes.present?
+    prompt += "Dislikes: #{sanitize_for_prompt(recipient.dislikes)}\n" if recipient.dislikes.present?
+    prompt += "Price Range: $#{price_min} - $#{price_max}\n" if price_min.present? || price_max.present?
+    prompt += "\nGenerate #{num_ideas} unique and thoughtful gift ideas. Return each idea as a separate numbered item."
     
     prompt
+  end
+
+  def sanitize_for_prompt(text)
+    return nil if text.blank?
+    text.to_s.strip.gsub(/[\r\n;"'\\]/, '').truncate(200, omission: '')
   end
 
   def parse_ideas(text)

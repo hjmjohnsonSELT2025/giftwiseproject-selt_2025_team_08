@@ -22,9 +22,16 @@ Rails.application.routes.draw do
   post "/quick_gift_ideas", to: "home#generate_quick_gift_idea", as: :quick_gift_ideas
 
   # Events
-  resources :events, only: [:index, :new, :create, :edit, :update, :show] do
+  resources :events, only: [:index, :new, :create, :edit, :update, :show, :destroy] do
     resources :recipients, only: [:create]
     resources :attendees, only: [:create, :destroy], controller: 'event_attendees'
+    resources :discussions, only: [] do
+      collection do
+        get :show
+        get :messages_feed
+        post :create_message
+      end
+    end
   end
 
   # Recipients

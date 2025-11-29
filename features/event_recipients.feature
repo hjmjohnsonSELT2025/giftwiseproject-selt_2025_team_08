@@ -32,7 +32,7 @@ Feature: Event Recipients Management
   Scenario: Remove a recipient from an event
     Given the event has a recipient "John Doe"
     When I navigate to the edit event page
-    And I click the remove button for "John Doe"
+    And I click the remove button for recipient "John Doe"
     Then "John Doe" should no longer appear on the event edit page
     And the recipient should be deleted from the database
 

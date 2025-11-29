@@ -1,341 +1,261 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["attendeeSearch", "attendeeResults", "attendeesList", "contactSearch", "contactResults", "recipientsList", "noAttendeesMsg", "noRecipientsMsg"]
-  
+  static values = {
+    eventId: Number
+  }
+
+  static targets = ["attendeeSearch", "recipientSearch", "attendeesList", "recipientsList"]
+
   connect() {
-    this.selectedAttendees = new Set()
-    this.selectedContacts = new Set()
-    this.existingRecipientIds = new Set()
-    this.existingRecipientNames = new Map()
-    this.eventId = this.element.dataset.eventId || null
+    this.csrfToken = document.querySelector('meta[name="csrf-token"]').content
+    this.tempAttendees = {}
+    this.tempRecipients = {}
     
-    this.initializeExistingItems()
+    this.attendeesListTarget.addEventListener("click", (e) => this.handleAttendeeRemove(e))
+    this.recipientsListTarget.addEventListener("click", (e) => this.handleRecipientRemove(e))
   }
 
-  initializeExistingItems() {
-    this.element.querySelectorAll('.attendee-item').forEach(li => {
-      const attendeeId = parseInt(li.getAttribute('data-attendee-id'))
-      if (!isNaN(attendeeId)) {
-        this.selectedAttendees.add(attendeeId)
-      }
-    })
-
-    this.element.querySelectorAll('.recipient-item').forEach(li => {
-      const recipientId = parseInt(li.getAttribute('data-recipient-id'))
-      if (!isNaN(recipientId)) {
-        this.existingRecipientIds.add(recipientId)
-        const name = li.textContent.trim().replace('Remove', '').trim()
-        this.existingRecipientNames.set(name, recipientId)
-        this.selectedContacts.add(`recipient-${recipientId}`)
-      }
-    })
+  handleAttendeeRemove(event) {
+    const btn = event.target.closest(".btn-small")
+    if (!btn) return
+    
+    event.preventDefault()
+    const li = event.target.closest("li")
+    const attendeeId = li.getAttribute("data-attendee-id")
+    this.removeAttendee(attendeeId, li)
   }
 
-  async searchAttendees(event) {
-    await this.performSearch(
-      event.target.value,
-      this.attendeeResultsTarget,
-      'attendee',
-      this.selectedAttendees,
-      this.handleAttendeeToggle.bind(this)
-    )
+  handleRecipientRemove(event) {
+    const btn = event.target.closest(".btn-small")
+    if (!btn) return
+    
+    event.preventDefault()
+    const li = event.target.closest("li")
+    const recipientId = li.getAttribute("data-recipient-id")
+    this.removeRecipient(recipientId, li)
   }
 
-  async searchContacts(event) {
-    await this.performSearch(
-      event.target.value,
-      this.contactResultsTarget,
-      'recipient',
-      this.selectedContacts,
-      this.handleContactToggle.bind(this),
-      this.existingRecipientNames
-    )
+  async searchAttendees() {
+    await this.searchContacts('attendee')
   }
 
-  async performSearch(query, resultsContainer, type, selectedSet, toggleHandler, existingNames = null) {
-    query = query.trim()
-    if (query.length < 2) {
-      resultsContainer.innerHTML = ''
-      return
-    }
+  async searchRecipients() {
+    await this.searchContacts('recipient')
+  }
+
+  async searchContacts(type) {
+    const targetName = `${type}SearchTarget`
+    const query = this[targetName].value.trim()
+    if (!query) return
 
     try {
       const response = await fetch(`/contacts/search.json?q=${encodeURIComponent(query)}`)
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+      if (!response.ok) throw new Error("Search failed")
+
       const data = await response.json()
-
-      resultsContainer.innerHTML = ''
-
-      if (data.contacts && data.contacts.length > 0) {
-        data.contacts.forEach(contact => {
-          const isSelected = selectedSet.has(contact.id)
-          const isAlreadyRecipient = existingNames && existingNames.has(`${contact.first_name} ${contact.last_name}`)
-          const disabled = isAlreadyRecipient || isSelected
-
-          const div = document.createElement('div')
-          div.className = 'search-result-item'
-          
-          const buttonText = type === 'recipient' && isAlreadyRecipient 
-            ? 'Already a Recipient' 
-            : (isSelected ? `Added as ${type === 'attendee' ? 'Attendee' : 'Recipient'}` : `Add as ${type === 'attendee' ? 'Attendee' : 'Recipient'}`)
-
-          div.innerHTML = `
-            <div class="contact-info">
-              <strong>${contact.first_name} ${contact.last_name}</strong>
-              ${contact.occupation ? `<br><small>Occupation: ${contact.occupation}</small>` : ''}
-            </div>
-            <button 
-              type="button" 
-              class="toggle-contact" 
-              data-contact-id="${contact.id}"
-              data-first-name="${contact.first_name}"
-              data-last-name="${contact.last_name}"
-              ${disabled ? 'disabled' : ''}
-            >
-              ${buttonText}
-            </button>
-          `
-
-          const btn = div.querySelector('.toggle-contact')
-          if (!disabled) {
-            btn.addEventListener('click', (e) => {
-              e.preventDefault()
-              toggleHandler(contact, btn)
-            })
-          }
-
-          resultsContainer.appendChild(div)
-        })
-      } else {
-        resultsContainer.innerHTML = '<p>No contacts found.</p>'
-      }
+      this.displayResults(data.contacts || [], type)
     } catch (error) {
-      console.error('Search error:', error)
-      resultsContainer.innerHTML = '<p>Error searching contacts.</p>'
+      console.error("Error:", error)
     }
   }
 
-  handleAttendeeToggle(contact, btn) {
-    this.selectedAttendees.add(contact.id)
-    btn.disabled = true
-    btn.textContent = 'Added as Attendee'
+  displayResults(contacts, type) {
+    const resultsDivId = type === 'attendee' ? "#attendee-search-results" : "#contact-search-results"
+    const resultsDiv = document.querySelector(resultsDivId)
+    resultsDiv.innerHTML = ""
 
-    if (this.eventId) {
-      this.createAttendee(contact, btn)
-    } else {
-      this.addAttendeeToList(contact)
-    }
-  }
-
-  handleContactToggle(contact, btn) {
-    this.selectedContacts.add(contact.id)
-    btn.disabled = true
-    btn.textContent = 'Added as Recipient'
-
-    if (this.eventId) {
-      this.createRecipient(contact, btn)
-    } else {
-      this.addRecipientToList(contact)
-    }
-  }
-
-  async createAttendee(contact, btn) {
-    try {
-      const response = await fetch(`/events/${this.eventId}/attendees`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          event_attendee: { user_id: contact.id }
-        })
-      })
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-      const data = await response.json()
-
-      if (data.id) {
-        contact.attendee_record_id = data.id
-        this.addAttendeeToList(contact)
-      }
-    } catch (error) {
-      console.error('Error creating attendee:', error)
-      this.selectedAttendees.delete(contact.id)
-      btn.disabled = false
-      btn.textContent = 'Add as Attendee'
-    }
-  }
-
-  async createRecipient(contact, btn) {
-    try {
-      const response = await fetch(`/events/${this.eventId}/recipients`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({
-          recipient: {
-            first_name: contact.first_name,
-            last_name: contact.last_name,
-            occupation: contact.occupation || null,
-            hobbies: contact.hobbies || null,
-            likes: contact.likes || null,
-            dislikes: contact.dislikes || null
-          }
-        })
-      })
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-      const data = await response.json()
-
-      if (data.id) {
-        contact.recipient_id = data.id
-        this.addRecipientToList(contact)
-      }
-    } catch (error) {
-      console.error('Error creating recipient:', error)
-      this.selectedContacts.delete(contact.id)
-      btn.disabled = false
-      btn.textContent = 'Add as Recipient'
-    }
-  }
-
-  addAttendeeToList(contact) {
-    if (this.noAttendeesMsgTarget && this.noAttendeesMsgTarget.parentNode) {
-      this.noAttendeesMsgTarget.remove()
+    if (contacts.length === 0) {
+      resultsDiv.innerHTML = "<p>No contacts found</p>"
+      return
     }
 
-    let ul = this.attendeesListTarget
-    if (!ul || ul.children.length === 0) {
-      ul = document.createElement('ul')
-      ul.id = 'attendees-list'
-      ul.className = 'attendees-list'
-      this.element.querySelector('#attendees-section').insertBefore(ul, this.element.querySelector('.attendee-search-section'))
-    }
-
-    const existingLi = ul.querySelector(`li[data-attendee-id="${contact.id}"]`)
-    if (!existingLi) {
-      const li = document.createElement('li')
-      li.className = 'attendee-item'
-      li.setAttribute('data-attendee-id', contact.id)
-      li.innerHTML = `
-        ${contact.first_name} ${contact.last_name}
-        <button type="button" class="remove-attendee" data-attendee-id="${contact.id}">Remove</button>
-      `
-
-      const removeBtn = li.querySelector('.remove-attendee')
-      removeBtn.addEventListener('click', (e) => this.removeAttendee(e, contact, li, ul))
-
-      ul.appendChild(li)
-    }
-  }
-
-  addRecipientToList(contact) {
-    if (this.noRecipientsMsgTarget && this.noRecipientsMsgTarget.parentNode) {
-      this.noRecipientsMsgTarget.remove()
-    }
-
-    let ul = this.recipientsListTarget
-    if (!ul || ul.children.length === 0) {
-      ul = document.createElement('ul')
-      ul.id = 'recipients-list'
-      ul.className = 'recipients-list'
-      this.element.querySelector('#recipients-section').insertBefore(ul, this.element.querySelector('.contact-search-section'))
-    }
-
-    const recipientId = contact.recipient_id
-    const existingLi = ul.querySelector(`li[data-recipient-id="${recipientId}"]`)
-    if (!existingLi) {
-      const li = document.createElement('li')
-      li.className = 'recipient-item'
-      li.setAttribute('data-contact-id', contact.id)
-      li.setAttribute('data-recipient-id', recipientId || '')
-      const name = `${contact.first_name} ${contact.last_name}`
-      li.innerHTML = `
-        ${name}
-        <button type="button" class="remove-recipient" data-recipient-id="${recipientId || ''}">Remove</button>
-      `
-
-      const removeBtn = li.querySelector('.remove-recipient')
-      removeBtn.addEventListener('click', (e) => this.removeRecipient(e, recipientId, contact.id, name, li, ul))
-
-      this.existingRecipientIds.add(recipientId)
-      this.existingRecipientNames.set(name, recipientId)
-
-      ul.appendChild(li)
-    }
-  }
-
-  removeAttendee(e, contact, li, ul) {
-    e.preventDefault()
-    this.selectedAttendees.delete(contact.id)
-    li.remove()
-    this.updateAttendeesDisplay(ul)
-
-    if (this.eventId && contact.attendee_record_id) {
-      fetch(`/events/${this.eventId}/attendees/${contact.attendee_record_id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    contacts.forEach((contact) => {
+      const div = document.createElement("div")
+      const span = document.createElement("span")
+      span.textContent = `${contact.first_name} ${contact.last_name}`
+      
+      const button = document.createElement("button")
+      button.type = "button"
+      button.className = "btn-add"
+      button.textContent = type === 'attendee' ? "Add as Attendee" : "Add as Recipient"
+      button.addEventListener("click", (e) => {
+        e.preventDefault()
+        if (type === 'attendee') {
+          this.addAttendee(contact)
+        } else {
+          this.addRecipient(contact)
         }
-      }).catch(error => console.error('Delete error:', error))
-    }
-
-    const searchBtn = document.querySelector(`button[data-contact-id="${contact.id}"].toggle-contact`)
-    if (searchBtn) {
-      searchBtn.disabled = false
-      searchBtn.textContent = 'Add as Attendee'
-    }
+      })
+      
+      div.appendChild(span)
+      div.appendChild(button)
+      resultsDiv.appendChild(div)
+    })
   }
 
-  removeRecipient(e, recipientId, contactId, name, li, ul) {
-    e.preventDefault()
-    this.selectedContacts.delete(contactId)
-    this.existingRecipientIds.delete(recipientId)
-    this.existingRecipientNames.delete(name)
-    li.remove()
-    this.updateRecipientsDisplay(ul)
-
-    if (this.eventId && recipientId) {
-      fetch(`/recipients/${recipientId}`, {
-        method: 'DELETE',
-        headers: {
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+  async addAttendee(contact) {
+    if (this.eventIdValue) {
+      try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 10000)
+        
+        const response = await fetch(`/events/${this.eventIdValue}/attendees`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": this.csrfToken
+          },
+          body: JSON.stringify({ event_attendee: { user_id: contact.id } }),
+          signal: controller.signal
+        })
+        clearTimeout(timeout)
+        
+        if (response.ok) {
+          const result = await response.json()
+          this.addToAttendeesList(contact, result.id)
         }
-      }).catch(error => console.error('Delete error:', error))
-    }
-
-    const searchBtn = document.querySelector(`button[data-contact-id="${contactId}"].toggle-contact`)
-    if (searchBtn) {
-      searchBtn.disabled = false
-      searchBtn.textContent = 'Add as Recipient'
+      } catch (error) {
+        console.error("Error adding attendee:", error)
+      }
+    } else {
+      const tempId = "temp-" + Math.random().toString(36).substr(2, 9)
+      this.tempAttendees[tempId] = contact
+      this.addToAttendeesList(contact, tempId)
     }
   }
 
-  updateAttendeesDisplay(ul) {
-    if (!ul || ul.querySelectorAll('li').length === 0) {
-      if (ul) ul.remove()
-      if (!this.noAttendeesMsgTarget) {
-        const p = document.createElement('p')
-        p.id = 'no-attendees'
-        p.textContent = 'No attendees added yet.'
-        this.element.querySelector('#attendees-section').insertBefore(p, this.element.querySelector('.attendee-search-section'))
+  async addRecipient(contact) {
+    if (this.eventIdValue) {
+      try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 10000)
+        
+        const response = await fetch(`/events/${this.eventIdValue}/recipients`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": this.csrfToken
+          },
+          body: JSON.stringify({
+            recipient: {
+              first_name: contact.first_name,
+              last_name: contact.last_name,
+              occupation: contact.occupation || null,
+              hobbies: contact.hobbies || null,
+              likes: contact.likes || null,
+              dislikes: contact.dislikes || null
+            }
+          }),
+          signal: controller.signal
+        })
+        clearTimeout(timeout)
+        
+        if (response.ok) {
+          const result = await response.json()
+          this.addToRecipientsList(contact, result.id)
+        }
+      } catch (error) {
+        console.error("Error adding recipient:", error)
       }
+    } else {
+      const tempId = "temp-" + Math.random().toString(36).substr(2, 9)
+      this.tempRecipients[tempId] = contact
+      this.addToRecipientsList(contact, tempId)
     }
   }
 
-  updateRecipientsDisplay(ul) {
-    if (!ul || ul.querySelectorAll('li').length === 0) {
-      if (ul) ul.remove()
-      if (!this.noRecipientsMsgTarget) {
-        const p = document.createElement('p')
-        p.id = 'no-recipients'
-        p.textContent = 'No recipients added yet.'
-        this.element.querySelector('#recipients-section').insertBefore(p, this.element.querySelector('.contact-search-section'))
+  addToAttendeesList(contact, id) {
+    const li = document.createElement("li")
+    li.setAttribute("data-attendee-id", id)
+    
+    const nameSpan = document.createElement("span")
+    nameSpan.textContent = `${contact.first_name} ${contact.last_name}`
+    
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "btn-small"
+    button.textContent = "Remove"
+    
+    li.appendChild(nameSpan)
+    li.appendChild(button)
+    this.attendeesListTarget.appendChild(li)
+    this.updateAttendeeVisibility()
+    document.querySelector("#attendee-search-results").innerHTML = ""
+  }
+
+  addToRecipientsList(contact, id) {
+    const li = document.createElement("li")
+    li.setAttribute("data-recipient-id", id)
+    
+    const nameSpan = document.createElement("span")
+    nameSpan.textContent = `${contact.first_name} ${contact.last_name}`
+    
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "btn-small"
+    button.textContent = "Remove"
+    
+    li.appendChild(nameSpan)
+    li.appendChild(button)
+    this.recipientsListTarget.appendChild(li)
+    this.updateRecipientVisibility()
+    document.querySelector("#contact-search-results").innerHTML = ""
+  }
+
+  async removeAttendee(attendeeId, li) {
+    if (this.eventIdValue && !attendeeId.startsWith("temp-")) {
+      try {
+        const response = await fetch(`/events/${this.eventIdValue}/attendees/${attendeeId}`, {
+          method: "DELETE",
+          headers: { "X-CSRF-Token": this.csrfToken }
+        })
+        if (response.ok) {
+          li.remove()
+          this.updateAttendeeVisibility()
+        }
+      } catch (error) {
+        console.error("Error:", error)
       }
+    } else {
+      delete this.tempAttendees[attendeeId]
+      li.remove()
+      this.updateAttendeeVisibility()
+    }
+  }
+
+  async removeRecipient(recipientId, li) {
+    if (this.eventIdValue && !recipientId.startsWith("temp-")) {
+      try {
+        const response = await fetch(`/recipients/${recipientId}`, {
+          method: "DELETE",
+          headers: { "X-CSRF-Token": this.csrfToken }
+        })
+        if (response.ok) {
+          li.remove()
+          this.updateRecipientVisibility()
+        }
+      } catch (error) {
+        console.error("Error:", error)
+      }
+    } else {
+      delete this.tempRecipients[recipientId]
+      li.remove()
+      this.updateRecipientVisibility()
+    }
+  }
+
+  updateAttendeeVisibility() {
+    const noAttendees = document.querySelector("#no-attendees")
+    if (noAttendees) {
+      noAttendees.style.display = this.attendeesListTarget.children.length === 0 ? "block" : "none"
+    }
+  }
+
+  updateRecipientVisibility() {
+    const noRecipients = document.querySelector("#no-recipients")
+    if (noRecipients) {
+      noRecipients.style.display = this.recipientsListTarget.children.length === 0 ? "block" : "none"
     }
   }
 }
