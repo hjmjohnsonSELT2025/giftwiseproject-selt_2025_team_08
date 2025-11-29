@@ -1,0 +1,255 @@
+<div class="discussion-container" data-controller="discussion" data-discussion-event-id-value="<%= @event.id %>" data-discussion-thread-type-value="<%= @thread_type %>">
+  <div class="discussion-header">
+    <h1><%= @event.name %></h1>
+        <%= link_to "Back to Event", event_path(@event)%>
+    <h2><%= @thread_type == 'public' ? 'All Participants' : 'Contributors Only' %> Discussion</h2>
+  </div>
+
+  <div class="discussion-tabs">
+    <%= link_to "All Participants", event_discussions_path(@event, thread_type: 'public'), 
+        class: "discussion-tab #{@thread_type == 'public' ? 'active' : ''}" %>
+    
+    <% if @event.creator_id == current_user.id || @event.attendees.include?(current_user) %>
+      <%= link_to "Contributors Only", event_discussions_path(@event, thread_type: 'contributors_only'), 
+          class: "discussion-tab #{@thread_type == 'contributors_only' ? 'active' : ''}" %>
+    <% end %>
+  </div>
+
+  <div class="messages-area" id="messages-container" data-discussion-target="messagesContainer">
+    <% @messages.each do |message| %>
+      <div class="message <%= message.user_id == current_user.id ? 'own-message' : 'other-message' %>" data-message-id="<%= message.id %>">
+        <div class="message-body">
+          <p class="message-content"><%= message.content %></p>
+          <p class="message-meta">
+            <%= message.user.first_name %> <%= message.user.last_name %> • 
+            <span class="time-ago" data-timestamp="<%= message.created_at.to_i %>"><%= time_ago_in_words(message.created_at) %> ago</span>
+          </p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="message-form">
+    <form data-discussion-target="form" action="<%= create_message_event_discussions_path(@event, thread_type: @thread_type) %>" method="post" data-turbo="false">
+      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+      <div class="form-group">
+        <div class="form-label-wrapper">
+          <label for="message-content">Message</label>
+          <span id="char-count" class="char-count">0 / 5000</span>
+        </div>
+        <textarea id="message-content" name="discussion_message[content]" placeholder="Type your message..." required rows="3" maxlength="5000"></textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('message-content')
+    const charCount = document.getElementById('char-count')
+    const submitBtn = document.getElementById('submit-btn')
+    const form = textarea.closest('form')
+    const messagesArea = document.getElementById('messages-container')
+
+    function scrollToBottom() {
+      if (messagesArea) {
+        setTimeout(() => {
+          messagesArea.scrollTop = messagesArea.scrollHeight
+        }, 0)
+      }
+    }
+
+    function resetForm() {
+      textarea.value = ''
+      charCount.textContent = '0 / 5000'
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Send Message'
+    }
+
+    function onMessageSent() {
+      resetForm()
+      scrollToBottom()
+    }
+
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        charCount.textContent = `${this.value.length} / 5000`
+        submitBtn.disabled = this.value.trim().length === 0
+        if (submitBtn.textContent !== 'Send Message') {
+          submitBtn.textContent = 'Send Message'
+        }
+      })
+
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey && !submitBtn.disabled) {
+          form.dispatchEvent(new Event('submit'))
+        }
+      })
+    }
+
+    form.addEventListener('submit', function() {
+      submitBtn.textContent = 'Sending...'
+      submitBtn.disabled = true
+    })
+
+    window.addEventListener('message-sent', onMessageSent)
+
+    scrollToBottom()
+    submitBtn.disabled = true
+  })
+</script>
+
+<style>
+  .discussion-container {
+    margin-top: 2rem;
+  }
+
+  .discussion-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .discussion-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .discussion-tab {
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .discussion-tab:hover {
+    color: #007bff;
+  }
+
+  .discussion-tab.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+  }
+
+  .messages-area {
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+  }
+
+  .message {
+    margin-bottom: 1rem;
+    display: flex;
+  }
+
+  .own-message {
+    justify-content: flex-start;
+  }
+
+  .other-message {
+    justify-content: flex-end;
+  }
+
+  .message-body {
+    max-width: 60%;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    background-color: #e7f3ff;
+  }
+
+  .own-message .message-body {
+    background-color: #e7e7e7;
+  }
+
+  .message-content {
+    margin: 0 0 0.5rem 0;
+    word-wrap: break-word;
+  }
+
+  .message-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .message-form {
+    margin-top: 1.5rem;
+  }
+
+  .form-label-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-label-wrapper label {
+    font-weight: 600;
+  }
+
+  .char-count {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+  }
+
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+
+  .form-actions {
+    margin-top: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+  }
+
+  .btn-primary:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+</style>

@@ -52,7 +52,7 @@ RSpec.describe Recipient, type: :model do
 
     it 'deletes associated gifts for recipients when recipient is deleted' do
       recipient = event.recipients.create!(first_name: 'John', last_name: 'Doe')
-      gift = recipient.gifts_for_recipients.create!(idea: 'A watch', user: user)
+      gift = recipient.gifts_for_recipients.create!(idea: 'A watch', gift_date: Date.today, user: user)
       
       expect { recipient.destroy }.to change(GiftForRecipient, :count).by(-1)
     end

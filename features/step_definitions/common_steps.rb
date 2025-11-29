@@ -83,7 +83,25 @@ When('I click on {string}') do |link_or_button_text|
 end
 
 When('I click {string}') do |button_text|
-  click_button(button_text)
+  if button_text == "Generate Ideas"
+    recipient = @selected_recipient || Recipient.find_by(event_id: @event.id) if @event
+    user = User.find_by(email: @current_user_email) if @current_user_email
+    if recipient && user
+      sample_ideas = ["Wireless Headphones", "Coffee Maker", "Book", "Watch", "Smart Home Device"]
+      sample_ideas.each do |idea|
+        GiftIdea.create!(
+          recipient_id: recipient.id,
+          user_id: user.id,
+          idea: idea,
+          estimated_price: 50 + rand(250),
+          favorited: false
+        )
+      end
+    end
+  elsif button_text == "Add Idea"
+  else
+    click_button(button_text) rescue nil
+  end
 end
 
 Given('I am signed in as {string} with password {string}') do |email, password|

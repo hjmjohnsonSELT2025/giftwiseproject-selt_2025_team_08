@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_28_223812) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -20,6 +20,25 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
     t.index ["contact_user_id"], name: "index_contacts_on_contact_user_id"
     t.index ["user_id", "contact_user_id"], name: "index_contacts_on_user_id_and_contact_user_id", unique: true
     t.index ["user_id"], name: "index_contacts_on_user_id"
+  end
+
+  create_table "discussion_messages", force: :cascade do |t|
+    t.integer "discussion_id", null: false
+    t.integer "user_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discussion_id"], name: "index_discussion_messages_on_discussion_id"
+    t.index ["user_id"], name: "index_discussion_messages_on_user_id"
+  end
+
+  create_table "discussions", force: :cascade do |t|
+    t.integer "event_id", null: false
+    t.string "thread_type", default: "public", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "thread_type"], name: "index_discussions_on_event_id_and_thread_type", unique: true
+    t.index ["event_id"], name: "index_discussions_on_event_id"
   end
 
   create_table "event_attendees", force: :cascade do |t|
@@ -88,7 +107,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
     t.datetime "updated_at", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
-    t.date "date_of_birth"
+    t.date "date_of_birth", null: false
     t.string "gender", null: false
     t.string "occupation", null: false
     t.text "hobbies"
@@ -102,10 +121,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_25_000000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "contacts", "users"
-  add_foreign_key "contacts", "users", column: "contact_user_id"
-  add_foreign_key "event_attendees", "events"
-  add_foreign_key "event_attendees", "users"
+  add_foreign_key "discussion_messages", "discussions"
+  add_foreign_key "discussion_messages", "users"
+  add_foreign_key "discussions", "events"
   add_foreign_key "events", "users", column: "creator_id"
   add_foreign_key "gift_ideas", "recipients"
   add_foreign_key "gift_ideas", "users"

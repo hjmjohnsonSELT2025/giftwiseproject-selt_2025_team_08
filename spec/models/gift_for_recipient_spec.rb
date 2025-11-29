@@ -44,6 +44,7 @@ RSpec.describe GiftForRecipient, type: :model do
     it 'allows optional gift_date' do
       gift = recipient.gifts_for_recipients.create!(
         idea: 'A watch',
+        gift_date: nil,
         user: user
       )
       expect(gift.gift_date).to be_nil
@@ -52,17 +53,17 @@ RSpec.describe GiftForRecipient, type: :model do
 
   describe 'user-specific gift tracking' do
     it 'each user can record their own gift for the same recipient' do
-      gift1 = recipient.gifts_for_recipients.create!(idea: 'Book', price: 20, user: user)
-      gift2 = recipient.gifts_for_recipients.create!(idea: 'Watch', price: 150, user: user2)
+      gift1 = recipient.gifts_for_recipients.create!(idea: 'Book', price: 20, gift_date: Date.today, user: user)
+      gift2 = recipient.gifts_for_recipients.create!(idea: 'Watch', price: 150, gift_date: Date.today, user: user2)
       
       expect(recipient.gifts_for_recipients.where(user: user).count).to eq(1)
       expect(recipient.gifts_for_recipients.where(user: user2).count).to eq(1)
     end
 
     it 'retrieves only the current users gifts for a recipient' do
-      recipient.gifts_for_recipients.create!(idea: 'Book', user: user)
-      recipient.gifts_for_recipients.create!(idea: 'Watch', user: user)
-      recipient.gifts_for_recipients.create!(idea: 'Shoes', user: user2)
+      recipient.gifts_for_recipients.create!(idea: 'Book', gift_date: Date.today, user: user)
+      recipient.gifts_for_recipients.create!(idea: 'Watch', gift_date: Date.today, user: user)
+      recipient.gifts_for_recipients.create!(idea: 'Shoes', gift_date: Date.today, user: user2)
       
       user_gifts = recipient.gifts_for_recipients.where(user: user)
       expect(user_gifts.count).to eq(2)
