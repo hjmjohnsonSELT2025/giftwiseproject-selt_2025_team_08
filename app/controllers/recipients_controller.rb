@@ -35,7 +35,7 @@ class RecipientsController < ApplicationController
     
     render json: {
       previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date]),
-      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price])
+      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note])
     }
   end
 
@@ -121,7 +121,7 @@ class RecipientsController < ApplicationController
   end
 
   def gift_idea_params
-    params.require(:gift_idea).permit(:idea, :estimated_price, :favorited)
+    params.require(:gift_idea).permit(:idea, :estimated_price, :favorited, :link, :note)
   end
 
   def gift_params

@@ -133,10 +133,55 @@
             <label for="manual-price">Price ($):</label>
             <input type="number" id="manual-price" placeholder="0.00" style="width: 100px;" min="0" step="0.01">
           </div>
+          <div style="margin-bottom: 10px;">
+            <label for="manual-link">Product Link:</label>
+            <input type="url" id="manual-link" placeholder="https://example.com/product" style="width: 100%;">
+          </div>
+          <div style="margin-bottom: 10px;">
+            <label for="manual-note">Note:</label>
+            <textarea id="manual-note" placeholder="Short note about this product..." style="width: 100%; height: 60px; max-length: 255;" maxlength="255"></textarea>
+            <small id="note-char-count" style="color: #666;">0/255</small>
+          </div>
           <button id="add-manual-idea-btn">Add Idea</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4);">
+  <div style="background-color:#fefefe; margin:10% auto; padding:20px; border:1px solid #888; width:90%; max-width:500px; border-radius:4px;">
+    <span style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;" onclick="closeEditModal()">&times;</span>
+    <h2 style="margin-top:0;">Edit Gift Idea</h2>
+    
+    <form id="edit-form" onsubmit="event.preventDefault(); saveEditedItem();">
+      <div style="margin-bottom: 15px;">
+        <label for="edit-idea">Gift Idea:</label>
+        <textarea id="edit-idea" style="width: 100%; height: 60px; margin-top: 5px;"></textarea>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <label for="edit-price">Price ($):</label>
+        <input type="number" id="edit-price" placeholder="0.00" style="width: 100%; margin-top: 5px;" min="0" step="0.01">
+      </div>
+      
+      <div id="edit-link-field" style="margin-bottom: 15px;">
+        <label for="edit-link">Product Link:</label>
+        <input type="url" id="edit-link" placeholder="https://example.com/product" style="width: 100%; margin-top: 5px;">
+      </div>
+      
+      <div id="edit-note-field" style="margin-bottom: 15px;">
+        <label for="edit-note">Note:</label>
+        <textarea id="edit-note" style="width: 100%; height: 60px; margin-top: 5px; max-length: 255;" maxlength="255"></textarea>
+        <small id="edit-note-char-count" style="color: #666;">0/255</small>
+      </div>
+      
+      <div style="text-align: right;">
+        <button type="button" onclick="closeEditModal()" style="padding: 8px 15px; margin-right: 10px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+        <button type="submit" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -256,6 +301,7 @@
             <p><strong>${gift.idea}</strong></p>
             <p>Price: $${gift.price || 'N/A'}</p>
             <p>Date: ${gift.gift_date || 'N/A'}</p>
+            <button onclick="openEditModal('gift', ${gift.id}, '${gift.idea.replace(/'/g, "\\'")}', ${gift.price || null}, null, null)">Edit</button>
           </div>
         `).join('');
       }
@@ -269,6 +315,10 @@
         list.innerHTML = ideas.map(idea => `
           <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd;">
             <p><strong>${idea.idea}</strong></p>
+            <p>Price: $${idea.estimated_price || 'N/A'}</p>
+            ${idea.link ? `<p>Link: <a href="${idea.link}" target="_blank">${idea.link}</a></p>` : ''}
+            ${idea.note ? `<p>Note: ${idea.note}</p>` : ''}
+            <button onclick="openEditModal('idea', ${idea.id}, '${idea.idea.replace(/'/g, "\\'")}', ${idea.estimated_price || null}, '${(idea.link || '').replace(/'/g, "\\'")}', '${(idea.note || '').replace(/'/g, "\\'")}')">Edit</button>
             <button onclick="addGiftForRecipient(${idea.id}, ${selectedRecipient})">Add as Gift</button>
             <button onclick="unfavoriteIdea(${idea.id})">Unfavorite</button>
           </div>
@@ -335,15 +385,28 @@
 
       const idea = manualIdeaInput.value.trim();
       const price = document.getElementById('manual-price').value;
+      const link = document.getElementById('manual-link').value.trim();
+      const note = document.getElementById('manual-note').value.trim();
       
       if (!idea) {
         alert('Please enter a gift idea');
         return;
       }
 
-      window.saveManualIdea(selectedRecipient, idea, price);
+      window.saveManualIdea(selectedRecipient, idea, price, link, note);
       manualIdeaInput.value = '';
       document.getElementById('manual-price').value = '';
+      document.getElementById('manual-link').value = '';
+      document.getElementById('manual-note').value = '';
+      document.getElementById('note-char-count').textContent = '0/255';
+    });
+
+    document.getElementById('manual-note').addEventListener('input', function() {
+      document.getElementById('note-char-count').textContent = `${this.value.length}/255`;
+    });
+
+    document.getElementById('edit-note').addEventListener('input', function() {
+      document.getElementById('edit-note-char-count').textContent = `${this.value.length}/255`;
     });
 
     window.saveIdeaForLater = function(recipientId, idea) {
@@ -372,7 +435,7 @@
       });
     };
 
-    window.saveManualIdea = function(recipientId, idea, price) {
+    window.saveManualIdea = function(recipientId, idea, price, link, note) {
       fetch(`/recipients/${recipientId}/gift_ideas`, {
         method: 'POST',
         headers: {
@@ -383,6 +446,8 @@
           gift_idea: {
             idea: idea,
             estimated_price: price || null,
+            link: link || null,
+            note: note || null,
             favorited: true
           }
         })
@@ -463,6 +528,91 @@
         alert('Error unfavoriting idea');
       });
     };
+
+    window.openEditModal = function(type, itemId, idea, price, link, note) {
+      const modal = document.getElementById('edit-modal');
+      const form = document.getElementById('edit-form');
+      
+      form.dataset.type = type;
+      form.dataset.id = itemId;
+      
+      document.getElementById('edit-idea').value = idea || '';
+      document.getElementById('edit-price').value = price || '';
+      document.getElementById('edit-link').value = link || '';
+      document.getElementById('edit-note').value = note || '';
+      document.getElementById('edit-note-char-count').textContent = `${(note || '').length}/255`;
+      
+      const linkField = document.getElementById('edit-link-field');
+      const noteField = document.getElementById('edit-note-field');
+      if (type === 'gift') {
+        linkField.style.display = 'none';
+        noteField.style.display = 'none';
+      } else {
+        linkField.style.display = 'block';
+        noteField.style.display = 'block';
+      }
+      
+      modal.style.display = 'block';
+    };
+
+    window.closeEditModal = function() {
+      const modal = document.getElementById('edit-modal');
+      modal.style.display = 'none';
+    };
+
+    window.saveEditedItem = function() {
+      const form = document.getElementById('edit-form');
+      const type = form.dataset.type;
+      const itemId = form.dataset.id;
+      
+      const idea = document.getElementById('edit-idea').value.trim();
+      const price = document.getElementById('edit-price').value;
+      const link = document.getElementById('edit-link').value.trim();
+      const note = document.getElementById('edit-note').value.trim();
+      
+      if (!idea) {
+        alert('Please enter a gift idea');
+        return;
+      }
+
+      if (type === 'idea') {
+        fetch(`/gift_ideas/${itemId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            gift_idea: {
+              idea: idea,
+              estimated_price: price || null,
+              link: link || null,
+              note: note || null
+            }
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Idea updated!');
+          closeEditModal();
+          if (selectedRecipient) {
+            loadRecipientData(selectedRecipient);
+          }
+          loadAllCurrentGifts();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error updating idea');
+        });
+      }
+    };
+
+    window.addEventListener('click', function(event) {
+      const modal = document.getElementById('edit-modal');
+      if (event.target === modal) {
+        closeEditModal();
+      }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', setupPage);
