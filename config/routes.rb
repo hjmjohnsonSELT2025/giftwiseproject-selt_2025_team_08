@@ -17,6 +17,9 @@ Rails.application.routes.draw do
   # Settings
   resource :settings, only: [:show, :update]
 
+  # Wish List
+  resources :wish_list_items, only: [:index, :new, :create, :edit, :update, :destroy]
+
   # Home
   root to: "home#index"
   post "/quick_gift_ideas", to: "home#generate_quick_gift_idea", as: :quick_gift_ideas

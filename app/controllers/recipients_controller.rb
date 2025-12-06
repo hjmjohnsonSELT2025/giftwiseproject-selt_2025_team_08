@@ -33,9 +33,16 @@ class RecipientsController < ApplicationController
     previous_gifts = @recipient.gifts_for_recipients.where(user_id: current_user.id).limit(5)
     favorited_ideas = @recipient.gift_ideas.where(user_id: current_user.id, favorited: true)
     
+    wish_list_items = []
+    matching_user = User.where(first_name: @recipient.first_name, last_name: @recipient.last_name).first
+    if matching_user.present?
+      wish_list_items = matching_user.wish_list_items.as_json(only: [:id, :name, :description, :url, :price])
+    end
+    
     render json: {
       previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date, :status]),
-      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note, :status])
+      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note, :status]),
+      wish_list_items: wish_list_items
     }
   end
 

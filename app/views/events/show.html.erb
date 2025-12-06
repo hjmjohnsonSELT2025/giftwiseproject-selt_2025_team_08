@@ -90,6 +90,16 @@
         </div>
       </div>
 
+      <!-- Wish List Items (Collapsible) -->
+      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
+        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('wish-list-items-section')">
+          <span id="wish-list-items-toggle">▼</span> Wish List for <span id="recipient-name-wish"></span>
+        </div>
+        <div id="wish-list-items-section" style="padding: 15px; display: block;">
+          <div id="wish-list-items-list"></div>
+        </div>
+      </div>
+
       <!-- Generate New Ideas (Collapsible) -->
       <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
         <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generate-ideas-section')">
@@ -265,7 +275,7 @@
     const generateIdeasBtn = document.getElementById('generate-ideas-btn');
     const addManualIdeaBtn = document.getElementById('add-manual-idea-btn');
     const manualIdeaInput = document.getElementById('manual-idea');
-    const recipientNameSpans = document.querySelectorAll('#recipient-name, #recipient-name-fav');
+    const recipientNameSpans = document.querySelectorAll('#recipient-name, #recipient-name-fav, #recipient-name-wish');
     let selectedRecipient = null;
 
     recipientSelect.addEventListener('change', function() {
@@ -288,6 +298,7 @@
         .then(data => {
           displayPreviousGifts(data.previous_gifts);
           displayFavoritedIdeas(data.favorited_ideas);
+          displayWishListItems(data.wish_list_items);
         })
         .catch(error => console.error('Error loading recipient data:', error));
     }
@@ -340,6 +351,25 @@
             <button onclick="openEditModal('idea', ${idea.id}, '${idea.idea.replace(/'/g, "\\'")}', ${idea.estimated_price || null}, '${(idea.link || '').replace(/'/g, "\\'")}', '${(idea.note || '').replace(/'/g, "\\'")}')">Edit</button>
             <button onclick="addGiftForRecipient(${idea.id}, ${selectedRecipient})">Add as Gift</button>
             <button onclick="unfavoriteIdea(${idea.id})">Unfavorite</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    function displayWishListItems(items) {
+      const list = document.getElementById('wish-list-items-list');
+      if (!list) return;
+      
+      if (items.length === 0) {
+        list.innerHTML = '<p>No wish list items available.</p>';
+      } else {
+        list.innerHTML = items.map(item => `
+          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; background-color: #fff9e6;">
+            <p><strong>${item.name}</strong></p>
+            ${item.description ? `<p><em>${item.description}</em></p>` : ''}
+            <p>Price: $${item.price ? Number(item.price).toFixed(2) : 'Not specified'}</p>
+            ${item.url ? `<p>Link: <a href="${item.url}" target="_blank">View Product</a></p>` : ''}
+            <button onclick="addFromWishList('${item.name.replace(/'/g, "\\'")}', ${item.price || null})">Add as Gift</button>
           </div>
         `).join('');
       }
@@ -546,6 +576,14 @@
         console.error('Error:', error);
         alert('Error unfavoriting idea');
       });
+    };
+
+    window.addFromWishList = function(itemName, itemPrice) {
+      if (!selectedRecipient) {
+        alert('Please select a recipient first');
+        return;
+      }
+      addGiftDirectly(selectedRecipient, itemName, itemPrice);
     };
 
     window.openEditModal = function(type, itemId, idea, price, link, note) {

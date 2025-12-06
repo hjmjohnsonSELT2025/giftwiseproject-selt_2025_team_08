@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_many :event_attendees, dependent: :destroy
   has_many :attended_events, through: :event_attendees, source: :event
   has_many :discussion_messages, dependent: :destroy
+  has_many :wish_list_items, dependent: :destroy
 
   GENDERS = ["Male", "Female", "Non-binary", "Prefer not to say"].freeze
 
