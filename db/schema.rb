@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_03_000000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_06_095234) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -72,7 +72,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_000000) do
     t.datetime "updated_at", null: false
     t.string "link"
     t.string "note", limit: 255
+    t.string "status", default: "idea"
     t.index ["recipient_id"], name: "index_gift_ideas_on_recipient_id"
+    t.index ["status"], name: "index_gift_ideas_on_status"
     t.index ["user_id"], name: "index_gift_ideas_on_user_id"
   end
 
@@ -84,7 +86,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_03_000000) do
     t.date "gift_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "status", default: "idea"
     t.index ["recipient_id"], name: "index_gifts_for_recipients_on_recipient_id"
+    t.index ["status"], name: "index_gifts_for_recipients_on_status"
     t.index ["user_id"], name: "index_gifts_for_recipients_on_user_id"
   end
 

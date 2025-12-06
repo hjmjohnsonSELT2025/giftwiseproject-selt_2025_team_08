@@ -46,6 +46,7 @@ Rails.application.routes.draw do
 
   # Gift Ideas
   resources :gift_ideas, only: [:show, :update]
+  resources :gifts_for_recipients, only: [:update]
   resources :contacts, only: [:index, :new, :create, :destroy] do
     collection do
       get :search

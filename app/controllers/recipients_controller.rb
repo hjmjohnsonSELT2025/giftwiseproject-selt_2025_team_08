@@ -34,8 +34,8 @@ class RecipientsController < ApplicationController
     favorited_ideas = @recipient.gift_ideas.where(user_id: current_user.id, favorited: true)
     
     render json: {
-      previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date]),
-      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note])
+      previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date, :status]),
+      favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note, :status])
     }
   end
 
