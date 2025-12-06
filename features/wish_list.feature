@@ -17,7 +17,7 @@ Feature: Wish List Management
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/wish_list_items"
-    Then I should see "You don't have any items"
+    Then I should see "You have 0/10 items in your wish list"
 
   Scenario: User can add a new wish list item
     Given a user exists with email "user@example.com" and password "password123"
