@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_06_095234) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_06_180402) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -127,8 +127,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_095234) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
-  add_foreign_key "contacts", "users"
-  add_foreign_key "contacts", "users", column: "contact_user_id"
+  create_table "wish_list_items", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.string "url"
+    t.decimal "price", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "name"], name: "index_wish_list_items_on_user_id_and_name", unique: true
+    t.index ["user_id"], name: "index_wish_list_items_on_user_id"
+  end
+
   add_foreign_key "discussion_messages", "discussions"
   add_foreign_key "discussion_messages", "users"
   add_foreign_key "discussions", "events"
@@ -140,4 +150,5 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_095234) do
   add_foreign_key "gifts_for_recipients", "recipients"
   add_foreign_key "gifts_for_recipients", "users"
   add_foreign_key "recipients", "events"
+  add_foreign_key "wish_list_items", "users"
 end

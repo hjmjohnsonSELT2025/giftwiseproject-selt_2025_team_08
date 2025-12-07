@@ -1,0 +1,45 @@
+<h1>My Wish List</h1>
+
+<div>
+  <p>You have <%= @wish_list_items.count %>/10 items in your wish list</p>
+  
+  <% if @wish_list_items.count < 10 %>
+    <%= link_to "Add Item", new_wish_list_item_path, class: "btn btn-primary" %>
+  <% else %>
+    <p style="color: red;">You have reached the maximum of 10 items in your wish list.</p>
+  <% end %>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>URL</th>
+      <th>Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @wish_list_items.each do |item| %>
+      <tr>
+        <td><%= item.name %></td>
+        <td><%= truncate(item.description, length: 50) %></td>
+        <td>
+          <% if item.url.present? %>
+            <%= link_to "Visit", item.url, target: "_blank" %>
+          <% end %>
+        </td>
+        <td>
+          <% if item.price.present? %>
+            $<%= number_with_precision(item.price, precision: 2) %>
+          <% end %>
+        </td>
+        <td>
+          <%= link_to "Edit", edit_wish_list_item_path(item) %> |
+          <%= link_to "Delete", wish_list_item_path(item), method: :delete, data: { confirm: "Are you sure?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
