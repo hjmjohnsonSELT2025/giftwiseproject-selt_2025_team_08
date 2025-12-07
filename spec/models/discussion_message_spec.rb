@@ -25,7 +25,8 @@ RSpec.describe DiscussionMessage, type: :model do
       description: 'Test Description',
       start_at: Time.current + 1.day,
       end_at: Time.current + 2.days,
-      creator_id: user.id
+      creator_id: user.id,
+      theme: 'General'
     )
   end
 

@@ -2,6 +2,13 @@
   <h1><%= @event.name %></h1>
   
   <div>
+    <% if @event.theme.present? %>
+      <div>
+        <strong>Theme:</strong>
+        <%= @event.theme %>
+      </div>
+    <% end %>
+
     <% if @event.start_at && @event.end_at %>
       <div>
         <strong>Date/Time:</strong>
@@ -117,6 +124,15 @@
             <label for="num-ideas">Number of Ideas (1-10):</label>
             <input type="number" id="num-ideas" value="3" min="1" max="10">
           </div>
+
+          <% if @event.theme.present? %>
+            <div style="margin-bottom: 10px;">
+              <label>
+                <input type="checkbox" id="use-theme-checkbox" checked>
+                Use Event Theme in Generation (<%= @event.theme %>)
+              </label>
+            </div>
+          <% end %>
 
           <button id="generate-ideas-btn">Generate Ideas</button>
         </div>
@@ -384,6 +400,8 @@
       const priceMin = document.getElementById('price-min').value || 'any';
       const priceMax = document.getElementById('price-max').value || 'any';
       const numIdeas = document.getElementById('num-ideas').value;
+      const useThemeCheckbox = document.getElementById('use-theme-checkbox');
+      const useTheme = useThemeCheckbox ? useThemeCheckbox.checked : false;
 
       generateIdeasBtn.disabled = true;
       generateIdeasBtn.textContent = 'Generating...';
@@ -397,7 +415,8 @@
         body: JSON.stringify({
           price_min: priceMin,
           price_max: priceMax,
-          num_ideas: numIdeas
+          num_ideas: numIdeas,
+          use_theme: useTheme
         })
       })
       .then(response => response.json())

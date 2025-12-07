@@ -89,7 +89,8 @@ RSpec.describe 'Event Attendees', type: :request do
         event: {
           name: 'Test Event',
           start_at: '2025-12-01T10:00',
-          end_at: '2025-12-01T11:00'
+          end_at: '2025-12-01T11:00',
+          theme: 'General'
         }
       }
 

@@ -139,6 +139,7 @@ class RecipientsController < ApplicationController
     price_min = params[:price_min].to_f.round(2) if params[:price_min].present?
     price_max = params[:price_max].to_f.round(2) if params[:price_max].present?
     num_ideas = sanitize_num_ideas(params[:num_ideas])
+    use_theme = params[:use_theme] == 'true' || params[:use_theme] == true
     
     prompt = "You are a helpful gift suggestion assistant. Generate thoughtful gift ideas for the following person:\n\n"
     prompt += "Name: #{sanitize_for_prompt(recipient.first_name)} #{sanitize_for_prompt(recipient.last_name)}\n"
@@ -148,6 +149,12 @@ class RecipientsController < ApplicationController
     prompt += "Likes: #{sanitize_for_prompt(recipient.likes)}\n" if recipient.likes.present?
     prompt += "Dislikes: #{sanitize_for_prompt(recipient.dislikes)}\n" if recipient.dislikes.present?
     prompt += "Price Range: $#{price_min} - $#{price_max}\n" if price_min.present? || price_max.present?
+    
+    if use_theme && recipient.event.present? && recipient.event.theme.present?
+      prompt += "Event Theme: #{sanitize_for_prompt(recipient.event.theme)}\n"
+      prompt += "Please ensure that the gifts are appropriate for a #{sanitize_for_prompt(recipient.event.theme)} event.\n"
+    end
+    
     prompt += "\nGenerate #{num_ideas} unique and thoughtful gift ideas. Return each idea as a separate numbered item."
     
     prompt

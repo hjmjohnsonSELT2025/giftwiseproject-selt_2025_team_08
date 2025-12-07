@@ -86,6 +86,7 @@ When('I create a new event named {string} scheduled for {string}') do |event_nam
   fill_in 'event_description', with: "Test event: #{event_name}"
   fill_in 'event_start_at', with: parsed_time.strftime('%Y-%m-%dT%H:%M')
   fill_in 'event_end_at', with: (parsed_time + 2.hours).strftime('%Y-%m-%dT%H:%M')
+  select 'General', from: 'event_theme'
   click_button 'Create Event' rescue click_button 'Save' rescue find(:button, visible: :all).click
   sleep 0.5
   @event = Event.find_by(name: event_name)

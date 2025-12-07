@@ -6,7 +6,8 @@ Given('I have created an event named {string} scheduled for {string}') do |event
     description: "Test event: #{event_name}",
     start_at: parsed_time,
     end_at: parsed_time + 2.hours,
-    creator_id: @user.id
+    creator_id: @user.id,
+    theme: 'General'
   )
 end
 

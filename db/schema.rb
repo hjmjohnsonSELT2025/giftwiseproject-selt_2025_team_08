@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_06_180402) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_06_180402) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "creator_id", null: false
+    t.string "theme"
   end
 
   create_table "gift_ideas", force: :cascade do |t|
