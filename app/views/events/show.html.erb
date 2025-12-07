@@ -239,6 +239,9 @@
               <div style="font-size: 0.9em; color: #666;">
                 Date: ${currentGift.gift_date || 'N/A'}
               </div>
+              <div style="font-size: 0.9em; color: #666;">
+                Status: <span style="font-weight: bold; color: #007bff;">${currentGift.status ? currentGift.status.charAt(0).toUpperCase() + currentGift.status.slice(1) : 'N/A'}</span>
+              </div>
             `;
           } else {
             div.innerHTML = '<em style="color: #999;">No gift recorded yet</em>';
@@ -256,8 +259,6 @@
   function setupPage() {
     if (pageInitialized) return;
     pageInitialized = true;
-
-    loadAllCurrentGifts();
 
     const recipientSelect = document.getElementById('recipient-select');
     const recipientDetails = document.getElementById('recipient-details');
@@ -293,6 +294,7 @@
 
     function displayPreviousGifts(gifts) {
       const list = document.getElementById('previous-gifts-list');
+      const statuses = ['idea', 'backlogged', 'purchased', 'delivered', 'wrapped', 'liked'];
       if (gifts.length === 0) {
         list.innerHTML = '<p>No previous gifts recorded.</p>';
       } else {
@@ -301,7 +303,15 @@
             <p><strong>${gift.idea}</strong></p>
             <p>Price: $${gift.price || 'N/A'}</p>
             <p>Date: ${gift.gift_date || 'N/A'}</p>
-            <button onclick="openEditModal('gift', ${gift.id}, '${gift.idea.replace(/'/g, "\\'")}', ${gift.price || null}, null, null)">Edit</button>
+            <div style="margin-top: 8px; margin-bottom: 8px;">
+              <label style="font-size: 0.9em; margin-right: 8px;">Status:</label>
+              <select onchange="updateGiftStatus(${gift.id}, this.value, 'gift')" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; font-size: 0.9em;">
+                ${statuses.map(status => `
+                  <option value="${status}" ${gift.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
+                `).join('')}
+              </select>
+            </div>
+            <button onclick="openEditModal('gift', ${gift.id}, '${gift.idea.replace(/'/g, "\\'")}'，${gift.price || null}, null, null)">Edit</button>
           </div>
         `).join('');
       }
@@ -309,6 +319,7 @@
 
     function displayFavoritedIdeas(ideas) {
       const list = document.getElementById('favorited-ideas-list');
+      const statuses = ['idea', 'backlogged', 'purchased', 'delivered', 'wrapped', 'liked'];
       if (ideas.length === 0) {
         list.innerHTML = '<p>No saved ideas yet.</p>';
       } else {
@@ -318,6 +329,14 @@
             <p>Price: $${idea.estimated_price || 'N/A'}</p>
             ${idea.link ? `<p>Link: <a href="${idea.link}" target="_blank">${idea.link}</a></p>` : ''}
             ${idea.note ? `<p>Note: ${idea.note}</p>` : ''}
+            <div style="margin-top: 8px; margin-bottom: 8px;">
+              <label style="font-size: 0.9em; margin-right: 8px;">Status:</label>
+              <select onchange="updateGiftStatus(${idea.id}, this.value, 'idea')" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; font-size: 0.9em;">
+                ${statuses.map(status => `
+                  <option value="${status}" ${idea.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
+                `).join('')}
+              </select>
+            </div>
             <button onclick="openEditModal('idea', ${idea.id}, '${idea.idea.replace(/'/g, "\\'")}', ${idea.estimated_price || null}, '${(idea.link || '').replace(/'/g, "\\'")}', '${(idea.note || '').replace(/'/g, "\\'")}')">Edit</button>
             <button onclick="addGiftForRecipient(${idea.id}, ${selectedRecipient})">Add as Gift</button>
             <button onclick="unfavoriteIdea(${idea.id})">Unfavorite</button>
@@ -607,12 +626,42 @@
       }
     };
 
+    window.updateGiftStatus = function(itemId, status, type) {
+      const endpoint = type === 'idea' ? `/gift_ideas/${itemId}` : `/gifts_for_recipients/${itemId}`;
+      const bodyKey = type === 'idea' ? 'gift_idea' : 'gift_for_recipient';
+      
+      fetch(endpoint, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          [bodyKey]: {
+            status: status
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (selectedRecipient) {
+          loadRecipientData(selectedRecipient);
+        }
+      })
+      .catch(error => {
+        console.error('Error updating status:', error);
+      });
+    };
+
     window.addEventListener('click', function(event) {
       const modal = document.getElementById('edit-modal');
       if (event.target === modal) {
         closeEditModal();
       }
     });
+
+    // Load current gifts last, after all setup is complete
+    loadAllCurrentGifts();
   }
 
   document.addEventListener('DOMContentLoaded', setupPage);
