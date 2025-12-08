@@ -46,6 +46,83 @@ RSpec.describe 'Settings', type: :request do
       end
     end
 
+    describe 'Credentials subpage' do
+      it 'redirects to login when unauthenticated user visits credentials page' do
+        delete session_path
+        get credentials_settings_path
+        expect(response).to redirect_to(login_path)
+      end
+
+      it 'shows a link to change email or password on the settings page' do
+        get settings_path
+        expect(response.body).to include('Change email or password')
+        expect(response.body).to include(credentials_settings_path)
+      end
+
+      it 'renders the credentials page for an authenticated user' do
+        get credentials_settings_path
+        expect(response).to be_successful
+        expect(response.body).to include('Change Email or Password')
+        expect(response.body).to include('Current password')
+      end
+
+      it 'updates email when current password is correct and allows login with new email only' do
+        post session_path, params: { email: user.email, password: 'password123' }
+        expect(session[:user_id]).to eq(user.id)
+
+        patch credentials_settings_path, params: {
+          current_password: 'password123',
+          user: { email: 'new_email@example.com' }
+        }
+
+        expect(response).to redirect_to(settings_path)
+        follow_redirect!
+        expect(response.body).to include('Account credentials updated successfully')
+
+        user.reload
+        expect(user.email).to eq('new_email@example.com')
+
+        delete session_path
+
+        post session_path, params: { email: 'user@example.com', password: 'password123' }
+        expect(response.body).to include('Invalid email or password')
+
+        post session_path, params: { email: 'new_email@example.com', password: 'password123' }
+        expect(response).to redirect_to(root_path)
+      end
+
+      it 'updates password when current password is correct and only new password works for login' do
+        patch credentials_settings_path, params: {
+          current_password: 'password123',
+          user: { password: 'newpass456', password_confirmation: 'newpass456' }
+        }
+
+        expect(response).to redirect_to(settings_path)
+
+        delete session_path
+
+        post session_path, params: { email: user.email, password: 'password123' }
+        expect(response.body).to include('Invalid email or password')
+
+        post session_path, params: { email: user.email, password: 'newpass456' }
+        expect(response).to redirect_to(root_path)
+      end
+
+      it 'does not update credentials if current password is wrong' do
+        original_email = user.email
+        patch credentials_settings_path, params: {
+          current_password: 'wrong',
+          user: { email: 'bad_change@example.com', password: 'whatever123', password_confirmation: 'whatever123' }
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include('Current password')
+        user.reload
+        expect(user.email).to eq(original_email)
+        expect(user.authenticate('password123')).to be_truthy
+      end
+    end
+
     describe 'PATCH /settings' do
       context 'with valid parameters' do
         let(:valid_params) do
@@ -83,7 +160,7 @@ RSpec.describe 'Settings', type: :request do
           expect(response.body).to include('Settings updated successfully')
         end
 
-        it 'updates only the specified fields' do
+        it 'updates only the specified fields (non-credential fields)' do
           original_email = user.email
           new_params = {
             user: {

@@ -132,7 +132,7 @@ RSpec.describe 'Events', type: :request do
       end
 
       it 'shows an Edit page that allows updating the event' do
-        # Seed an event first
+
         post events_path, params: { event: { name: 'Temp', description: '', start_at: '2025-12-02T10:00', end_at: '2025-12-02T11:00', location: '' } }
         follow_redirect!
         event = Event.last
@@ -148,7 +148,7 @@ RSpec.describe 'Events', type: :request do
       end
 
       it "does not render a description block when an event doesn't have a description" do
-        # Create an event without a description
+
         post events_path, params: {
           event: {
             name: 'No Desc Event',
@@ -161,10 +161,10 @@ RSpec.describe 'Events', type: :request do
         expect(response).to redirect_to(events_path)
 
         follow_redirect!
-        # Should show the event name and location
+
         expect(response.body).to include('No Desc Event')
         expect(response.body).to include('Somewhere')
-        # Should not render the description container when description is blank
+
         expect(response.body).not_to include('event-description')
       end
     end
