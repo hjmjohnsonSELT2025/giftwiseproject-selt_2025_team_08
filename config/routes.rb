@@ -15,7 +15,11 @@ Rails.application.routes.draw do
   resources :registrations, only: [:new, :create]
 
   # Settings
-  resource :settings, only: [:show, :update]
+  resource :settings, only: [:show, :update] do
+    # Subpage for changing email/password
+    get :credentials, on: :member
+    patch :credentials, to: 'settings#update_credentials', on: :member
+  end
 
   # Wish List
   resources :wish_list_items, only: [:index, :new, :create, :edit, :update, :destroy]
