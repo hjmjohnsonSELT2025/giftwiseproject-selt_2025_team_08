@@ -94,15 +94,20 @@
         </div>
       </fieldset>
 
+      <!-- Account Credentials -->
+      <fieldset>
+        <legend>Account</legend>
+        <p>Click the button below to manage your email and password.</p>
+        <%= button_tag type: 'button', class: 'button', onclick: "window.location='#{credentials_settings_path}'" do %>
+          Change email or password
+        <% end %>
+      </fieldset>
+
       <!-- Form Actions -->
       <div class="settings-actions">
         <%= f.submit "Save Changes", class: "button save-button" %>
         <%= link_to "Cancel", root_path, class: "button cancel-button" %>
       </div>
     <% end %>
-
-    <!-- TODO: Add sections for email and password below -->
-    <!-- Password Change Section (to be implemented) -->
-    <!-- Email Change Section (to be implemented) -->
   </div>
 </div>
