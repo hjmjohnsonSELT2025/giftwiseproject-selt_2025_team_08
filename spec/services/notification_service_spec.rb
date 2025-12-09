@@ -89,6 +89,16 @@ RSpec.describe NotificationService do
           expect(EventReminderMailer).not_to receive(:event_reminder)
           NotificationService.send(:check_event_reminders, user)
         end
+
+        it 'sends at_time reminders when event starts now' do
+          preference.update(event_reminder_timing: 'at_time')
+          event.attendees << user
+          now_utc = Time.current
+          event.update(start_at: now_utc.beginning_of_minute, end_at: now_utc.end_of_day)
+          
+          expect(EventReminderMailer).to receive(:event_reminder).and_call_original
+          NotificationService.send(:check_event_reminders, user)
+        end
       end
     end
 

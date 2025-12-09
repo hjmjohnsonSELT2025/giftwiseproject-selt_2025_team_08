@@ -76,9 +76,6 @@ class NotificationService
         now = Time.current
         minute_start = now.beginning_of_minute
         minute_end = minute_start + 1.minute
-        
-        Rails.logger.info "[Notification]   Looking for events starting between #{minute_start} and #{minute_end} (CST: #{cst_time.beginning_of_minute} - #{(cst_time.beginning_of_minute + 1.minute)})"
-        
         events = Event.where("creator_id = ? OR id IN (SELECT event_id FROM event_attendees WHERE user_id = ?)", user.id, user.id)
         results = events.where("(start_at >= ? AND start_at < ?) OR (start_at < ? AND end_at > ?)", 
                      minute_start, minute_end, now, now)
@@ -89,7 +86,7 @@ class NotificationService
       else
         target_time_start = (Time.current + offset).beginning_of_day
         target_time_end = target_time_start.end_of_day
-        
+
         Event.where("creator_id = ? OR id IN (SELECT event_id FROM event_attendees WHERE user_id = ?)", user.id, user.id)
              .where("start_at >= ? AND start_at <= ?", target_time_start, target_time_end)
       end

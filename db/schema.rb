@@ -167,6 +167,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
   add_foreign_key "discussion_messages", "users"
   add_foreign_key "discussions", "events"
   add_foreign_key "email_notification_preferences", "users"
+  add_foreign_key "event_attendees", "events"
+  add_foreign_key "event_attendees", "users"
   add_foreign_key "events", "users", column: "creator_id"
   add_foreign_key "gift_ideas", "recipients"
   add_foreign_key "gift_ideas", "users"
