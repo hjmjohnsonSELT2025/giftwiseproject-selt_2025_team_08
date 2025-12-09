@@ -7,6 +7,10 @@ class User < ApplicationRecord
   has_many :attended_events, through: :event_attendees, source: :event
   has_many :discussion_messages, dependent: :destroy
   has_many :wish_list_items, dependent: :destroy
+  has_one :email_notification_preference, dependent: :destroy, autosave: true
+  has_many :sent_reminders, dependent: :destroy
+
+  accepts_nested_attributes_for :email_notification_preference, update_only: true
 
   GENDERS = ["Male", "Female", "Non-binary", "Prefer not to say"].freeze
 

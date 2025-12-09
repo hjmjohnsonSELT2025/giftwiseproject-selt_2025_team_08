@@ -11,12 +11,12 @@
 
   <div class="field">
     <%= f.label :start_at, "Start date and time" %><br>
-    <%= f.datetime_local_field :start_at, required: true %>
+    <%= f.datetime_local_field :start_at, required: true, step: 60, value: event.start_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M") %>
   </div>
 
   <div class="field">
     <%= f.label :end_at, "End date and time" %><br>
-    <%= f.datetime_local_field :end_at, required: true %>
+    <%= f.datetime_local_field :end_at, required: true, step: 60, value: event.end_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M") %>
   </div>
 
   <div class="field">

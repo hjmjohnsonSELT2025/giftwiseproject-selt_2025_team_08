@@ -41,6 +41,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
     t.index ["event_id"], name: "index_discussions_on_event_id"
   end
 
+  create_table "email_notification_preferences", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "event_reminder_timing"
+    t.string "gift_reminder_timing"
+    t.boolean "event_reminders_enabled", default: false
+    t.boolean "gift_reminders_enabled", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_email_notification_preferences_on_user_id"
+  end
+
   create_table "event_attendees", force: :cascade do |t|
     t.integer "event_id", null: false
     t.integer "user_id", null: false
@@ -107,6 +118,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
     t.index ["event_id"], name: "index_recipients_on_event_id"
   end
 
+  create_table "sent_reminders", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "event_id", null: false
+    t.string "reminder_type", null: false
+    t.string "timing", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_sent_reminders_on_event_id"
+    t.index ["user_id", "event_id", "reminder_type"], name: "index_sent_reminders_uniqueness", unique: true
+    t.index ["user_id"], name: "index_sent_reminders_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.string "password_digest", null: false
@@ -143,11 +166,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
   add_foreign_key "discussion_messages", "discussions"
   add_foreign_key "discussion_messages", "users"
   add_foreign_key "discussions", "events"
+  add_foreign_key "email_notification_preferences", "users"
   add_foreign_key "events", "users", column: "creator_id"
   add_foreign_key "gift_ideas", "recipients"
   add_foreign_key "gift_ideas", "users"
   add_foreign_key "gifts_for_recipients", "recipients"
   add_foreign_key "gifts_for_recipients", "users"
   add_foreign_key "recipients", "events"
+  add_foreign_key "sent_reminders", "events"
+  add_foreign_key "sent_reminders", "users"
   add_foreign_key "wish_list_items", "users"
 end

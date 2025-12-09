@@ -95,6 +95,8 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
 
+  Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
+
   config.include Module.new {
     def create_user(email: 'test@example.com', password: 'password123', **attrs)
       User.create!(
