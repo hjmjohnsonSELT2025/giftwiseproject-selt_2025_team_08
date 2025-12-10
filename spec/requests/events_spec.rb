@@ -119,7 +119,8 @@ RSpec.describe 'Events', type: :request do
             description: 'Fun time',
             start_at: '2025-12-01T18:00',
             end_at: '2025-12-01T21:00',
-            location: 'Community Hall'
+            location: 'Community Hall',
+            theme: 'Birthday'
           }
         }
         expect(response).to redirect_to(events_path)
@@ -128,12 +129,12 @@ RSpec.describe 'Events', type: :request do
         expect(response.body).to include('Birthday Party')
         expect(response.body).to include('Fun time')
         expect(response.body).to include('Community Hall')
+        expect(response.body).to include('Birthday')
         expect(response.body).to include('Edit')
       end
 
       it 'shows an Edit page that allows updating the event' do
-
-        post events_path, params: { event: { name: 'Temp', description: '', start_at: '2025-12-02T10:00', end_at: '2025-12-02T11:00', location: '' } }
+        post events_path, params: { event: { name: 'Temp', description: '', start_at: '2025-12-02T10:00', end_at: '2025-12-02T11:00', location: '', theme: 'General' } }
         follow_redirect!
         event = Event.last
 
@@ -141,10 +142,14 @@ RSpec.describe 'Events', type: :request do
         expect(response).to be_successful
         expect(response.body).to include('Edit Event')
 
-        patch event_path(event), params: { event: { name: 'Updated Name' } }
+        patch event_path(event), params: { event: { name: 'Updated Name', theme: 'Wedding' } }
         expect(response).to redirect_to(events_path)
         follow_redirect!
         expect(response.body).to include('Updated Name')
+
+        get event_path(event)
+        expect(response).to be_successful
+        expect(response.body).to include('Wedding')
       end
 
       it "does not render a description block when an event doesn't have a description" do
@@ -155,7 +160,8 @@ RSpec.describe 'Events', type: :request do
             description: '',
             start_at: '2025-12-10T09:00',
             end_at: '2025-12-10T10:00',
-            location: 'Somewhere'
+            location: 'Somewhere',
+            theme: 'General'
           }
         }
         expect(response).to redirect_to(events_path)

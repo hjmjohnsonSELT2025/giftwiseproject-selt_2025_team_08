@@ -10,7 +10,8 @@ RSpec.describe DiscussionsController, type: :controller do
       description: 'Test Description',
       start_at: Time.current + 1.day,
       end_at: Time.current + 2.days,
-      creator_id: creator.id
+      creator_id: creator.id,
+      theme: 'General'
     )
   end
 

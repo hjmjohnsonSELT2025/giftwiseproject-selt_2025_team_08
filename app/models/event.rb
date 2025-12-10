@@ -5,10 +5,13 @@ class Event < ApplicationRecord
   has_many :attendees, through: :event_attendees, source: :user
   has_many :discussions, dependent: :destroy
 
+  THEMES = ['Birthday', 'Wedding', 'Anniversary', 'Holiday', 'Graduation', 'Baby Shower', 'Retirement', 'General'].freeze
+
   validates :name, presence: true
   validates :start_at, presence: true
   validates :end_at, presence: true
   validates :creator_id, presence: true
+  validates :theme, presence: true, inclusion: { in: THEMES, message: "is not a valid theme" }
 
   validate :end_after_start
 
