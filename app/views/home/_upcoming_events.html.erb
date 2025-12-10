@@ -1,29 +1,46 @@
 <div class="upcoming-events-section">
-  <h2>Upcoming Events This Month</h2>
-  
   <% if upcoming_events&.any? %>
-    <ul class="events-list">
+    <div class="events-list">
       <% upcoming_events.each do |event| %>
-        <li class="event-item">
-          <div class="event-header">
-            <h3><%= link_to event.name, event_path(event) %></h3>
-            <p class="event-date">
-              <%= event.start_at.strftime("%b %d, %Y at %I:%M %p") %>
-            </p>
-          </div>
-          
-          <div class="event-details">
-            <% if event.location.present? %>
-              <p class="event-location">
-                <strong>Location:</strong> <%= event.location %>
+        <div class="event-card mb-3 p-3 border-bottom">
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <div class="event-date-badge bg-primary text-white rounded p-2 text-center" style="min-width: 70px;">
+                <div class="small"><%= event.start_at.strftime("%b").upcase %></div>
+                <div class="h4 mb-0"><%= event.start_at.strftime("%d") %></div>
+              </div>
+            </div>
+            <div class="col">
+              <h3 class="fw-bold mb-2">
+                <%= link_to event.name, event_path(event), class: "text-decoration-none text-white event-name-link" %>
+              </h3>
+              <p class="text-white-50 mb-0">
+                <i class="bi bi-clock"></i> 
+                <%= event.start_at.strftime("%I:%M %p") %> - <%= event.end_at.strftime("%I:%M %p") %>
+                <% if event.location.present? %>
+                  <i class="bi bi-geo-alt ms-3"></i> 
+                  <%= event.location %>
+                <% end %>
+                <% if event.theme.present? %>
+                  <i class="bi bi-palette ms-3"></i> 
+                  <%= event.theme %>
+                <% end %>
+                <i class="bi bi-gift ms-3"></i>
+                <span><%= event.gift_count %> Gifts</span>
               </p>
-            <% end %>
+            </div>
+            <div class="col-auto">
+              <%= link_to "View", event_path(event), class: "btn btn-outline-light btn-sm", style: "padding: 0.375rem 0.75rem;" %>
+            </div>
           </div>
-        </li>
+        </div>
       <% end %>
-    </ul>
+    </div>
   <% else %>
-    <p class="no-events">No upcoming events this month.</p>
+    <div class="text-center py-5">
+      <p class="text-white mt-3">No upcoming events this month</p>
+      <%= link_to "Create your first event", new_event_path, class: "btn btn-primary mt-2" %>
+    </div>
   <% end %>
 </div>
 

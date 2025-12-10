@@ -31,6 +31,12 @@ class Event < ApplicationRecord
       .order("events.start_at")
   }
 
+  def gift_count
+    total_recipients = recipients.count
+    purchased_count = recipients.sum { |r| r.gifts_for_recipients.where(status: ['purchased', 'delivered', 'wrapped']).count }
+    "#{purchased_count}/#{total_recipients}"
+  end
+
   private
 
   def clear_sent_reminders_if_time_changed

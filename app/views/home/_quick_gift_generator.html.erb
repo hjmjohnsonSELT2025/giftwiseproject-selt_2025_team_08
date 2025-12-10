@@ -1,79 +1,78 @@
 <div class="quick-gift-generator">
-  <!-- Generate Gift Ideas (Collapsible) -->
-  <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-    <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generate-gift-section')">
-      <span id="generate-gift-toggle">▶</span> Quick Gift Generation
-    </div>
-    <div id="generate-gift-section" style="padding: 15px; display: none;">
-      <p style="color: #666; margin-bottom: 1.5rem;">Get personalized gift suggestions with just a few details (all optional)</p>
-      
-      <form id="quick-gift-form" style="display: contents;">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="likes">What do they like?</label>
-            <input type="text" id="likes" name="likes" placeholder="e.g., reading, cooking, travel" class="form-control">
+  <!-- Generate Gift Ideas (Accordion) -->
+  <div class="accordion" id="giftAccordion">
+    <div class="accordion-item border-0">
+      <div id="generateGiftSection" class="accordion-collapse collapse show" data-bs-parent="#giftAccordion">
+        <div class="accordion-body">
+          <p class="text-white mb-4">Tell us as few or many things about the recipient, and we'll suggest some gift ideas for them!</p>
+          
+          <form id="quick-gift-form">
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="likes" class="form-label">What do they like?</label>
+                <input type="text" id="likes" name="likes" placeholder="e.g., reading, cooking, travel" class="form-control">
+              </div>
+              
+              <div class="col-md-6">
+                <label for="dislikes" class="form-label">What do they dislike?</label>
+                <input type="text" id="dislikes" name="dislikes" placeholder="e.g., sports, video games" class="form-control">
+              </div>
+            </div>
+            
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="occupation" class="form-label">Their job/occupation</label>
+                <input type="text" id="occupation" name="occupation" placeholder="e.g., software engineer, teacher" class="form-control">
+              </div>
+              
+              <div class="col-md-6">
+                <label for="age" class="form-label">Age</label>
+                <input type="number" id="age" name="age" placeholder="e.g., 25" class="form-control">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="hobbies" class="form-label">Hobbies/Interests</label>
+              <input type="text" id="hobbies" name="hobbies" placeholder="e.g., photography, gardening, fitness" class="form-control">
+            </div>
+            
+            <div class="mb-3">
+              <label for="budget" class="form-label">Budget</label>
+              <input type="text" id="budget" name="budget" placeholder="e.g., $50, $100" class="form-control">
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-sparkles me-2"></i> Generate Gift Ideas
+              </button>
+            </div>
+          </form>
+          
+          <!-- Loading Spinner -->
+          <div id="gift-loading" class="alert alert-info d-none mt-4" role="alert">
+            <div class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
+            <span>Generating personalized gift ideas...</span>
           </div>
           
-          <div class="form-group">
-            <label for="dislikes">What do they dislike?</label>
-            <input type="text" id="dislikes" name="dislikes" placeholder="e.g., sports, video games" class="form-control">
-          </div>
-        </div>
-        
-        <div class="form-row">
-          <div class="form-group">
-            <label for="occupation">Their job/occupation</label>
-            <input type="text" id="occupation" name="occupation" placeholder="e.g., software engineer, teacher" class="form-control">
-          </div>
+          <!-- Error Message -->
+          <div id="gift-error" class="alert alert-danger d-none mt-4" role="alert"></div>
           
-          <div class="form-group">
-            <label for="age">Age</label>
-            <input type="number" id="age" name="age" placeholder="e.g., 25" class="form-control">
+          <!-- Results Section -->
+          <div id="gift-results" class="d-none mt-4">
+            <div class="alert alert-success mb-3">
+              <h5 class="alert-heading mb-3">
+                <i class="bi bi-check-circle me-2"></i> Suggested Gift Ideas
+              </h5>
+              <div id="ideas-content" class="ideas-content"></div>
+            </div>
           </div>
         </div>
-        
-        <div class="form-group">
-          <label for="hobbies">Hobbies/Interests</label>
-          <input type="text" id="hobbies" name="hobbies" placeholder="e.g., photography, gardening, fitness" class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="budget">Budget</label>
-          <input type="text" id="budget" name="budget" placeholder="e.g., $50, $100" class="form-control">
-        </div>
-        
-        <div class="form-actions">
-          <button type="submit" class="btn btn-primary btn-lg">Generate Gift Ideas</button>
-        </div>
-      </form>
-      
-      <div id="gift-results" style="display: none; margin-top: 2rem;">
-        <h3>Suggested Gift Ideas</h3>
-        <div id="ideas-content" class="ideas-content"></div>
       </div>
-      
-      <div id="gift-error" style="display: none; margin-top: 1rem; padding: 1rem; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px; color: #721c24;"></div>
-      
-      <div id="gift-loading" style="display: none; margin-top: 1rem; padding: 1rem; background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; color: #0c5460;">Loading ideas...</div>
     </div>
   </div>
 </div>
 
 <script>
-  function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    const toggleId = sectionId.replace('section', 'toggle');
-    const toggle = document.getElementById(toggleId);
-    
-    if (section.style.display === 'none' || section.style.display === '') {
-      section.style.display = 'block';
-      toggle.textContent = '▼';
-    } else {
-      section.style.display = 'none';
-      toggle.textContent = '▶';
-    }
-  }
-
   document.getElementById('quick-gift-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -93,13 +92,12 @@
     const loadingDiv = document.getElementById('gift-loading');
     const ideasContent = document.getElementById('ideas-content');
     
-    resultsDiv.style.display = 'none';
-    errorDiv.style.display = 'none';
+    resultsDiv.classList.add('d-none');
+    errorDiv.classList.add('d-none');
     errorDiv.textContent = '';
-    loadingDiv.style.display = 'block';
+    loadingDiv.classList.remove('d-none');
     
     console.log('Sending form data:', formData);
-    console.log('CSRF Token:', csrfToken);
     
     try {
       const response = await fetch('<%= quick_gift_ideas_path %>', {
@@ -112,9 +110,7 @@
         body: JSON.stringify(formData)
       });
       
-      console.log('Response status:', response.status);
-      
-      loadingDiv.style.display = 'none';
+      loadingDiv.classList.add('d-none');
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -125,68 +121,35 @@
       const data = await response.json();
       
       if (data.success) {
-        ideasContent.innerHTML = `<pre>${data.idea}</pre>`;
-        resultsDiv.style.display = 'block';
+        // Split by numbers followed by period/dot (e.g., "1.", "2.", "3.") or by newlines
+        let ideas = data.idea.split(/\n/).filter(idea => idea.trim());
+        
+        // If we got fewer than 3, try splitting by numbered lists
+        if (ideas.length < 3) {
+          ideas = data.idea.split(/^\d+\.\s+/m).filter(idea => idea.trim());
+        }
+        
+        // Take only first 3 ideas
+        ideas = ideas.slice(0, 3);
+        
+        // Clean up each idea and create HTML with columns
+        const ideasHtml = ideas.map(idea => {
+          const cleaned = idea.replace(/^\d+\.\s*/, '').trim();
+          return cleaned ? `<div class="col-md-4"><div class="idea-card"><p class="lead text-white">${cleaned}</p></div></div>` : '';
+        }).join('');
+        
+        ideasContent.innerHTML = `<div class="row g-3">${ideasHtml}</div>`;
+        resultsDiv.classList.remove('d-none');
       } else {
         errorDiv.textContent = data.error || 'Failed to generate gift ideas. Please try again.';
-        errorDiv.style.display = 'block';
+        errorDiv.classList.remove('d-none');
       }
     } catch (error) {
-      loadingDiv.style.display = 'none';
+      loadingDiv.classList.add('d-none');
       console.error('Error:', error);
       errorDiv.textContent = 'An error occurred: ' + error.message;
-      errorDiv.style.display = 'block';
+      errorDiv.classList.remove('d-none');
     }
   });
 </script>
-
-<style>
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .form-group label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-  }
-
-  .form-control {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    font-family: inherit;
-    transition: border-color 0.2s ease;
-  }
-
-  .form-control:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-  }
-
-  .form-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .ideas-content {
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    padding: 1rem;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
-</style>
 
