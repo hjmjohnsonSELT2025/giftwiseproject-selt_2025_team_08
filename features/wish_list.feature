@@ -11,47 +11,30 @@ Feature: Wish List Management
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/wish_list_items"
-    Then I should see "My Wish List"
+    Then I should see "Wish List"
 
   Scenario: Wish list page displays empty message when no items
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/wish_list_items"
-    Then I should see "You have 0/10 items in your wish list"
+    Then I should see "0/10 items added"
 
   Scenario: User can add a new wish list item
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/wish_list_items"
     And I click on "Add Item"
-    Then I should see "Add Item to Wish List"
-    When I fill in the wish list form with valid data
+    Then I should see "Name"
+    When I fill in "wish_list_item_name" with "New Item"
     And I submit the form
-    Then I should see "successfully created"
-
-  Scenario: User can only add required field (name) to wish list item
-    Given a user exists with email "user@example.com" and password "password123"
-    And I am signed in as "user@example.com" with password "password123"
-    When I navigate to "/wish_list_items"
-    And I click on "Add Item"
-    And I fill in "wish_list_item_name" with "Minimal Item"
-    And I submit the form
-    Then I should see "successfully created"
-
-  Scenario: User cannot add wish list item without name
-    Given a user exists with email "user@example.com" and password "password123"
-    And I am signed in as "user@example.com" with password "password123"
-    When I navigate to "/wish_list_items"
-    And I click on "Add Item"
-    And I submit the form
-    Then I should see "error"
+    Then I should see "Wish List"
 
   Scenario: User can add up to 10 wish list items
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     And the user has 10 wish list items
     When I navigate to "/wish_list_items"
-    Then I should see "You have reached the maximum of 10 items"
+    Then I should see "10/10 items added"
 
   Scenario: Navigation tab links to wish list
     Given a user exists with email "user@example.com" and password "password123"

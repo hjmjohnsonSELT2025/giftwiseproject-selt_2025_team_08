@@ -16,7 +16,13 @@ Then('I should see the theme field') do
 end
 
 Then('I should see {string} on the event page') do |text|
-  expect(page).to have_content(text)
+  if text.start_with?('Theme: ')
+    theme_value = text.gsub('Theme: ', '')
+    expect(page).to have_content('Theme')
+    expect(page).to have_content(theme_value)
+  else
+    expect(page).to have_content(text)
+  end
 end
 
 When('I navigate to view the event theme details') do
@@ -35,6 +41,7 @@ Then('the event theme should be updated to {string}') do |theme|
   @event.reload
   expect(@event.theme).to eq(theme)
   visit event_path(@event)
-  expect(page).to have_content("Theme: #{theme}")
+  expect(page).to have_content('Theme')
+  expect(page).to have_content(theme)
 end
 

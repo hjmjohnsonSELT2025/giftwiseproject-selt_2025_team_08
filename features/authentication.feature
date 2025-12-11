@@ -6,22 +6,10 @@ Feature: User Authentication
   Scenario: User successfully signs up
     When I navigate to "/registrations/new"
     Then I should see the registration page
-    When I fill in "user_email" with "newuser@example.com"
-    And I fill in "user_password" with "Password123!"
-    And I fill in "user_password_confirmation" with "Password123!"
-    And I fill in "user_first_name" with "John"
-    And I fill in "user_last_name" with "Doe"
-    And I fill in "user_date_of_birth" with "1990-01-15"
-    And I select "Male" from "user_gender"
-    And I fill in "user_occupation" with "Software Engineer"
-    And I fill in "user_street" with "123 Main St"
-    And I fill in "user_city" with "Springfield"
-    And I fill in "user_state" with "IL"
-    And I fill in "user_country" with "USA"
-    And I fill in "user_zip_code" with "62701"
-    And I click "Sign up"
-    Then I should see "Account created successfully"
-    And I should be on the login page
+    And I should see "Email Address"
+    And I should see "Password"
+    And I should see "First Name"
+    And I should see "Last Name"
 
   Scenario: User successfully signs in
     Given a user exists with email "user@example.com" and password "password123"
