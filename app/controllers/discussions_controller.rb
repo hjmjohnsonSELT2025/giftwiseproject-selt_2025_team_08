@@ -106,9 +106,12 @@ class DiscussionsController < ApplicationController
     {
       id: message.id,
       content: message.content,
-      user_name: "#{message.user.first_name} #{message.user.last_name}",
-      is_own: message.user_id == current_user.id,
-      timestamp: message.created_at.to_i
+      user: {
+        first_name: message.user.first_name,
+        last_name: message.user.last_name
+      },
+      is_own_message: message.user_id == current_user.id,
+      created_at: message.created_at.iso8601
     }
   end
 end

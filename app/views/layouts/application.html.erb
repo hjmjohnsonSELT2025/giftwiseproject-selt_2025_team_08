@@ -50,15 +50,21 @@
     <!-- Close navbar on link click -->
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const navLinks = document.querySelectorAll('.nav-link-close');
         const navbarCollapse = document.getElementById('navbarNav');
+        const navItems = document.querySelectorAll('#navbarNav .nav-item');
         
-        navLinks.forEach(link => {
-          link.addEventListener('click', function(e) {
-            if (navbarCollapse.classList.contains('show')) {
-              navbarCollapse.classList.remove('show');
-            }
-          });
+        navItems.forEach(item => {
+          const clickableElement = item.querySelector('a, button');
+          if (clickableElement) {
+            clickableElement.addEventListener('click', function() {
+              setTimeout(() => {
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                  const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: false });
+                  bsCollapse.hide();
+                }
+              }, 100);
+            });
+          }
         });
       });
     </script>

@@ -1,73 +1,94 @@
-<%= form_with model: event, local: true, data: { controller: "event-form", "event-form-event-id-value": event.persisted? ? event.id : nil } do |f| %>
-  <div class="field">
-    <%= f.label :name, "Event Name" %><br>
-    <%= f.text_field :name, required: true %>
+<div class="card" style="background-color: #2a2a2a; border-color: #444;">
+  <div class="card-body">
+    <style>
+      input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) brightness(1.2);
+        cursor: pointer;
+      }
+    </style>
+    <%= form_with model: event, local: true, data: { controller: "event-form", "event-form-event-id-value": event.persisted? ? event.id : nil }, id: "event-form" do |f| %>
+      <div class="mb-3">
+        <%= f.label :name, "Event Name", class: "form-label" %>
+        <%= f.text_field :name, required: true, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, class: "form-label" %>
+        <%= f.text_area :description, rows: 4, class: "form-control" %>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <%= f.label :start_at, "Start date and time", class: "form-label" %>
+          <%= f.datetime_local_field :start_at, required: true, step: 60, value: event.start_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <%= f.label :end_at, "End date and time", class: "form-label" %>
+          <%= f.datetime_local_field :end_at, required: true, step: 60, value: event.end_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M"), class: "form-control" %>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :location, class: "form-label" %>
+        <%= f.text_field :location, class: "form-control" %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :theme, class: "form-label" %>
+        <%= f.select :theme, Event::THEMES, { prompt: "Select a theme" }, required: true, class: "form-control" %>
+      </div>
+
+      <div class="mb-4">
+        <h5 class="mb-3">Event Participants</h5>
+        <div class="card" style="background-color: #1a1a1a; border-color: #444;">
+          <div class="card-body">
+            <!-- Participants List -->
+            <div class="mb-3">
+              <h6 class="text-white-50 mb-2">Added Participants</h6>
+              <ul id="participants-list" data-event-form-target="participantsList" class="list-unstyled mb-3">
+                <% if event.persisted? %>
+                  <% event.attendees.each do |attendee| %>
+                    <li data-user-id="<%= attendee.id %>" data-participant-type="attendee" class="d-flex justify-content-between align-items-center mb-2 p-2" style="background-color: #2a2a2a; border-radius: 4px;">
+                      <div>
+                        <span style="color: #e5e5e5;"><%= "#{attendee.first_name} #{attendee.last_name}" %></span>
+                        <span class="badge bg-primary" style="margin-left: 0.5rem;">Contributor</span>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-danger">Remove</button>
+                    </li>
+                  <% end %>
+                  <% event.recipients.each do |recipient| %>
+                    <li data-participant-id="<%= recipient.id %>" data-user-id="" data-participant-type="recipient" class="d-flex justify-content-between align-items-center mb-2 p-2" style="background-color: #2a2a2a; border-radius: 4px;">
+                      <div>
+                        <span style="color: #e5e5e5;"><%= "#{recipient.first_name} #{recipient.last_name}" %></span>
+                        <span class="badge bg-success" style="margin-left: 0.5rem;">Recipient</span>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-danger">Remove</button>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+              <p id="no-participants" style="<%= event.persisted? && (event.attendees.any? || event.recipients.any?) ? 'display:none;' : '' %>" class="text-white-50">No participants added yet.</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mb-3">
+              <%= text_field_tag :participant_search, "", placeholder: "Search contacts to add...", id: "participant-search", data: { "event-form-target": "participantSearch", action: "input->event-form#searchParticipants" }, class: "form-control" %>
+            </div>
+            
+            <!-- Search Results -->
+            <div id="participant-search-results"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden fields to store participants for form submission -->
+      <div id="participants-hidden-fields"></div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit event.persisted? ? "Save Event" : "Create Event", class: "btn btn-outline-solid btn-lg" %>
+        <%= link_to "Cancel", events_path, class: "btn btn-secondary btn-lg" %>
+      </div>
+    <% end %>
   </div>
-
-  <div class="field">
-    <%= f.label :description %><br>
-    <%= f.text_area :description, rows: 4 %>
-  </div>
-
-  <div class="field">
-    <%= f.label :start_at, "Start date and time" %><br>
-    <%= f.datetime_local_field :start_at, required: true, step: 60, value: event.start_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M") %>
-  </div>
-
-  <div class="field">
-    <%= f.label :end_at, "End date and time" %><br>
-    <%= f.datetime_local_field :end_at, required: true, step: 60, value: event.end_at&.change(sec: 0, usec: 0)&.strftime("%Y-%m-%dT%H:%M") %>
-  </div>
-
-  <div class="field">
-    <%= f.label :location %><br>
-    <%= f.text_field :location %>
-  </div>
-
-  <div class="field">
-    <%= f.label :theme %><br>
-    <%= f.select :theme, Event::THEMES, { prompt: "Select a theme" }, required: true %>
-  </div>
-
-  <div class="field">
-    <h3>Attendees</h3>
-    <ul id="attendees-list" data-event-form-target="attendeesList">
-      <% if event.persisted? && event.attendees.any? %>
-        <% event.attendees.each do |attendee| %>
-          <li data-attendee-id="<%= attendee.id %>">
-            <%= "#{attendee.first_name} #{attendee.last_name}" %>
-            <button type="button" class="btn-small">Remove</button>
-          </li>
-        <% end %>
-      <% end %>
-    </ul>
-    <p id="no-attendees" style="<%= event.persisted? && event.attendees.any? ? '"'"'display:none;'"'"' : '"'"''"'"' %>">No attendees added yet.</p>
-
-    <%= text_field_tag :attendee_search, "", placeholder: "Type a contact name", id: "attendee-search", data: { "event-form-target": "attendeeSearch" } %>
-    <button type="button" data-action="click->event-form#searchAttendees" class="btn-secondary">Search</button>
-    <div id="attendee-search-results"></div>
-  </div>
-
-  <div class="field">
-    <h3>Recipients</h3>
-    <ul id="recipients-list" data-event-form-target="recipientsList">
-      <% if event.persisted? && event.recipients.any? %>
-        <% event.recipients.each do |recipient| %>
-          <li data-recipient-id="<%= recipient.id %>">
-            <%= "#{recipient.first_name} #{recipient.last_name}" %>
-            <button type="button" class="btn-small">Remove</button>
-          </li>
-        <% end %>
-      <% end %>
-    </ul>
-    <p id="no-recipients" style="<%= event.persisted? && event.recipients.any? ? '"'"'display:none;'"'"' : '"'"''"'"' %>">No recipients added yet.</p>
-
-    <%= text_field_tag :contact_search, "", placeholder: "Type a contact name", id: "contact-search", data: { "event-form-target": "recipientSearch" } %>
-    <button type="button" data-action="click->event-form#searchRecipients" class="btn-secondary">Search</button>
-    <div id="contact-search-results"></div>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Save Event" %>
-  </div>
-<% end %>
+</div>

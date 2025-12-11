@@ -381,7 +381,7 @@ footer p {
 }
 
 .welcome-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #1a1a1a;
 }
 
 .welcome-section h1,
@@ -393,18 +393,6 @@ footer p {
   color: rgba(255, 255, 255, 0.9);
 }
 
-.welcome-icon {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
 
 .home-container {
   background-color: var(--bg-dark);
@@ -455,7 +443,11 @@ footer p {
 }
 
 .bg-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #1a1a1a;
+}
+
+.welcome-section {
+  background-color: #1a1a1a;
 }
 
 .shadow-sm {

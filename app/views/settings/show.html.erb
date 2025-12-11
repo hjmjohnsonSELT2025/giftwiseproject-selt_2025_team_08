@@ -1,156 +1,183 @@
-<div class="settings-container">
-  <h1>Settings</h1>
+<style>
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+</style>
 
-  <div class="settings-content">
-    <%= form_with model: @user, url: settings_path, method: :patch, local: true do |f| %>
-      <% if @user.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@user.errors.count, "error") %> prohibited changes from being saved:</h2>
-          <ul>
-            <% @user.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3">Settings</h1>
+          <p class="lead text-white-50 mb-4">Manage your profile and preferences</p>
+          <div class="button-group">
+            <%= link_to "Back to Home", root_path, class: "btn btn-outline-solid btn-lg" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container" style="max-width: 800px;">
+
+    <div style="background-color: #2a2a2a; padding: 2rem; border: 1px solid #444; border-radius: 8px;">
+      <%= form_with model: @user, url: settings_path, method: :patch, local: true do |f| %>
+        <% if @user.errors.any? %>
+          <div style="background-color: #8b0000; color: #fff; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem;">
+            <h2 style="margin-top: 0;"><%= pluralize(@user.errors.count, "error") %> prohibited changes from being saved:</h2>
+            <ul style="margin: 0.5rem 0 0 1.5rem;">
+              <% @user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Personal Information -->
+        <fieldset style="border: 1px solid #444; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; background-color: #1a1a1a;">
+          <legend style="color: #667eea; font-weight: bold;">Personal Information</legend>
+
+          <!-- First and Last Name row -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <%= f.label :first_name, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :first_name, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+            <div>
+              <%= f.label :last_name, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :last_name, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+          </div>
+
+          <!-- Date of Birth, Gender, Occupation row -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 0;">
+            <div>
+              <%= f.label :date_of_birth, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.date_field :date_of_birth, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px; accent-color: #667eea;" %>
+            </div>
+            <div>
+              <%= f.label :gender, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+            <div>
+              <%= f.label :occupation, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :occupation, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Interests -->
+        <fieldset style="border: 1px solid #444; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; background-color: #1a1a1a;">
+          <legend style="color: #667eea; font-weight: bold;">Interests</legend>
+
+          <div style="margin-bottom: 1rem;">
+            <%= f.label :hobbies, "Hobbies (comma separated)", style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+            <%= f.text_area :hobbies, rows: 3, placeholder: "e.g., Reading, Painting, Gaming", style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <%= f.label :likes, "Likes (comma separated)", style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+            <%= f.text_area :likes, rows: 3, placeholder: "e.g., Coffee, Hiking, Music", style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+          </div>
+
+          <div style="margin-bottom: 0;">
+            <%= f.label :dislikes, "Dislikes (comma separated)", style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+            <%= f.text_area :dislikes, rows: 3, placeholder: "e.g., Crowds, Spicy food, Delays", style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+          </div>
+        </fieldset>
+
+        <!-- Address -->
+        <fieldset style="border: 1px solid #444; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; background-color: #1a1a1a;">
+          <legend style="color: #667eea; font-weight: bold;">Address</legend>
+
+          <!-- Street and City row -->
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <%= f.label :street, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :street, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+            <div>
+              <%= f.label :city, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :city, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+          </div>
+
+          <!-- State, Zip Code, and Country row -->
+          <div style="display: grid; grid-template-columns: 0.8fr 1fr 1.2fr; gap: 1rem; margin-bottom: 0;">
+            <div>
+              <%= f.label :state, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :state, required: true, placeholder: "e.g., CA", style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+            <div>
+              <%= f.label :zip_code, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :zip_code, required: true, placeholder: "e.g., 90210", style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+            <div>
+              <%= f.label :country, style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+              <%= f.text_field :country, required: true, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Account Credentials -->
+        <fieldset style="border: 1px solid #444; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; background-color: #1a1a1a;">
+          <legend style="color: #667eea; font-weight: bold;">Account</legend>
+          <p style="color: #999; margin-bottom: 1rem;">Click the button below to manage your email and password.</p>
+          <%= button_tag type: 'button', class: 'btn btn-outline-solid', onclick: "window.location='#{credentials_settings_path}'" do %>
+            Change email or password
+          <% end %>
+        </fieldset>
+
+        <!-- Email Notifications -->
+        <fieldset style="border: 1px solid #444; padding: 1.5rem; border-radius: 4px; margin-bottom: 1.5rem; background-color: #1a1a1a;">
+          <legend style="color: #667eea; font-weight: bold;">Email Notifications</legend>
+
+          <% notification_timing_options = EmailNotificationPreference::TIMING_OPTIONS.map { |key, label| [label, key] } %>
+
+          <%= f.fields_for :email_notification_preference, @user.email_notification_preference do |nf| %>
+            <div style="margin-bottom: 2rem;">
+              <div style="margin-bottom: 1rem;">
+                <%= nf.check_box :event_reminders_enabled, {}, "true", "false" %>
+                <%= nf.label :event_reminders_enabled, "Enable Event Reminders", style: "color: #e5e5e5; display: inline; cursor: pointer; margin-left: 0.5rem;" %>
+              </div>
+
+              <div style="margin-bottom: 1rem;">
+                <%= nf.label :event_reminder_timing, "Send reminder:", style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+                <%= nf.select :event_reminder_timing, notification_timing_options, { prompt: "Select timing" }, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+              </div>
+
+              <p style="font-size: 0.9em; color: #999; margin: 0;">
+                When enabled, you'll receive an email at your chosen time before each event with details about the event.
+              </p>
+            </div>
+
+            <div style="margin-bottom: 0; border-top: 1px solid #444; padding-top: 1.5rem;">
+              <div style="margin-bottom: 1rem;">
+                <%= nf.check_box :gift_reminders_enabled, {}, "true", "false" %>
+                <%= nf.label :gift_reminders_enabled, "Enable Gift Reminders", style: "color: #e5e5e5; display: inline; cursor: pointer; margin-left: 0.5rem;" %>
+              </div>
+
+              <div style="margin-bottom: 1rem;">
+                <%= nf.label :gift_reminder_timing, "Send reminder:", style: "color: #e5e5e5; display: block; margin-bottom: 0.5rem;" %>
+                <%= nf.select :gift_reminder_timing, notification_timing_options, { prompt: "Select timing" }, style: "width: 100%; padding: 0.5rem; background-color: #2a2a2a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px;" %>
+              </div>
+
+              <p style="font-size: 0.9em; color: #999; margin: 0;">
+                When enabled, you'll receive an email at your chosen time before each event with a summary of your gift purchases and ideas for any missing recipients.
+              </p>
+            </div>
+          <% end %>
+        </fieldset>
+
+        <!-- Form Actions -->
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <%= f.submit "Save Changes", class: "btn btn-primary", style: "background-color: #667eea; color: white; padding: 0.5rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; flex: 1;" %>
+          <button type="button" class="btn btn-secondary" style="background-color: #444; color: #e5e5e5; padding: 0.5rem 1.5rem; border: 1px solid #555; border-radius: 4px; cursor: pointer; flex: 1;" onclick="location.reload();">Cancel</button>
         </div>
       <% end %>
-
-      <!-- Personal Information -->
-      <fieldset>
-        <legend>Personal Information</legend>
-
-        <div>
-          <%= f.label :first_name %><br />
-          <%= f.text_field :first_name, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :last_name %><br />
-          <%= f.text_field :last_name, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :date_of_birth %><br />
-          <%= f.date_field :date_of_birth, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :gender %><br />
-          <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :occupation %><br />
-          <%= f.text_field :occupation, required: true %>
-        </div>
-      </fieldset>
-
-      <!-- Interests -->
-      <fieldset>
-        <legend>Interests</legend>
-
-        <div>
-          <%= f.label :hobbies, "Hobbies (comma separated)" %><br />
-          <%= f.text_area :hobbies, rows: 3, placeholder: "e.g., Reading, Painting, Gaming" %>
-        </div>
-
-        <div>
-          <%= f.label :likes, "Likes (comma separated)" %><br />
-          <%= f.text_area :likes, rows: 3, placeholder: "e.g., Coffee, Hiking, Music" %>
-        </div>
-
-        <div>
-          <%= f.label :dislikes, "Dislikes (comma separated)" %><br />
-          <%= f.text_area :dislikes, rows: 3, placeholder: "e.g., Crowds, Spicy food, Delays" %>
-        </div>
-      </fieldset>
-
-      <!-- Address -->
-      <fieldset>
-        <legend>Address</legend>
-
-        <div>
-          <%= f.label :street %><br />
-          <%= f.text_field :street, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :city %><br />
-          <%= f.text_field :city, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :state %><br />
-          <%= f.text_field :state, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :zip_code %><br />
-          <%= f.text_field :zip_code, required: true %>
-        </div>
-
-        <div>
-          <%= f.label :country %><br />
-          <%= f.text_field :country, required: true %>
-        </div>
-      </fieldset>
-
-      <!-- Account Credentials -->
-      <fieldset>
-        <legend>Account</legend>
-        <p>Click the button below to manage your email and password.</p>
-        <%= button_tag type: 'button', class: 'button', onclick: "window.location='#{credentials_settings_path}'" do %>
-          Change email or password
-        <% end %>
-      </fieldset>
-
-      <!-- Email Notifications -->
-      <fieldset>
-        <legend>Email Notifications</legend>
-
-        <% notification_timing_options = EmailNotificationPreference::TIMING_OPTIONS.map { |key, label| [label, key] } %>
-
-        <%= f.fields_for :email_notification_preference, @user.email_notification_preference do |nf| %>
-          <div>
-            <h3>Event Reminders</h3>
-            <div>
-              <%= nf.label :event_reminders_enabled, "Enable Event Reminders" %><br />
-              <%= nf.check_box :event_reminders_enabled %>
-            </div>
-
-            <div>
-              <%= nf.label :event_reminder_timing, "Send reminder:" %><br />
-              <%= nf.select :event_reminder_timing, notification_timing_options, { prompt: "Select timing" } %>
-            </div>
-
-            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-              When enabled, you'll receive an email at your chosen time before each event with details about the event.
-            </p>
-          </div>
-
-          <div style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;">
-            <h3>Gift Reminders</h3>
-            <div>
-              <%= nf.label :gift_reminders_enabled, "Enable Gift Reminders" %><br />
-              <%= nf.check_box :gift_reminders_enabled %>
-            </div>
-
-            <div>
-              <%= nf.label :gift_reminder_timing, "Send reminder:" %><br />
-              <%= nf.select :gift_reminder_timing, notification_timing_options, { prompt: "Select timing" } %>
-            </div>
-
-            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-              When enabled, you'll receive an email at your chosen time before each event with a summary of your gift purchases and ideas for any missing recipients.
-            </p>
-          </div>
-        <% end %>
-      </fieldset>
-
-      <!-- Form Actions -->
-      <div class="settings-actions">
-        <%= f.submit "Save Changes", class: "button save-button" %>
-        <%= link_to "Cancel", root_path, class: "button cancel-button" %>
-      </div>
-    <% end %>
+    </div>
   </div>
 </div>

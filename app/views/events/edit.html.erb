@@ -1,12 +1,24 @@
-<div class="event-form-container">
-  <h1>Edit Event</h1>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section bg-gradient py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3">Edit Event</h1>
+          <p class="lead text-white-50 mb-4">Update your event details</p>
+          <a href="<%= events_path %>" class="btn btn-outline-solid btn-lg">Back to Events</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <div class="event-form">
+  <div class="container mb-5">
     <%= render 'form', event: @event %>
   </div>
 
-  <div class="event-form-actions">
-    <%= link_to "Back to Events", events_path, class: "button back-button" %>
-    <%= button_to "Delete Event", event_path(@event), method: :delete, data: { confirm: "Are you sure? This will delete the event for everyone." }, class: "button delete-button" %>
+  <div class="container mb-5">
+    <div class="d-flex justify-content-center">
+      <%= button_to "Delete Event", event_path(@event), method: :delete, data: { confirm: "Are you sure? This will delete the event for everyone." }, class: "btn btn-danger" %>
+    </div>
   </div>
 </div>

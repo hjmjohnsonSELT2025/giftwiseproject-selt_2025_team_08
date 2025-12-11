@@ -30,7 +30,7 @@ class RecipientsController < ApplicationController
   end
 
   def data
-    previous_gifts = @recipient.gifts_for_recipients.where(user_id: current_user.id).limit(5)
+    previous_gifts = @recipient.gifts_for_recipients.where(user_id: current_user.id).order(created_at: :desc).limit(5)
     favorited_ideas = @recipient.gift_ideas.where(user_id: current_user.id, favorited: true)
     
     wish_list_items = []
@@ -40,7 +40,7 @@ class RecipientsController < ApplicationController
     end
     
     render json: {
-      previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date, :status]),
+      previous_gifts: previous_gifts.as_json(only: [:id, :idea, :price, :gift_date, :status, :deleted_at]),
       favorited_ideas: favorited_ideas.as_json(only: [:id, :idea, :estimated_price, :link, :note, :status]),
       wish_list_items: wish_list_items
     }
@@ -78,11 +78,12 @@ class RecipientsController < ApplicationController
   def gifts_for_recipients
     @gift = @recipient.gifts_for_recipients.build(gift_params)
     @gift.user = current_user
+    @gift.status = 'idea' if @gift.status.blank?
     
     if @gift.save
-      render json: @gift, status: :created
+      render json: @gift, only: [:id, :idea, :price, :gift_date, :status], status: :created
     else
-      render json: @gift.errors, status: :unprocessable_content
+      render json: { errors: @gift.errors.messages }, status: :unprocessable_entity
     end
   end
 
@@ -132,7 +133,7 @@ class RecipientsController < ApplicationController
   end
 
   def gift_params
-    params.require(:gift_for_recipient).permit(:idea, :price, :gift_date)
+    params.require(:gift_for_recipient).permit(:idea, :price, :gift_date, :status)
   end
 
   def build_prompt(recipient)
@@ -156,6 +157,8 @@ class RecipientsController < ApplicationController
     end
     
     prompt += "\nGenerate #{num_ideas} unique and thoughtful gift ideas. Return each idea as a separate numbered item."
+    prompt += "\nFor each idea, use this format: [Number]. [Gift Name/Description] (Price: $[estimated_price])"
+    prompt += "\nExample: 1. A luxury silk scarf (Price: $45)"
     
     prompt
   end
@@ -167,6 +170,19 @@ class RecipientsController < ApplicationController
 
   def parse_ideas(text)
     ideas = text.split("\n").map { |line| line.strip }.select { |line| line =~ /^\d+\./ }
-    ideas.map { |idea| idea.gsub(/^\d+\.\s*/, '').strip }
+    ideas.map do |idea|
+      idea = idea.gsub(/^\d+\.\s*/, '').strip
+      price = nil
+      if idea.match?(/\(Price:\s*\$?[\d.]+\)/)
+        price_match = idea.match(/\(Price:\s*\$?([\d.]+)\)/)
+        price = price_match[1].to_f if price_match
+        idea = idea.gsub(/\s*\(Price:\s*\$?[\d.]+\)\s*/, '').strip
+      end
+      
+      {
+        idea: idea,
+        estimated_price: price
+      }
+    end
   end
 end

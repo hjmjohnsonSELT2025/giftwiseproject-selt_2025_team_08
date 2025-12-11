@@ -1,48 +1,67 @@
-<div class="discussion-container" data-controller="discussion" data-discussion-event-id-value="<%= @event.id %>" data-discussion-thread-type-value="<%= @thread_type %>">
-  <div class="discussion-header">
-    <h1><%= @event.name %></h1>
-        <%= link_to "Back to Event", event_path(@event)%>
-    <h2><%= @thread_type == 'public' ? 'All Participants' : 'Contributors Only' %> Discussion</h2>
-  </div>
-
-  <div class="discussion-tabs">
-    <%= link_to "All Participants", event_discussions_path(@event, thread_type: 'public'), 
-        class: "discussion-tab #{@thread_type == 'public' ? 'active' : ''}" %>
-    
-    <% if @event.creator_id == current_user.id || @event.attendees.include?(current_user) %>
-      <%= link_to "Contributors Only", event_discussions_path(@event, thread_type: 'contributors_only'), 
-          class: "discussion-tab #{@thread_type == 'contributors_only' ? 'active' : ''}" %>
-    <% end %>
-  </div>
-
-  <div class="messages-area" id="messages-container" data-discussion-target="messagesContainer">
-    <% @messages.each do |message| %>
-      <div class="message <%= message.user_id == current_user.id ? 'own-message' : 'other-message' %>" data-message-id="<%= message.id %>">
-        <div class="message-body">
-          <p class="message-content"><%= message.content %></p>
-          <p class="message-meta">
-            <%= message.user.first_name %> <%= message.user.last_name %> • 
-            <span class="time-ago" data-timestamp="<%= message.created_at.to_i %>"><%= time_ago_in_words(message.created_at) %> ago</span>
-          </p>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3"><%= @event.name %></h1>
+          <p class="lead text-white-50"><%= @thread_type == 'public' ? 'Discuss event details with everyone. Do not discuss gift ideas here!' : 'Private chat only for contributors. Feel free to discuss gift ideas!' %></p>
+          <div class="button-group">
+            <%= link_to 'Back to Event', event_path(@event), class: 'btn btn-outline-light me-2' %>
+            <% if @event.creator_id == current_user.id || @event.attendees.include?(current_user) %>
+              <%= link_to 'Switch to ' + (@thread_type == 'public' ? 'Contributors Only' : 'All Participants'), 
+                  event_discussions_path(@event, thread_type: @thread_type == 'public' ? 'contributors_only' : 'public'), 
+                  class: 'btn btn-outline-light' %>
+            <% end %>
+          </div>
         </div>
       </div>
-    <% end %>
-  </div>
+    </div>
+  </section>
 
-  <div class="message-form">
-    <form data-discussion-target="form" action="<%= create_message_event_discussions_path(@event, thread_type: @thread_type) %>" method="post" data-turbo="false">
-      <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
-      <div class="form-group">
-        <div class="form-label-wrapper">
-          <label for="message-content">Message</label>
-          <span id="char-count" class="char-count">0 / 5000</span>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow-sm border-0" style="background-color: #2a2a2a; border-color: #444;">
+          <div class="card-header" style="background-color: #667eea; border: none;">
+            <h4 class="mb-0">
+              <%= @thread_type == 'public' ? 'All Participants Discussion' : 'Contributors Only Discussion' %>
+            </h4>
+          </div>
+          <div class="card-body" style="background-color: #2a2a2a;">
+            <div class="messages-area" id="messages-container" data-discussion-target="messagesContainer" style="background-color: #1a1a1a; border: 1px solid #444;">
+              <% @messages.each do |message| %>
+                <div class="message <%= message.user_id == current_user.id ? 'own-message' : 'other-message' %>" data-message-id="<%= message.id %>" style="margin-bottom: 15px;">
+                  <div class="message-body" style="padding: 12px 15px; border-radius: 8px; max-width: 70%; <%= message.user_id == current_user.id ? 'background-color: #667eea; margin-left: auto;' : 'background-color: #444; margin-right: auto;' %>">
+                    <p class="message-content" style="margin: 0 0 8px 0; color: #e5e5e5; word-wrap: break-word;"><%= message.content %></p>
+                    <p class="message-meta" style="margin: 0; font-size: 0.85em; color: #e5e5e5;">
+                      <%= message.user.first_name %> <%= message.user.last_name %> • 
+                      <span class="time-ago" data-timestamp="<%= message.created_at.to_i %>"><%= time_ago_in_words(message.created_at) %> ago</span>
+                    </p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="message-form" style="margin-top: 20px;">
+              <form data-discussion-target="form" action="<%= create_message_event_discussions_path(@event, thread_type: @thread_type) %>" method="post" data-turbo="false">
+                <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                <div class="form-group">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <label for="message-content" style="color: #e5e5e5; font-weight: 600;">Message</label>
+                    <span id="char-count" class="char-count" style="font-size: 0.85rem; color: #999;">0 / 5000</span>
+                  </div>
+                  <textarea id="message-content" name="discussion_message[content]" placeholder="Type your message..." required rows="4" maxlength="5000" style="width: 100%; padding: 12px; border: 1px solid #444; border-radius: 6px; background-color: #1a1a1a; color: #e5e5e5; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+                <div style="margin-top: 12px;">
+                  <button type="submit" class="btn btn-outline-solid" id="submit-btn">Send Message</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <textarea id="message-content" name="discussion_message[content]" placeholder="Type your message..." required rows="3" maxlength="5000"></textarea>
       </div>
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
 
@@ -53,6 +72,10 @@
     const submitBtn = document.getElementById('submit-btn')
     const form = textarea.closest('form')
     const messagesArea = document.getElementById('messages-container')
+    const eventId = '<%= @event.id %>'
+    const threadType = '<%= @thread_type %>'
+    let lastMessageId = <%= @messages.any? ? @messages.last.id : 0 %>
+    let pollInterval = null
 
     function scrollToBottom() {
       if (messagesArea) {
@@ -74,6 +97,70 @@
       scrollToBottom()
     }
 
+    function formatMessageHTML(message, isOwnMessage) {
+      const userDisplay = `${message.user.first_name} ${message.user.last_name}`
+      const timeAgo = getTimeAgo(new Date(message.created_at))
+      
+      return `
+        <div class="message ${isOwnMessage ? 'own-message' : 'other-message'}" data-message-id="${message.id}" style="margin-bottom: 15px;">
+          <div class="message-body" style="padding: 12px 15px; border-radius: 8px; max-width: 70%; ${isOwnMessage ? 'background-color: #667eea; margin-left: auto;' : 'background-color: #444; margin-right: auto;'}">
+            <p class="message-content" style="margin: 0 0 8px 0; color: #e5e5e5; word-wrap: break-word;">${escapeHTML(message.content)}</p>
+            <p class="message-meta" style="margin: 0; font-size: 0.85em; color: #e5e5e5;">
+              ${userDisplay} • 
+              <span class="time-ago" data-timestamp="${new Date(message.created_at).getTime() / 1000}">${timeAgo}</span>
+            </p>
+          </div>
+        </div>
+      `
+    }
+
+    function escapeHTML(text) {
+      const div = document.createElement('div')
+      div.textContent = text
+      return div.innerHTML
+    }
+
+    function getTimeAgo(date) {
+      const now = new Date()
+      const seconds = Math.floor((now - date) / 1000)
+      
+      if (seconds < 60) return 'less than a minute ago'
+      if (seconds < 3600) return `${Math.floor(seconds / 60)} minute${Math.floor(seconds / 60) > 1 ? 's' : ''} ago`
+      if (seconds < 86400) return `${Math.floor(seconds / 3600)} hour${Math.floor(seconds / 3600) > 1 ? 's' : ''} ago`
+      return `${Math.floor(seconds / 86400)} day${Math.floor(seconds / 86400) > 1 ? 's' : ''} ago`
+    }
+
+    function fetchNewMessages() {
+      fetch(`/events/${eventId}/discussions/messages_feed?thread_type=${threadType}&after_message_id=${lastMessageId}`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.messages && data.messages.length > 0) {
+          data.messages.forEach(message => {
+            const messageHTML = formatMessageHTML(message, message.is_own_message)
+            messagesArea.insertAdjacentHTML('beforeend', messageHTML)
+            lastMessageId = message.id
+          })
+          scrollToBottom()
+        }
+      })
+      .catch(error => console.error('Error fetching messages:', error))
+    }
+
+    function startPolling() {
+      fetchNewMessages()
+      pollInterval = setInterval(fetchNewMessages, 2000) // Poll every 2 seconds
+    }
+
+    function stopPolling() {
+      if (pollInterval) {
+        clearInterval(pollInterval)
+      }
+    }
+
     if (textarea) {
       textarea.addEventListener('input', function() {
         charCount.textContent = `${this.value.length} / 5000`
@@ -90,15 +177,25 @@
       })
     }
 
-    form.addEventListener('submit', function() {
+    form.addEventListener('submit', function(e) {
       submitBtn.textContent = 'Sending...'
       submitBtn.disabled = true
     })
 
     window.addEventListener('message-sent', onMessageSent)
 
+    // Handle page visibility to pause polling when tab is not visible
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        stopPolling()
+      } else {
+        startPolling()
+      }
+    })
+
     scrollToBottom()
     submitBtn.disabled = true
+    startPolling()
   })
 </script>
 
@@ -114,12 +211,13 @@
   .back-link {
     display: inline-block;
     margin-bottom: 1rem;
-    color: #007bff;
+    color: #667eea;
     text-decoration: none;
     font-size: 0.95rem;
   }
 
   .back-link:hover {
+    color: #7b8efd;
     text-decoration: underline;
   }
 
@@ -127,24 +225,26 @@
     display: flex;
     gap: 1rem;
     margin-bottom: 1.5rem;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid #444;
   }
 
   .discussion-tab {
     padding: 0.75rem 1rem;
     text-decoration: none;
-    color: #666;
+    color: #999;
     border-bottom: 3px solid transparent;
     transition: all 0.2s ease;
+    font-weight: 500;
   }
 
   .discussion-tab:hover {
-    color: #007bff;
+    color: #e5e5e5;
+    border-bottom-color: #667eea;
   }
 
   .discussion-tab.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
+    color: #667eea;
+    border-bottom-color: #667eea;
   }
 
   .messages-area {
@@ -153,78 +253,132 @@
     overflow-y: auto;
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background-color: #f9f9f9;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 8px;
+  }
+
+  .messages-area::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .messages-area::-webkit-scrollbar-track {
+    background: #1a1a1a;
+  }
+
+  .messages-area::-webkit-scrollbar-thumb {
+    background: #444;
     border-radius: 4px;
+  }
+
+  .messages-area::-webkit-scrollbar-thumb:hover {
+    background: #555;
   }
 
   .message {
     margin-bottom: 1rem;
     display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .own-message {
-    justify-content: flex-start;
-  }
-
-  .other-message {
     justify-content: flex-end;
   }
 
+  .other-message {
+    justify-content: flex-start;
+  }
+
   .message-body {
-    max-width: 60%;
+    max-width: 70%;
     padding: 0.75rem 1rem;
-    border-radius: 4px;
-    background-color: #e7f3ff;
+    border-radius: 8px;
+    word-wrap: break-word;
   }
 
   .own-message .message-body {
-    background-color: #e7e7e7;
+    background-color: #667eea;
+  }
+
+  .other-message .message-body {
+    background-color: #444;
   }
 
   .message-content {
     margin: 0 0 0.5rem 0;
+    color: #e5e5e5;
     word-wrap: break-word;
+    line-height: 1.5;
   }
 
   .message-meta {
     margin: 0;
     font-size: 0.85rem;
-    color: #666;
+    color: #e5e5e5;
   }
 
   .message-form {
     margin-top: 1.5rem;
   }
 
+  .message-form form {
+    background-color: #2a2a2a;
+    padding: 1.5rem;
+    border: 1px solid #444;
+    border-radius: 8px;
+  }
+
   .form-label-wrapper {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
+    align-items: center;
   }
 
   .form-label-wrapper label {
     font-weight: 600;
+    color: #e5e5e5;
+    margin: 0;
   }
 
   .char-count {
     font-size: 0.85rem;
-    color: #666;
+    color: #999;
   }
 
   .form-group textarea {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #1a1a1a;
+    color: #e5e5e5;
     font-family: inherit;
     font-size: 0.95rem;
     resize: vertical;
   }
 
+  .form-group textarea::placeholder {
+    color: #666;
+  }
+
   .form-group textarea:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    border-color: #667eea;
+    background-color: #1a1a1a;
+    color: #e5e5e5;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
 
   .form-actions {
@@ -233,23 +387,35 @@
 
   .btn {
     padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid #667eea;
+    background-color: transparent;
+    color: #667eea;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn:hover:not(:disabled) {
+    background-color: #667eea;
+    color: #fff;
+    border-color: #667eea;
   }
 
   .btn-primary {
-    background-color: #007bff;
-    color: white;
+    border-color: #667eea;
+    color: #667eea;
   }
 
   .btn-primary:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: #667eea;
+    color: #fff;
+    border-color: #667eea;
   }
 
   .btn-primary:disabled {
-    background-color: #ccc;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 </style>

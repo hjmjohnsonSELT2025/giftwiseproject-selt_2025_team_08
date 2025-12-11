@@ -26,7 +26,7 @@
                   <%= event.theme %>
                 <% end %>
                 <i class="bi bi-gift ms-3"></i>
-                <span><%= event.gift_count %> Gifts</span>
+                <span><%= event.gift_count(current_user) %> Gifts</span>
               </p>
             </div>
             <div class="col-auto">

@@ -31,10 +31,17 @@ class Event < ApplicationRecord
       .order("events.start_at")
   }
 
-  def gift_count
-    total_recipients = recipients.count
-    purchased_count = recipients.sum { |r| r.gifts_for_recipients.where(status: ['purchased', 'delivered', 'wrapped']).count }
-    "#{purchased_count}/#{total_recipients}"
+  def gift_count(user = nil)
+    total_recipients = Recipient.where(event_id: id).count
+    
+    query = Recipient
+      .where(event_id: id)
+      .joins(:gifts_for_recipients)
+      .where(gifts_for_recipients: { deleted_at: nil })
+    
+    query = query.where(gifts_for_recipients: { user_id: user.id }) if user.present?
+    total_gifts = query.distinct.count
+    "#{total_gifts}/#{total_recipients}"
   end
 
   private
