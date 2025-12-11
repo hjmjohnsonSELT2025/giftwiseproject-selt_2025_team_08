@@ -59,7 +59,6 @@ Rails.application.routes.draw do
       get :search
     end
     member do
-      get :edit_note
       patch :update_note
     end
   end

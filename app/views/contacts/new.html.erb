@@ -1,52 +1,72 @@
-<h1>Add Contact</h1>
+<div class="home-container">
+  <!-- Header Section -->
+  <section class="welcome-section bg-gradient py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3">Add New Contact</h1>
+          <p class="lead text-white-50 mb-4">Search and add a person to your contacts</p>
+          <%= link_to "Back to Contacts", contacts_path, class: "btn btn-outline-solid btn-lg" %>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="add-contact-form">
-  <div class="search-section">
-    <h3>Search for a person to add as a contact</h3>
-    <%= form_with url: new_contact_path, method: :get, local: true, id: "users-search-form" do |search_f| %>
-      <%= search_f.text_field :q, placeholder: "Search by first or last name", class: "search-input", id: "users-search-input", value: params[:q] %>
-    <% end %>
+  <!-- Search Section -->
+  <div class="container mb-5">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="card" style="background-color: #2a2a2a; border: 1px solid #444;">
+          <div class="card-body">
+            <h5 class="card-title text-white mb-4">Search for a person to add as a contact</h5>
+            <%= form_with url: new_contact_path, method: :get, local: true, id: "users-search-form" do |search_f| %>
+              <%= search_f.text_field :q, placeholder: "Search by first or last name", class: "form-control", id: "users-search-input", value: params[:q], style: "background-color: #1a1a1a; border-color: #444; color: #e5e5e5;" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <% if @users.any? %>
-    <div class="users-list">
-      <h3><%= params[:q].present? ? "Search Results:" : "All Available Users:" %></h3>
-      <table class="users-table">
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Occupation</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="users-list">
-          <% @users.each do |user| %>
-            <tr class="user-row" data-user-name="<%= (user.first_name + ' ' + user.last_name).downcase %>">
-              <td><%= user.first_name %></td>
-              <td><%= user.last_name %></td>
-              <td><%= user.email %></td>
-              <td><%= user.occupation %></td>
-              <td>
-                <%= button_to "Add Contact", contacts_path, method: :post, params: { contact_user_id: user.id }, class: "button add-btn" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  <% elsif params[:q].present? %>
-    <p class="no-results-message">No users found matching "<%= params[:q] %>"</p>
-  <% end %>
-
-  <%= link_to "Back to Contacts", contacts_path, class: "button cancel-button" %>
+  <!-- Results Section -->
+  <div class="container mb-5">
+    <% if @users.any? %>
+      <div class="row">
+        <div class="col-lg-12">
+          <h3 class="text-white mb-4"><%= params[:q].present? ? "Search Results:" : "All Available Users:" %></h3>
+          
+          <div class="row g-4" id="users-list">
+            <% @users.each do |user| %>
+              <div class="col-md-4 col-lg-3 user-row" data-user-name="<%= (user.first_name + ' ' + user.last_name).downcase %>">
+                <div class="card h-100" style="background-color: #2a2a2a; border: 1px solid #444;">
+                  <div class="card-header text-center" style="background-color: #1a1a1a; border-bottom: 1px solid #444; padding: 0.5rem 0.75rem;">
+                    <h5 class="mb-0" style="color: #e5e5e5; font-size: 0.95rem;"><%= user.first_name %> <%= user.last_name %></h5>
+                  </div>
+                  <div class="card-body d-flex flex-column" style="padding: 0.75rem;">
+                    <%= button_to "Add Contact", contacts_path, method: :post, params: { contact_user_id: user.id }, class: "btn btn-outline-solid btn-sm w-100" %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% elsif params[:q].present? %>
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="alert alert-warning" style="background-color: #3a3a2a; border-color: #666; color: #e5e5e5;">
+            No users found matching "<%= params[:q] %>"
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <script>
   const searchInput = document.getElementById('users-search-input');
-  const usersList = document.querySelector('.users-list');
-  const noResults = document.querySelector('.no-results-message');
+  const usersList = document.querySelector('div#users-list');
+  const noResults = document.querySelector('.alert-warning');
   
   if (searchInput) {
     searchInput.addEventListener('keyup', function(e) {
