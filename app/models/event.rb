@@ -4,6 +4,9 @@ class Event < ApplicationRecord
   has_many :event_attendees, dependent: :destroy
   has_many :attendees, through: :event_attendees, source: :user
   has_many :discussions, dependent: :destroy
+  has_many :sent_reminders, dependent: :destroy
+
+  THEMES = ['Birthday', 'Wedding', 'Anniversary', 'Holiday', 'Graduation', 'Baby Shower', 'Retirement', 'General'].freeze
 
   THEMES = ['Birthday', 'Wedding', 'Anniversary', 'Holiday', 'Graduation', 'Baby Shower', 'Retirement', 'General'].freeze
 
@@ -14,6 +17,7 @@ class Event < ApplicationRecord
   validates :theme, presence: true, inclusion: { in: THEMES, message: "is not a valid theme" }
 
   validate :end_after_start
+  before_update :clear_sent_reminders_if_time_changed
 
   scope :upcoming_this_month, ->(user) {
     now = Time.current
@@ -30,6 +34,12 @@ class Event < ApplicationRecord
   }
 
   private
+
+  def clear_sent_reminders_if_time_changed
+    if start_at_changed?
+      sent_reminders.delete_all
+    end
+  end
 
   def end_after_start
     return if start_at.blank? || end_at.blank?

@@ -103,6 +103,49 @@
         <% end %>
       </fieldset>
 
+      <!-- Email Notifications -->
+      <fieldset>
+        <legend>Email Notifications</legend>
+
+        <% notification_timing_options = EmailNotificationPreference::TIMING_OPTIONS.map { |key, label| [label, key] } %>
+
+        <%= f.fields_for :email_notification_preference, @user.email_notification_preference do |nf| %>
+          <div>
+            <h3>Event Reminders</h3>
+            <div>
+              <%= nf.label :event_reminders_enabled, "Enable Event Reminders" %><br />
+              <%= nf.check_box :event_reminders_enabled %>
+            </div>
+
+            <div>
+              <%= nf.label :event_reminder_timing, "Send reminder:" %><br />
+              <%= nf.select :event_reminder_timing, notification_timing_options, { prompt: "Select timing" } %>
+            </div>
+
+            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+              When enabled, you'll receive an email at your chosen time before each event with details about the event.
+            </p>
+          </div>
+
+          <div style="margin-top: 20px; border-top: 1px solid #ccc; padding-top: 20px;">
+            <h3>Gift Reminders</h3>
+            <div>
+              <%= nf.label :gift_reminders_enabled, "Enable Gift Reminders" %><br />
+              <%= nf.check_box :gift_reminders_enabled %>
+            </div>
+
+            <div>
+              <%= nf.label :gift_reminder_timing, "Send reminder:" %><br />
+              <%= nf.select :gift_reminder_timing, notification_timing_options, { prompt: "Select timing" } %>
+            </div>
+
+            <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+              When enabled, you'll receive an email at your chosen time before each event with a summary of your gift purchases and ideas for any missing recipients.
+            </p>
+          </div>
+        <% end %>
+      </fieldset>
+
       <!-- Form Actions -->
       <div class="settings-actions">
         <%= f.submit "Save Changes", class: "button save-button" %>

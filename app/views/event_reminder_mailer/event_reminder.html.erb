@@ -1,0 +1,31 @@
+<h1>Event Reminder</h1>
+
+<p>Hi <%= h(@user.first_name) %>,</p>
+
+<p>Your event <strong><%= h(@event.name) %></strong> is coming up!</p>
+
+<h2>Event Details</h2>
+
+<ul>
+  <li><strong>Event:</strong> <%= h(@event.name) %></li>
+  <li><strong>Date:</strong> <%= @event.start_at ? @event.start_at.strftime("%B %d, %Y at %I:%M %p") : 'TBD' %></li>
+  <li><strong>Theme:</strong> <%= h(@event.theme.presence || 'Not specified') %></li>
+  <li><strong>Recipients:</strong> <%= @event.recipients&.count || 0 %></li>
+</ul>
+
+<h2>Your Recipients</h2>
+
+<% if @event.recipients&.any? %>
+  <ul>
+    <% @event.recipients.each do |recipient| %>
+      <li><%= h(recipient.first_name) %> <%= h(recipient.last_name) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No recipients for this event.</p>
+<% end %>
+
+<p>Don't forget to prepare your gifts!</p>
+
+<p>Best regards,<br>
+The Gift Wise Team</p>

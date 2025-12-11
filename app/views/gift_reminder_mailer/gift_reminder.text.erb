@@ -1,0 +1,34 @@
+Gift Reminder for <%= @event.name %>
+
+Hi <%= @user.first_name %>,
+
+Your event <%= @event.name %> is coming up! Here's a summary of your gift status:
+
+GIFT STATUS SUMMARY
+
+<% @gift_summary.each do |recipient, gifts| %>
+<%= recipient.first_name %> <%= recipient.last_name %>
+<% if gifts[:selected].any? %>
+✓ Gift Selected:
+<% gifts[:selected].each do |gift| %>
+  - <%= gift.idea %> (<%= number_to_currency(gift.price) if gift.price %>)
+<% end %>
+<% else %>
+✗ No Gift Selected Yet
+
+<% if gifts[:suggestions].any? %>
+Suggested Gift Ideas:
+<% gifts[:suggestions].each do |suggestion| %>
+  - <%= suggestion %>
+<% end %>
+<% end %>
+<% end %>
+
+---
+
+<% end %>
+
+Time to get shopping!
+
+Best regards,
+The Gift Wise Team

@@ -1,0 +1,26 @@
+Event Reminder
+
+Hi <%= @user.first_name %>,
+
+Your event <%= @event.name %> is coming up!
+
+EVENT DETAILS
+Event: <%= @event.name %>
+Date: <%= @event.start_at.strftime("%B %d, %Y at %I:%M %p") %>
+Theme: <%= @event.theme %>
+Recipients: <%= @event.recipients.count %>
+
+YOUR RECIPIENTS
+
+<% if @event.recipients.any? %>
+<% @event.recipients.each do |recipient| %>
+- <%= recipient.first_name %> <%= recipient.last_name %>
+<% end %>
+<% else %>
+No recipients for this event.
+<% end %>
+
+Don't forget to prepare your gifts!
+
+Best regards,
+The Gift Wise Team
