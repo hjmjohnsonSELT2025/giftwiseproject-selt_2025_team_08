@@ -5,7 +5,7 @@ RSpec.describe 'Registrations', type: :request do
     it 'renders the signup page' do
       get new_registration_path
       expect(response).to be_successful
-      expect(response.body).to include('Sign up')
+      expect(response.body).to include('Create your account')
     end
 
     it 'provides a new user form' do

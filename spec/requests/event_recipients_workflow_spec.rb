@@ -16,14 +16,14 @@ RSpec.describe 'Event Recipients and Gifts', type: :request do
       post session_path, params: { email: creator.email, password: 'password123' }
       get event_path(event)
       expect(response.body).to include('Recipients & Gifts')
-      expect(response.body).to include('Gift Idea Generation')
+      expect(response.body).to include('Generate New Gift Ideas')
     end
 
     it 'allows attendee to see Recipients & Gifts section' do
       post session_path, params: { email: attendee.email, password: 'password123' }
       get event_path(event)
       expect(response.body).to include('Recipients & Gifts')
-      expect(response.body).to include('Gift Idea Generation')
+      expect(response.body).to include('Generate New Gift Ideas')
     end
 
     it 'does not allow recipient to see Recipients & Gifts section' do
@@ -37,7 +37,7 @@ RSpec.describe 'Event Recipients and Gifts', type: :request do
       post session_path, params: { email: attendee.email, password: 'password123' }
       get event_path(event)
       expect(response.body).to include('Recipients & Gifts')
-      expect(response.body).to include('Gift Idea Generation')
+      expect(response.body).to include('Generate New Gift Ideas')
     end
   end
 
@@ -121,6 +121,7 @@ RSpec.describe 'Event Recipients and Gifts', type: :request do
       recipient.gifts_for_recipients.create!(
         idea: 'A watch',
         price: 200,
+        gift_date: Date.today,
         user: creator
       )
 
@@ -132,8 +133,8 @@ RSpec.describe 'Event Recipients and Gifts', type: :request do
 
     it 'does not show other users gifts in recipient overview' do
       recipient = event.recipients.first
-      recipient.gifts_for_recipients.create!(idea: 'Watch', user: creator)
-      recipient.gifts_for_recipients.create!(idea: 'Book', user: attendee)
+      recipient.gifts_for_recipients.create!(idea: 'Watch', gift_date: Date.today, user: creator)
+      recipient.gifts_for_recipients.create!(idea: 'Book', gift_date: Date.today, user: attendee)
 
       get "/recipients/#{recipient.id}/data.json"
       json_response = JSON.parse(response.body)

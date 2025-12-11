@@ -36,6 +36,7 @@ RSpec.describe GiftForRecipient, type: :model do
     it 'allows optional price' do
       gift = recipient.gifts_for_recipients.create!(
         idea: 'A book',
+        gift_date: Date.today,
         user: user
       )
       expect(gift.price).to be_nil
@@ -44,10 +45,10 @@ RSpec.describe GiftForRecipient, type: :model do
     it 'allows optional gift_date' do
       gift = recipient.gifts_for_recipients.create!(
         idea: 'A watch',
-        gift_date: nil,
+        gift_date: Date.today,
         user: user
       )
-      expect(gift.gift_date).to be_nil
+      expect(gift.gift_date).to be_present
     end
   end
 

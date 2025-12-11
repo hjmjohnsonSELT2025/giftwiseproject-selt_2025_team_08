@@ -12,17 +12,17 @@ RSpec.describe 'home/index.html.erb', type: :view do
 
   it 'renders the welcome heading' do
     render
-    expect(rendered).to include('Welcome to Gift Wise')
+    expect(rendered).to include('Welcome back')
   end
 
   it 'displays the user greeting with first name' do
     render
-    expect(rendered).to include("Hello, #{user.first_name}!")
+    expect(rendered).to include("Welcome back, #{user.first_name}!")
   end
 
   it 'renders the gift ideas section heading' do
     render
-    expect(rendered).to include('Quick Gift Generation')
+    expect(rendered).to include('Gift Idea Generator')
   end
 
   context 'with different user first names' do
@@ -31,8 +31,8 @@ RSpec.describe 'home/index.html.erb', type: :view do
       allow(view).to receive(:current_user).and_return(other_user)
       
       render
-      expect(rendered).to include("Hello, Jane!")
-      expect(rendered).not_to include("Hello, #{user.first_name}!")
+      expect(rendered).to include("Welcome back, Jane!")
+      expect(rendered).not_to include("Welcome back, #{user.first_name}!")
     end
   end
 
