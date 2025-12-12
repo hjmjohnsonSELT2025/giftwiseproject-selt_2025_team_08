@@ -14,6 +14,11 @@ Rails.application.routes.draw do
   get '/login', to: 'sessions#new', as: :login
   resources :registrations, only: [:new, :create]
 
+  # Password resets
+  resources :password_resets, only: [:new, :create]
+  get '/password_resets/:token/edit', to: 'password_resets#edit', as: :edit_password_reset
+  patch '/password_resets/:token', to: 'password_resets#update', as: :password_reset
+
   # Settings
   resource :settings, only: [:show, :update] do
     # Subpage for changing email/password
