@@ -29,6 +29,22 @@ class User < ApplicationRecord
   validates :street, :city, :state, :country, presence: true, length: { minimum: 1, maximum: 255 }
   validates :zip_code, presence: true, length: { minimum: 1, maximum: 20 }
 
+  def generate_password_reset!
+    update!(
+      reset_password_token: SecureRandom.urlsafe_base64(32),
+      reset_password_sent_at: Time.current
+    )
+  end
+
+  def password_reset_token_valid?(ttl_hours: 2)
+    return false if reset_password_sent_at.nil?
+    reset_password_sent_at >= ttl_hours.hours.ago
+  end
+
+  def clear_password_reset!
+    update!(reset_password_token: nil, reset_password_sent_at: nil)
+  end
+
   private
 
   def password_present?

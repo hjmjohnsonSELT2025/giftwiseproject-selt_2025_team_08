@@ -39,7 +39,6 @@ Rails.application.configure do
 
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
-
   # Configure email for development - using SMTP with Gmail
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
@@ -49,7 +48,8 @@ Rails.application.configure do
     user_name: ENV['SMTP_USERNAME'],
     password: ENV['SMTP_PASSWORD'],
     authentication: 'plain',
-    enable_starttls_auto: true
+    enable_starttls_auto: true,
+    openssl_verify_mode: 'none'
   }
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.perform_deliveries = true

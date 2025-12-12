@@ -1,0 +1,14 @@
+<p>Hello <%= @user.first_name %>,</p>
+
+<p>We received a request to reset your password for your GiftWise account. You can set a new password by clicking the button below:</p>
+
+<p>
+  <a href="<%= @reset_url %>" style="display:inline-block;padding:10px 16px;background:#4f46e5;color:#fff;text-decoration:none;border-radius:6px">Reset your password</a>
+</p>
+
+<p>If the button above doesn’t work, copy and paste this link into your browser:</p>
+<p><a href="<%= @reset_url %>"><%= @reset_url %></a></p>
+
+<p>This link will expire in 2 hours. If you didn’t request a password reset, you can safely ignore this email.</p>
+
+<p>— The GiftWise Team</p>

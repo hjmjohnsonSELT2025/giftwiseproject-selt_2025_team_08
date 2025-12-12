@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_12_030530) do
   create_table "contacts", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "contact_user_id"
@@ -99,6 +99,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "status", default: "idea"
+    t.datetime "deleted_at"
     t.index ["recipient_id"], name: "index_gifts_for_recipients_on_recipient_id"
     t.index ["status"], name: "index_gifts_for_recipients_on_status"
     t.index ["user_id"], name: "index_gifts_for_recipients_on_user_id"
@@ -148,6 +149,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
     t.string "state", null: false
     t.string "zip_code", null: false
     t.string "country", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -167,8 +170,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_07_001034) do
   add_foreign_key "discussion_messages", "users"
   add_foreign_key "discussions", "events"
   add_foreign_key "email_notification_preferences", "users"
-  add_foreign_key "event_attendees", "events"
-  add_foreign_key "event_attendees", "users"
   add_foreign_key "events", "users", column: "creator_id"
   add_foreign_key "gift_ideas", "recipients"
   add_foreign_key "gift_ideas", "users"

@@ -1,0 +1,12 @@
+<%# Password reset email (plain text) %>
+
+Hello <%= @user.first_name %>,
+
+We received a request to reset your password for your GiftWise account.
+
+Reset your password:
+<%= @reset_url %>
+
+This link will expire in 2 hours. If you didn’t request a password reset, you can ignore this email.
+
+— The GiftWise Team
