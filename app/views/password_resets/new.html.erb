@@ -1,18 +1,74 @@
-<h1>Forgot your password?</h1>
+<div class="auth-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h1 class="display-4 fw-bold text-white mb-3">
+            <i class="bi bi-gift-fill"></i> GiftWise <i class="bi bi-cpu-fill"></i>
+          </h1>
+          <p class="lead text-white-50 mb-4">Reset your password</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<p>Enter your email address and we'll send you a link to reset your password.</p>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+          <div class="card-header">
+            <h2 class="mb-0 text-white">Forgot your password?</h2>
+          </div>
+          <div class="card-body">
+            <p class="text-white-50 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
 
-<%= form_with url: password_resets_path, method: :post, local: true do %>
-  <div>
-    <%= label_tag :email, "Email" %><br />
-    <%= email_field_tag :email, params[:email], required: true, autofocus: true %>
+            <%= form_with url: password_resets_path, method: :post, local: true do %>
+              <div class="form-group mb-4">
+                <%= label_tag :email, "Email Address", class: "form-label" %>
+                <%= email_field_tag :email, params[:email], required: true, autofocus: true, class: "form-control", placeholder: "Enter your email" %>
+              </div>
+
+              <div class="d-grid">
+                <%= submit_tag "Send reset link", class: "btn btn-outline-solid btn-lg" %>
+              </div>
+            <% end %>
+
+            <hr>
+
+            <p class="text-center mb-0">
+              <%= link_to "Back to log in", login_path %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <div>
-    <%= submit_tag "Send reset link" %>
-  </div>
-<% end %>
+<style>
+  .auth-container {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+  }
 
-<p>
-  <%= link_to "Back to log in", login_path %>
-</p>
+  .form-control {
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    background-color: #1a1a1a !important;
+    border-color: #667eea !important;
+    color: #e5e5e5 !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .form-control::placeholder {
+    color: #666;
+  }
+
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+</style>
