@@ -1,7 +1,7 @@
 {
   "RSpec": {
     "coverage": {
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/services/notification_scheduler.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/services/notification_scheduler.rb": {
         "lines": [
           1,
           1,
@@ -50,7 +50,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/helpers/application_helper.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/helpers/application_helper.rb": {
         "lines": [
           1,
           1,
@@ -64,7 +64,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/contacts_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/contacts_controller.rb": {
         "lines": [
           1,
           1,
@@ -104,7 +104,7 @@
           null,
           null,
           1,
-          3,
+          0,
           null,
           null,
           1,
@@ -136,12 +136,12 @@
           1,
           null,
           1,
-          15,
+          12,
           null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/application_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/application_controller.rb": {
         "lines": [
           1,
           1,
@@ -149,27 +149,27 @@
           1,
           null,
           1,
-          886,
-          296,
-          236,
+          909,
+          292,
+          233,
           null,
-          60,
+          59,
           null,
-          null,
-          null,
-          1,
-          354,
           null,
           null,
           1,
-          254,
-          33,
+          350,
+          null,
+          null,
+          1,
+          250,
+          32,
           null,
           null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/discussions_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/discussions_controller.rb": {
         "lines": [
           1,
           1,
@@ -284,10 +284,13 @@
           null,
           null,
           null,
+          null,
+          null,
+          null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/events_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/events_controller.rb": {
         "lines": [
           1,
           1,
@@ -326,6 +329,29 @@
           4,
           4,
           4,
+          null,
+          4,
+          0,
+          0,
+          0,
+          0,
+          null,
+          null,
+          null,
+          4,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           4,
           null,
           0,
@@ -379,7 +405,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/gift_ideas_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/gift_ideas_controller.rb": {
         "lines": [
           1,
           1,
@@ -398,6 +424,24 @@
           null,
           null,
           1,
+          0,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          null,
+          1,
           null,
           1,
           14,
@@ -411,12 +455,13 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/home_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/home_controller.rb": {
         "lines": [
           1,
           1,
           null,
           1,
+          21,
           21,
           null,
           null,
@@ -486,7 +531,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/wish_list_items_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/wish_list_items_controller.rb": {
         "lines": [
           1,
           1,
@@ -538,7 +583,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/jobs/check_notifications_job.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/jobs/check_notifications_job.rb": {
         "lines": [
           1,
           1,
@@ -549,7 +594,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/jobs/application_job.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/jobs/application_job.rb": {
         "lines": [
           1,
           null,
@@ -560,7 +605,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/mailers/event_reminder_mailer.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/event_reminder_mailer.rb": {
         "lines": [
           1,
           1,
@@ -573,7 +618,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/mailers/application_mailer.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/application_mailer.rb": {
         "lines": [
           1,
           1,
@@ -581,7 +626,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/mailers/gift_reminder_mailer.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/gift_reminder_mailer.rb": {
         "lines": [
           1,
           1,
@@ -595,7 +640,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/mailers/password_reset_mailer.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/mailers/password_reset_mailer.rb": {
         "lines": [
           1,
           1,
@@ -608,7 +653,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/contact.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/contact.rb": {
         "lines": [
           1,
           1,
@@ -622,27 +667,27 @@
           1,
           null,
           1,
-          65,
+          61,
           1,
           null,
           null,
           null,
           1,
-          65,
+          61,
           2,
           null,
           null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/application_record.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/application_record.rb": {
         "lines": [
           1,
           1,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/discussion_message.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/discussion_message.rb": {
         "lines": [
           1,
           1,
@@ -656,7 +701,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/discussion.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/discussion.rb": {
         "lines": [
           1,
           1,
@@ -673,7 +718,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/email_notification_preference.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/email_notification_preference.rb": {
         "lines": [
           1,
           1,
@@ -705,7 +750,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/event_attendee.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/event_attendee.rb": {
         "lines": [
           1,
           1,
@@ -715,7 +760,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/event.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/event.rb": {
         "lines": [
           1,
           1,
@@ -750,6 +795,19 @@
           null,
           null,
           null,
+          null,
+          null,
+          1,
+          9,
+          null,
+          9,
+          null,
+          null,
+          null,
+          null,
+          9,
+          9,
+          9,
           null,
           null,
           1,
@@ -767,7 +825,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/gift_for_recipient.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/gift_for_recipient.rb": {
         "lines": [
           1,
           1,
@@ -781,10 +839,25 @@
           1,
           1,
           1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          0,
+          null,
+          null,
+          1,
+          0,
+          null,
+          null,
+          1,
+          0,
+          null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/gift_idea.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/gift_idea.rb": {
         "lines": [
           1,
           1,
@@ -801,7 +874,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/recipient.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/recipient.rb": {
         "lines": [
           1,
           1,
@@ -814,7 +887,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/sent_reminder.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/sent_reminder.rb": {
         "lines": [
           1,
           1,
@@ -827,7 +900,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/user.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/user.rb": {
         "lines": [
           1,
           1,
@@ -850,7 +923,7 @@
           1,
           null,
           1,
-          634,
+          626,
           1,
           null,
           1,
@@ -879,16 +952,16 @@
           1,
           null,
           1,
-          633,
+          625,
           null,
           null,
           1,
-          633,
+          625,
           null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/models/wish_list_item.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/models/wish_list_item.rb": {
         "lines": [
           1,
           1,
@@ -911,7 +984,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/services/notification_service.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/services/notification_service.rb": {
         "lines": [
           1,
           null,
@@ -1061,7 +1134,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/sessions_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/sessions_controller.rb": {
         "lines": [
           1,
           1,
@@ -1088,7 +1161,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/event_attendees_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/event_attendees_controller.rb": {
         "lines": [
           1,
           1,
@@ -1133,7 +1206,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/services/gemini_service.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/services/gemini_service.rb": {
         "lines": [
           1,
           1,
@@ -1178,22 +1251,22 @@
           null,
           7,
           null,
-          0,
+          7,
           null,
           7,
           7,
           null,
           null,
           1,
-          0,
+          7,
           0,
           0,
           0,
           null,
-          0,
-          0,
-          0,
-          0,
+          7,
+          7,
+          7,
+          7,
           null,
           null,
           0,
@@ -1202,7 +1275,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/recipients_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/recipients_controller.rb": {
         "lines": [
           1,
           1,
@@ -1282,6 +1355,7 @@
           null,
           null,
           1,
+          4,
           4,
           4,
           null,
@@ -1362,6 +1436,8 @@
           null,
           null,
           3,
+          3,
+          3,
           null,
           3,
           null,
@@ -1373,12 +1449,25 @@
           null,
           1,
           21,
-          12,
+          3,
+          9,
+          9,
+          9,
+          0,
+          0,
+          0,
+          null,
+          null,
+          null,
+          9,
+          null,
+          null,
+          null,
           null,
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/password_resets_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/password_resets_controller.rb": {
         "lines": [
           1,
           1,
@@ -1435,7 +1524,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/registrations_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/registrations_controller.rb": {
         "lines": [
           1,
           1,
@@ -1464,7 +1553,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/settings_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/settings_controller.rb": {
         "lines": [
           1,
           1,
@@ -1531,7 +1620,7 @@
           null
         ]
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/channels/application_cable/channel.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/channel.rb": {
         "lines": [
           0,
           0,
@@ -1541,7 +1630,7 @@
         "branches": {
         }
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/channels/application_cable/connection.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/channels/application_cable/connection.rb": {
         "lines": [
           0,
           0,
@@ -1551,11 +1640,22 @@
         "branches": {
         }
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/errors_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/errors_controller.rb": {
         "lines": [
           0,
           0,
           0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
           0,
           null,
           0,
@@ -1566,7 +1666,7 @@
         "branches": {
         }
       },
-      "/Users/SB8G/RubymineProjects/giftwiseproject-selt_2025_team_08/app/controllers/gifts_for_recipients_controller.rb": {
+      "C:/Coding Projects/Ruby/gift-wise-app/app/controllers/gifts_for_recipients_controller.rb": {
         "lines": [
           0,
           0,
@@ -1575,6 +1675,24 @@
           0,
           0,
           0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
           0,
           0,
           0,
@@ -1595,6 +1713,6 @@
         }
       }
     },
-    "timestamp": 1765507882
+    "timestamp": 1765509948
   }
 }

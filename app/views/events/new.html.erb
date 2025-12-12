@@ -1,11 +1,18 @@
-<div class="event-form-container">
-  <h1>New Event</h1>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section bg-gradient py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3">Create New Event</h1>
+          <p class="lead text-white-50 mb-4">Set up an event and start planning gifts</p>
+          <a href="<%= events_path %>" class="btn btn-outline-solid btn-lg">Back to Events</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <div class="event-form">
+  <div class="container mb-5">
     <%= render 'form', event: @event %>
-  </div>
-
-  <div class="event-form-actions">
-    <%= link_to "Back to Events", events_path, class: "button back-button" %>
   </div>
 </div>

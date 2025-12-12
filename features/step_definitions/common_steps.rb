@@ -145,11 +145,11 @@ Then('I should not see {string}') do |text|
 end
 
 Then('I should see the registration page') do
-  expect(page).to have_content('Sign up')
+  expect(page).to have_content('Create your account')
 end
 
 Then('I should see the login page') do
-  expect(page).to have_content('Log in')
+  expect(page).to have_content('Log in to your account')
 end
 
 Then('I should be on the login page') do
@@ -202,9 +202,9 @@ end
 Then('I should see the {string} page') do |page_name|
   case page_name
   when 'registration page'
-    expect(page).to have_content('Sign Up')
+    expect(page).to have_content('Create your account')
   when 'login page'
-    expect(page).to have_content('Sign In')
+    expect(page).to have_content('Log in to your account')
   when 'events page'
     expect(page).to have_content('Events')
   when 'settings page'

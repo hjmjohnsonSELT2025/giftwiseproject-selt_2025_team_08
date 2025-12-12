@@ -136,38 +136,6 @@ RSpec.describe ContactsController, type: :controller do
     end
   end
 
-  describe 'GET #edit_note' do
-    let(:contact) { user.contacts.create(contact_user: other_user, note: 'Test note') }
-
-    context 'when user is not logged in' do
-      it 'redirects to login page' do
-        get :edit_note, params: { id: contact.id }
-        expect(response).to redirect_to(login_path)
-      end
-    end
-
-    context 'when user is logged in' do
-      before do
-        session[:user_id] = user.id
-      end
-
-      it 'returns a successful response' do
-        get :edit_note, params: { id: contact.id }
-        expect(response).to be_successful
-      end
-
-      it 'renders without layout' do
-        get :edit_note, params: { id: contact.id }
-        expect(response).to render_template(:edit_note)
-      end
-
-      it 'assigns the contact to @contact' do
-        get :edit_note, params: { id: contact.id }
-        expect(assigns(:contact)).to eq(contact)
-      end
-    end
-  end
-
   describe 'PATCH #update_note' do
     let(:contact) { user.contacts.create(contact_user: other_user, note: 'Original note') }
 

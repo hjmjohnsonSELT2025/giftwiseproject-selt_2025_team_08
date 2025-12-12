@@ -11,8 +11,8 @@ Feature: Home Page
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/"
-    Then I should see "Welcome to Gift Wise"
-    And I should see "Test"
+    Then I should see "Welcome back, Test"
+    And I should see "Upcoming Events"
 
   Scenario: Authenticated user can access navigation
     Given a user exists with email "user@example.com" and password "password123"

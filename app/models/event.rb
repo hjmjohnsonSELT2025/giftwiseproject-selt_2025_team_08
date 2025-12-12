@@ -33,6 +33,19 @@ class Event < ApplicationRecord
       .order("events.start_at")
   }
 
+  def gift_count(user = nil)
+    total_recipients = Recipient.where(event_id: id).count
+    
+    query = Recipient
+      .where(event_id: id)
+      .joins(:gifts_for_recipients)
+      .where(gifts_for_recipients: { deleted_at: nil })
+    
+    query = query.where(gifts_for_recipients: { user_id: user.id }) if user.present?
+    total_gifts = query.distinct.count
+    "#{total_gifts}/#{total_recipients}"
+  end
+
   private
 
   def clear_sent_reminders_if_time_changed

@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>GiftWiseApp</title>
+    <title>GiftWise - Smart Gift Planning</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <% unless Rails.env.test? %>
@@ -12,24 +18,55 @@
     <% end %>
   </head>
 
-  <body>
-    <header>
-      <% if logged_in? %>
-        <nav>
-          <%= link_to "Home", root_path %> |
-          <%= link_to "Contacts", contacts_path %> |
-          <%= link_to "Events", events_path %> |
-          <%= link_to "Wish List", wish_list_items_path %> |
-          <%= link_to "Settings", settings_path %> |
-          <%= button_to "Logout", session_path, method: :delete %>
-        </nav>
+  <body class="d-flex flex-column" style="min-height: 100vh;">
+    <!-- Navigation Header -->
+    <%= render 'layouts/navbar' %>
+
+    <!-- Flash Messages -->
+    <div class="container-fluid">
+      <% flash.each do |k, v| %>
+        <div class="alert alert-<%= k == 'notice' ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+          <%= v %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       <% end %>
-    </header>
+    </div>
 
-    <% flash.each do |k, v| %>
-      <div><%= v %></div>
-    <% end %>
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+      <%= yield %>
+    </main>
 
-    <%= yield %>
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
+      <div class="container-fluid">
+        <p class="mb-0">&copy; <%= Time.current.year %> GiftWise. Plan smarter, gift better.</p>
+      </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Close navbar on link click -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const navbarCollapse = document.getElementById('navbarNav');
+        const navItems = document.querySelectorAll('#navbarNav .nav-item');
+        
+        navItems.forEach(item => {
+          const clickableElement = item.querySelector('a, button');
+          if (clickableElement) {
+            clickableElement.addEventListener('click', function() {
+              setTimeout(() => {
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                  const bsCollapse = new bootstrap.Collapse(navbarCollapse, { toggle: false });
+                  bsCollapse.hide();
+                }
+              }, 100);
+            });
+          }
+        });
+      });
+    </script>
   </body>
 </html>

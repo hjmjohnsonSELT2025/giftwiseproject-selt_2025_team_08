@@ -30,7 +30,7 @@ When('I submit the form') do
 end
 
 Then('I should see {string} in the navigation') do |text|
-  within('nav') do
+  within('header') do
     expect(page).to have_content(text)
   end
 end

@@ -3,6 +3,7 @@ class HomeController < ApplicationController
 
   def index
     @upcoming_events = Event.upcoming_this_month(current_user)
+    @wish_list_items = current_user.wish_list_items.limit(10)
   end
 
   def generate_quick_gift_idea
@@ -42,7 +43,7 @@ class HomeController < ApplicationController
   private
 
   def build_gift_prompt(likes, dislikes, occupation, age, hobbies, budget)
-    prompt_parts = ["Generate one creative and thoughtful gift idea"]
+    prompt_parts = ["Generate exactly 3 creative and thoughtful gift ideas"]
     
     prompt_parts << "for a #{age}-year-old" if age.present?
     prompt_parts << "who works as a #{occupation}" if occupation.present?

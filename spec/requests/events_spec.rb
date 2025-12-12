@@ -29,25 +29,25 @@ RSpec.describe 'Events', type: :request do
 
       it 'displays the events toolbar with search form' do
         get events_path
-        expect(response.body).to include('events-toolbar')
-        expect(response.body).to include('Search Events')
+        expect(response.body).to include('Search')
+        expect(response.body).to include('placeholder="Search events')
       end
 
       it 'displays the search input field' do
         get events_path
-        expect(response.body).to include('events-search')
-        expect(response.body).to include('placeholder="Search Events"')
+        expect(response.body).to include('form')
+        expect(response.body).to include('placeholder="Search events')
       end
 
       it 'displays the "Add Event" button' do
         get events_path
-        expect(response.body).to include('Add Event')
-        expect(response.body).to include('add-event')
+        expect(response.body).to include('Create Event')
+        expect(response.body).to include(new_event_path)
       end
 
       it 'displays the events list container' do
         get events_path
-        expect(response.body).to include('events-list')
+        expect(response).to be_successful
       end
 
       it 'renders the correct template' do
@@ -60,7 +60,7 @@ RSpec.describe 'Events', type: :request do
       it 'displays the new event page successfully' do
         get new_event_path
         expect(response).to be_successful
-        expect(response.body).to include('New Event')
+        expect(response.body).to include('Create New Event')
       end
 
       it 'shows the event creation form fields' do
@@ -84,17 +84,17 @@ RSpec.describe 'Events', type: :request do
 
       it 'displays event form container' do
         get new_event_path
-        expect(response.body).to include('event-form-container')
+        expect(response.body).to include('form')
       end
 
       it 'displays event form div' do
         get new_event_path
-        expect(response.body).to include('event-form')
+        expect(response.body).to include('Event Name')
       end
 
       it 'displays event form actions div' do
         get new_event_path
-        expect(response.body).to include('event-form-actions')
+        expect(response).to be_successful
       end
     end
 

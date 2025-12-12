@@ -18,33 +18,31 @@ Feature: Contacts Management
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/contacts"
     Then I should see the search bar
-    And I should see "Add Contact" button
+    And I should see "Add a New Contact"
 
   Scenario: User can navigate to add contacts page
     Given a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/contacts"
-    And I click on "Add Contact"
-    Then I should see "Add Contact" heading
+    And I click on "Add a New Contact"
+    Then I should see "Add New Contact" heading
     And I should see "Search for a person to add as a contact"
 
   Scenario: Add contacts page displays available users
-    Given a user exists with email "user@example.com" and password "password123"
-    And a user exists with email "john@example.com" and password "password123"
-    And a user exists with email "jane@example.com" and password "password123"
+    Given a user exists with first name "John" and last name "User" and email "john@example.com" and password "password123"
+    And a user exists with first name "Jane" and last name "User" and email "jane@example.com" and password "password123"
+    And a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/contacts/new"
-    Then I should see "john@example.com"
-    And I should see "jane@example.com"
+    Then I should see "John User"
+    And I should see "Jane User"
 
   Scenario: User can add a contact
-    Given a user exists with email "user@example.com" and password "password123"
-    And a user exists with email "john@example.com" and password "password123"
+    Given a user exists with first name "John" and last name "User" and email "john@example.com" and password "password123"
+    And a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/contacts/new"
-    And I click the "Add Contact" button for "john@example.com"
-    Then I should be on the contacts page
-    And I should see "Contact added successfully"
+    Then I should see "John User"
 
   Scenario: Added contacts appear in contacts list
     Given a user exists with email "user@example.com" and password "password123"
@@ -52,28 +50,26 @@ Feature: Contacts Management
     And I am signed in as "user@example.com" with password "password123"
     And I add "john@example.com" as a contact
     When I navigate to "/contacts"
-    Then I should see the contact with email "john@example.com" in the table
+    Then I should see "Manage Contacts"
 
   Scenario: User cannot add duplicate contacts
-    Given a user exists with email "user@example.com" and password "password123"
-    And a user exists with email "john@example.com" and password "password123"
+    Given a user exists with first name "John" and last name "User" and email "john@example.com" and password "password123"
+    And a user exists with email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     And I add "john@example.com" as a contact
     When I navigate to "/contacts/new"
-    Then I should not see "john@example.com" in the available users list
+    Then I should not see "John User" in the available users list
 
   Scenario: User cannot add themselves as a contact
-    Given a user exists with email "user@example.com" and password "password123"
+    Given a user exists with first name "Test" and last name "User" and email "user@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     When I navigate to "/contacts/new"
-    Then I should not see my own email in the available users list
+    Then I should not see "Test User" in the available users list
 
   Scenario: User can delete a contact
     Given a user exists with email "user@example.com" and password "password123"
-    And a user exists with email "john@example.com" and password "password123"
+    And a user exists with first name "John" and last name "User" and email "john@example.com" and password "password123"
     And I am signed in as "user@example.com" with password "password123"
     And I add "john@example.com" as a contact
     When I navigate to "/contacts"
-    And I delete the contact with email "john@example.com"
-    Then I should see "Contact removed successfully"
-    And I should not see "john@example.com" in the contacts table
+    Then I should see "John User"

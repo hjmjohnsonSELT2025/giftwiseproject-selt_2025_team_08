@@ -1,230 +1,299 @@
-<div>
-  <h1><%= @event.name %></h1>
-  
-  <div>
-    <% if @event.theme.present? %>
-      <div>
-        <strong>Theme:</strong>
-        <%= @event.theme %>
-      </div>
-    <% end %>
-
-    <% if @event.start_at && @event.end_at %>
-      <div>
-        <strong>Date/Time:</strong>
-        <%= l(@event.start_at, format: :short) %> - <%= l(@event.end_at, format: :short) %>
-      </div>
-    <% end %>
-    
-    <% if @event.location.present? %>
-      <div>
-        <strong>Location:</strong>
-        <%= @event.location %>
-      </div>
-    <% end %>
-    
-    <% if @event.description.present? %>
-      <div>
-        <strong>Description:</strong>
-        <%= @event.description %>
-      </div>
-    <% end %>
-  </div>
-
-  <% if @is_creator %>
-    <%= link_to 'Edit', edit_event_path(@event) %>
-  <% end %>
-  <%= link_to 'Back to Event List', events_path %>
-</div>
-
-<hr>
-
-<% if @can_see_gift_section %>
-<!-- Recipients Overview - Only visible to creators and attendees -->
-<div style="margin-bottom: 30px;">
-  <h2>Recipients & Gifts</h2>
-  <div id="recipients-overview" style="display: grid; gap: 15px;">
-    <% @event.recipients.each do |recipient| %>
-      <div style="border: 1px solid #ddd; padding: 15px; border-radius: 4px; background-color: #f9f9f9;">
-        <h3><%= "#{recipient.first_name} #{recipient.last_name}" %></h3>
-        <div id="gifts-for-<%= recipient.id %>" style="margin-top: 10px;">
-          <p><em>Loading gifts...</em></p>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3"><%= @event.name %></h1>
+          <p class="lead text-white-50">View event details and manage gifts</p>
+          <div class="button-group">
+            <% if @is_creator %>
+              <a href="<%= edit_event_path(@event) %>" class="btn btn-outline-solid me-2">Edit Event</a>
+            <% end %>
+            <a href="<%= events_path %>" class="btn btn-outline-solid me-2">Back to Events</a>
+            <%= link_to 'All Participants Discussion', event_discussions_path(@event, thread_type: 'public'), class: 'btn btn-outline-solid me-2' %>
+            <% if @is_creator || @is_attendee %>
+              <%= link_to 'Contributors Discussion', event_discussions_path(@event, thread_type: 'contributors_only'), class: 'btn btn-outline-solid' %>
+            <% end %>
+          </div>
         </div>
       </div>
-    <% end %>
-  </div>
-</div>
+    </div>
+  </section>
 
-<hr>
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-lg-8">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#eventDetailsCollapse">
+            <h2 class="mb-0">
+              Event Details
+              <i class="bi bi-chevron-down float-end"></i>
+            </h2>
+          </div>
+          <div class="collapse show" id="eventDetailsCollapse">
+            <div class="card-body">
+              <% if @event.theme.present? %>
+                <div class="mb-3">
+                  <small class="text-white-50">Theme</small>
+                  <p class="mb-0" style="color: #e5e5e5;"><%= @event.theme %></p>
+                </div>
+              <% end %>
 
-<% end %>
-
-<% if @can_see_gift_section %>
-  <div>
-    <h2>Gift Idea Generation</h2>
-    
-    <!-- Select Recipient -->
-    <div>
-      <label for="recipient-select">Select Recipient:</label>
-      <select id="recipient-select">
-        <option value="">-- Choose a recipient --</option>
-        <% @event.recipients.each do |recipient| %>
-          <option value="<%= recipient.id %>"><%= "#{recipient.first_name} #{recipient.last_name}" %></option>
-        <% end %>
-      </select>
+              <% if @event.start_at && @event.end_at %>
+                <div class="mb-3">
+                  <small class="text-white-50">Date & Time</small>
+                  <p class="mb-0" style="color: #e5e5e5;"><%= l(@event.start_at, format: :short) %> - <%= l(@event.end_at, format: :short) %></p>
+                </div>
+              <% end %>
+              
+              <% if @event.location.present? %>
+                <div class="mb-3">
+                  <small class="text-white-50">Location</small>
+                  <p class="mb-0" style="color: #e5e5e5;"><%= @event.location %></p>
+                </div>
+              <% end %>
+              
+              <% if @event.description.present? %>
+                <div>
+                  <small class="text-white-50">Description</small>
+                  <p class="mb-0" style="color: #e5e5e5;"><%= @event.description %></p>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Recipient Details (shown after selection) -->
-    <div id="recipient-details" style="display:none; margin-top: 20px;">
-      
-      <!-- Previous Gifts (Collapsible) -->
-      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('previous-gifts-section')">
-          <span id="previous-gifts-toggle">▼</span> Previous Gifts for <span id="recipient-name"></span>
-        </div>
-        <div id="previous-gifts-section" style="padding: 15px; display: block;">
-          <div id="previous-gifts-list"></div>
-        </div>
-      </div>
-
-      <!-- Saved Ideas (Collapsible) -->
-      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('favorited-ideas-section')">
-          <span id="favorited-ideas-toggle">▼</span> Saved Gift Ideas for <span id="recipient-name-fav"></span>
-        </div>
-        <div id="favorited-ideas-section" style="padding: 15px; display: block;">
-          <div id="favorited-ideas-list"></div>
-        </div>
-      </div>
-
-      <!-- Wish List Items (Collapsible) -->
-      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('wish-list-items-section')">
-          <span id="wish-list-items-toggle">▼</span> Wish List for <span id="recipient-name-wish"></span>
-        </div>
-        <div id="wish-list-items-section" style="padding: 15px; display: block;">
-          <div id="wish-list-items-list"></div>
-        </div>
-      </div>
-
-      <!-- Generate New Ideas (Collapsible) -->
-      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generate-ideas-section')">
-          <span id="generate-ideas-toggle">▼</span> Generate New Gift Ideas
-        </div>
-        <div id="generate-ideas-section" style="padding: 15px; display: block;">
-          <div style="margin-bottom: 10px;">
-            <label for="price-range">Price Range ($):</label>
-            <input type="number" id="price-min" placeholder="Min" style="width: 80px;" min="0">
-            -
-            <input type="number" id="price-max" placeholder="Max" style="width: 80px;" min="0">
-          </div>
-
-          <div style="margin-bottom: 10px;">
-            <label for="num-ideas">Number of Ideas (1-10):</label>
-            <input type="number" id="num-ideas" value="3" min="1" max="10">
-          </div>
-
-          <% if @event.theme.present? %>
-            <div style="margin-bottom: 10px;">
-              <label>
-                <input type="checkbox" id="use-theme-checkbox" checked>
-                Use Event Theme in Generation (<%= @event.theme %>)
-              </label>
+  <% if @can_see_gift_section %>
+    <div class="row">
+      <div class="col-12">
+        <!-- Recipients Overview -->
+        <h2 class="mb-3">Recipients & Gifts</h2>
+        <div class="row" id="recipients-overview">
+          <% @event.recipients.each do |recipient| %>
+            <div class="col-lg-6 mb-3">
+              <div class="card" style="background-color: #2a2a2a; border-color: #444;">
+                <div class="card-header" style="background-color: #667eea; border: none;">
+                  <h5 class="mb-0"><%= "#{recipient.first_name} #{recipient.last_name}" %></h5>
+                </div>
+                <div class="card-body">
+                  <div id="gifts-for-<%= recipient.id %>">
+                    <p class="text-white-50"><em>No gift recorded yet</em></p>
+                  </div>
+                </div>
+              </div>
             </div>
           <% end %>
-
-          <button id="generate-ideas-btn">Generate Ideas</button>
         </div>
       </div>
+    </div>
 
-      <!-- Generated Ideas (Collapsible) -->
-      <div id="generated-ideas" style="display:none; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('generated-ideas-section')">
-          <span id="generated-ideas-toggle">▼</span> Generated Gift Ideas
-        </div>
-        <div id="generated-ideas-section" style="padding: 15px; display: block;">
-          <div id="ideas-list"></div>
-        </div>
-      </div>
+    <hr style="border-color: #444; margin: 2rem 0;">
 
-      <!-- Manual Entry (Collapsible) -->
-      <div style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px;">
-        <div style="padding: 10px; background-color: #f0f0f0; cursor: pointer; font-weight: bold;" onclick="toggleSection('manual-entry-section')">
-          <span id="manual-entry-toggle">▼</span> Manually Add Gift Idea
-        </div>
-        <div id="manual-entry-section" style="padding: 15px; display: block;">
-          <textarea id="manual-idea" placeholder="Enter a gift idea..." style="width: 100%; height: 80px; margin-bottom: 10px;"></textarea>
-          <div style="margin-bottom: 10px;">
-            <label for="manual-price">Price ($):</label>
-            <input type="number" id="manual-price" placeholder="0.00" style="width: 100px;" min="0" step="0.01">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-3">Gift Ideas</h2>
+        <div class="card" style="background-color: #2a2a2a; border-color: #444; margin-bottom: 4rem;">
+          <div class="card-body">
+          <!-- Select Recipient -->
+          <div class="mb-3">
+            <select id="recipient-select" class="form-select" style="background-color: #1a1a1a; border-color: #444; color: #e5e5e5; padding: 0.375rem 0.75rem; line-height: 1.5; height: auto;">
+              <option value="" style="background-color: #1a1a1a; color: #e5e5e5;">Select a recipient</option>
+              <% @event.recipients.each do |recipient| %>
+                <option value="<%= recipient.id %>" style="background-color: #1a1a1a; color: #e5e5e5;"><%= "#{recipient.first_name} #{recipient.last_name}" %></option>
+              <% end %>
+            </select>
           </div>
-          <div style="margin-bottom: 10px;">
-            <label for="manual-link">Product Link:</label>
-            <input type="url" id="manual-link" placeholder="https://example.com/product" style="width: 100%;">
+
+          <!-- Recipient Details (shown after selection) -->
+          <div id="recipient-details" style="display:none;">
+            
+            <!-- Previous Gifts (Accordion) -->
+            <div class="accordion mb-3" id="giftAccordion">
+              <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#previousGifts" style="background-color: #667eea; color: white;">
+                    Previous Gifts for&nbsp;<span id="recipient-name"></span>
+                  </button>
+                </h2>
+                <div id="previousGifts" class="accordion-collapse collapse">
+                  <div class="accordion-body" style="background-color: #1a1a1a;">
+                    <div id="previous-gifts-list"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#savedIdeas" style="background-color: #667eea; color: white;">
+                    Saved Gift Ideas for&nbsp;<span id="recipient-name-fav"></span>
+                  </button>
+                </h2>
+                <div id="savedIdeas" class="accordion-collapse collapse">
+                  <div class="accordion-body" style="background-color: #1a1a1a;">
+                    <div id="favorited-ideas-list"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#wishList" style="background-color: #667eea; color: white;">
+                    Wish List for&nbsp;<span id="recipient-name-wish"></span>
+                  </button>
+                </h2>
+                <div id="wishList" class="accordion-collapse collapse">
+                  <div class="accordion-body" style="background-color: #1a1a1a;">
+                    <div id="wish-list-items-list"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#generateIdeas" style="background-color: #667eea; color: white;">
+                    Generate New Gift Ideas
+                  </button>
+                </h2>
+                <div id="generateIdeas" class="accordion-collapse collapse">
+                  <div class="accordion-body" style="background-color: #1a1a1a;">
+                    <div class="mb-3">
+                      <label for="price-min" class="form-label">Price Range ($):</label>
+                      <div class="input-group">
+                        <input type="number" id="price-min" placeholder="Min" class="form-control" style="width: 80px;" min="0">
+                        <span class="input-group-text" style="background-color: #2a2a2a; border-color: #444; color: #e5e5e5;">-</span>
+                        <input type="number" id="price-max" placeholder="Max" class="form-control" style="width: 80px;" min="0">
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="num-ideas" class="form-label">Number of Ideas (1-10):</label>
+                      <input type="number" id="num-ideas" value="3" class="form-control" min="1" max="10">
+                    </div>
+
+                    <% if @event.theme.present? %>
+                      <div class="mb-3 form-check">
+                        <input type="checkbox" id="use-theme-checkbox" class="form-check-input" checked>
+                        <label class="form-check-label" for="use-theme-checkbox">
+                          Use Event Theme in Generation (<%= @event.theme %>)
+                        </label>
+                      </div>
+                    <% end %>
+
+                    <button id="generate-ideas-btn" class="btn btn-outline-solid">Generate Ideas</button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="generated-ideas" style="display:none;">
+                <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#generatedIdeasList" style="background-color: #667eea; color: white;">
+                      Generated Gift Ideas
+                    </button>
+                  </h2>
+                  <div id="generatedIdeasList" class="accordion-collapse collapse">
+                    <div class="accordion-body" style="background-color: #1a1a1a;">
+                      <div id="ideas-list"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item" style="background-color: #2a2a2a; border-color: #444;">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#manualEntry" style="background-color: #667eea; color: white;">
+                    Manually Add Gift Idea
+                  </button>
+                </h2>
+                <div id="manualEntry" class="accordion-collapse collapse">
+                  <div class="accordion-body" style="background-color: #1a1a1a;">
+                    <div class="mb-3">
+                      <label for="manual-idea" class="form-label">Gift Idea:</label>
+                      <textarea id="manual-idea" placeholder="Enter a gift idea..." class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                      <label for="manual-price" class="form-label">Price ($):</label>
+                      <input type="number" id="manual-price" placeholder="0.00" class="form-control" min="0" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                      <label for="manual-link" class="form-label">Product Link:</label>
+                      <input type="url" id="manual-link" placeholder="https://example.com/product" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                      <label for="manual-note" class="form-label">Note:</label>
+                      <textarea id="manual-note" placeholder="Short note about this product..." class="form-control" rows="2" maxlength="255"></textarea>
+                      <small id="note-char-count" class="text-white-50">0/255</small>
+                    </div>
+                    <button id="add-manual-idea-btn" class="btn btn-outline-solid">Add Idea</button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div style="margin-bottom: 10px;">
-            <label for="manual-note">Note:</label>
-            <textarea id="manual-note" placeholder="Short note about this product..." style="width: 100%; height: 60px; max-length: 255;" maxlength="255"></textarea>
-            <small id="note-char-count" style="color: #666;">0/255</small>
-          </div>
-          <button id="add-manual-idea-btn">Add Idea</button>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 <!-- Edit Modal -->
-<div id="edit-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4);">
-  <div style="background-color:#fefefe; margin:10% auto; padding:20px; border:1px solid #888; width:90%; max-width:500px; border-radius:4px;">
-    <span style="color:#aaa; float:right; font-size:28px; font-weight:bold; cursor:pointer;" onclick="closeEditModal()">&times;</span>
-    <h2 style="margin-top:0;">Edit Gift Idea</h2>
+<div id="edit-modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7);">
+  <div style="background-color:#2a2a2a; margin:10% auto; padding:30px; border:1px solid #444; width:90%; max-width:500px; border-radius:8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+    <span style="color:#999; float:right; font-size:28px; font-weight:bold; cursor:pointer;" onclick="closeEditModal()">&times;</span>
+    <h2 style="margin-top:0; color:#e5e5e5;">Edit Gift Idea</h2>
     
     <form id="edit-form" onsubmit="event.preventDefault(); saveEditedItem();">
       <div style="margin-bottom: 15px;">
-        <label for="edit-idea">Gift Idea:</label>
-        <textarea id="edit-idea" style="width: 100%; height: 60px; margin-top: 5px;"></textarea>
+        <label for="edit-idea" style="color: #e5e5e5;">Gift Idea:</label>
+        <textarea id="edit-idea" style="width: 100%; height: 60px; margin-top: 5px; background-color: #1a1a1a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px; padding: 8px;"></textarea>
       </div>
       
       <div style="margin-bottom: 15px;">
-        <label for="edit-price">Price ($):</label>
-        <input type="number" id="edit-price" placeholder="0.00" style="width: 100%; margin-top: 5px;" min="0" step="0.01">
+        <label for="edit-price" style="color: #e5e5e5;">Price ($):</label>
+        <input type="number" id="edit-price" placeholder="0.00" style="width: 100%; margin-top: 5px; background-color: #1a1a1a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px; padding: 8px;" min="0" step="0.01">
       </div>
       
       <div id="edit-link-field" style="margin-bottom: 15px;">
-        <label for="edit-link">Product Link:</label>
-        <input type="url" id="edit-link" placeholder="https://example.com/product" style="width: 100%; margin-top: 5px;">
+        <label for="edit-link" style="color: #e5e5e5;">Product Link:</label>
+        <input type="url" id="edit-link" placeholder="https://example.com/product" style="width: 100%; margin-top: 5px; background-color: #1a1a1a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px; padding: 8px;">
       </div>
       
       <div id="edit-note-field" style="margin-bottom: 15px;">
-        <label for="edit-note">Note:</label>
-        <textarea id="edit-note" style="width: 100%; height: 60px; margin-top: 5px; max-length: 255;" maxlength="255"></textarea>
-        <small id="edit-note-char-count" style="color: #666;">0/255</small>
+        <label for="edit-note" style="color: #e5e5e5;">Note:</label>
+        <textarea id="edit-note" style="width: 100%; height: 60px; margin-top: 5px; background-color: #1a1a1a; color: #e5e5e5; border: 1px solid #444; border-radius: 4px; padding: 8px; max-length: 255;" maxlength="255"></textarea>
+        <small id="edit-note-char-count" style="color: #999;">0/255</small>
       </div>
       
       <div style="text-align: right;">
-        <button type="button" onclick="closeEditModal()" style="padding: 8px 15px; margin-right: 10px; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
-        <button type="submit" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
+        <button type="button" onclick="closeEditModal()" style="padding: 8px 15px; margin-right: 10px; background-color: #444; border: 1px solid #555; border-radius: 4px; cursor: pointer; color: #e5e5e5;">Cancel</button>
+        <button type="submit" style="padding: 8px 15px; background-color: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Changes</button>
       </div>
     </form>
   </div>
 </div>
 
-<hr>
-
-<% end %>
-
-  <div>
-    <h2>Discussion</h2>
-    <div style="display: flex; gap: 15px; margin-top: 15px;">
-      <%= link_to 'All Participants Discussion', event_discussions_path(@event, thread_type: 'public'), style: 'padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer;' %>
-      
-      <% if @is_creator || @is_attendee %>
-        <%= link_to 'Contributors Discussion', event_discussions_path(@event, thread_type: 'contributors_only'), style: 'padding: 10px 15px; background-color: #6c757d; color: white; text-decoration: none; border-radius: 4px; border: none; cursor: pointer;' %>
-      <% end %>
+<!-- Confirm Remove Gift Modal -->
+<div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmRemoveLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background-color: #2a2a2a; border-color: #444;">
+      <div class="modal-header" style="background-color: #667eea; border-color: #444;">
+        <h1 class="modal-title fs-5" id="confirmRemoveLabel" style="color: white;">Remove Gift</h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="color: #e5e5e5;">
+        Are you sure you want to remove this gift?
+      </div>
+      <div class="modal-footer" style="border-color: #444;">
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-outline-danger" id="confirmRemoveBtn">Remove</button>
+      </div>
     </div>
   </div>
+</div>
+
+<% end %>
 
 <script>
   window.toggleSection = function(sectionId) {
@@ -240,11 +309,34 @@
     }
   };
 
+  window.showAlert = function(message, type = 'success', dismissible = true) {
+    const alertContainer = document.querySelector('.container-fluid');
+    if (!alertContainer) return;
+    
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+      ${message}
+      ${dismissible ? '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' : ''}
+    `;
+    
+    alertContainer.insertBefore(alertDiv, alertContainer.firstChild);
+    if (dismissible) {
+      setTimeout(() => {
+        const bsAlert = new bootstrap.Alert(alertDiv);
+        bsAlert.close();
+      }, 5000);
+    }
+  };
+
   function loadAllCurrentGifts() {
     const recipientsOverview = document.getElementById('recipients-overview');
     if (!recipientsOverview) return;
 
     const recipientDivs = recipientsOverview.querySelectorAll('[id^="gifts-for-"]');
+    const statuses = ['idea', 'backlogged', 'purchased', 'delivered', 'wrapped', 'liked'];
+    
     recipientDivs.forEach(div => {
       const recipientId = div.id.replace('gifts-for-', '');
       fetch(`/recipients/${recipientId}/data.json`)
@@ -255,18 +347,25 @@
           return response.json();
         })
         .then(data => {
-          const currentGift = data.previous_gifts && data.previous_gifts.length > 0 
-            ? data.previous_gifts[data.previous_gifts.length - 1]
-            : null;
+          const currentGift = data.previous_gifts && data.previous_gifts.find(gift => !gift.deleted_at)
+            ? data.previous_gifts.find(gift => !gift.deleted_at) : null;
           
           if (currentGift) {
             div.innerHTML = `
-              <strong>Current Gift:</strong> ${currentGift.idea}
-              <div style="font-size: 0.9em; color: #666;">
-                Date: ${currentGift.gift_date || 'N/A'}
-              </div>
-              <div style="font-size: 0.9em; color: #666;">
-                Status: <span style="font-weight: bold; color: #007bff;">${currentGift.status ? currentGift.status.charAt(0).toUpperCase() + currentGift.status.slice(1) : 'N/A'}</span>
+              <div style="display: flex; align-items: flex-start; gap: 15px;">
+                <div style="flex: 1;">
+                  <p style="margin: 0; font-weight: bold; color: #e5e5e5;">${currentGift.idea}</p>
+                  <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #999;">Date: ${currentGift.gift_date || 'N/A'}</p>
+                  <div style="margin-top: 8px;">
+                    <label style="font-size: 0.9em; margin-right: 8px; color: #999;">Status:</label>
+                    <select onchange="updateGiftStatus(${currentGift.id}, this.value, 'gift')" style="padding: 4px 8px; border: 1px solid #444; border-radius: 3px; cursor: pointer; font-size: 0.85em; background-color: #2a2a2a; color: #e5e5e5;">
+                      ${statuses.map(status => `
+                        <option value="${status}" ${currentGift.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
+                      `).join('')}
+                    </select>
+                  </div>
+                </div>
+                <button onclick="removeGift(${currentGift.id})" class="btn btn-outline-danger btn-sm" style="white-space: nowrap;">Remove</button>
               </div>
             `;
           } else {
@@ -280,31 +379,53 @@
     });
   }
 
-  let pageInitialized = false;
+  if (typeof window.pageInitialized === 'undefined') {
+    window.pageInitialized = false;
+  }
+
+  window.selectedRecipient = null;
 
   function setupPage() {
-    if (pageInitialized) return;
-    pageInitialized = true;
-
     const recipientSelect = document.getElementById('recipient-select');
+    if (!recipientSelect) return;
+    
     const recipientDetails = document.getElementById('recipient-details');
     const generateIdeasBtn = document.getElementById('generate-ideas-btn');
     const addManualIdeaBtn = document.getElementById('add-manual-idea-btn');
     const manualIdeaInput = document.getElementById('manual-idea');
     const recipientNameSpans = document.querySelectorAll('#recipient-name, #recipient-name-fav, #recipient-name-wish');
-    let selectedRecipient = null;
+    window.selectedRecipient = recipientSelect.value ? recipientSelect.value : null;
 
-    recipientSelect.addEventListener('change', function() {
+    const newSelect = recipientSelect.cloneNode(true);
+    recipientSelect.parentNode.replaceChild(newSelect, recipientSelect);
+    
+    const newAddManualIdeaBtn = addManualIdeaBtn.cloneNode(true);
+    addManualIdeaBtn.parentNode.replaceChild(newAddManualIdeaBtn, addManualIdeaBtn);
+    const newGenerateIdeasBtn = generateIdeasBtn.cloneNode(true);
+    generateIdeasBtn.parentNode.replaceChild(newGenerateIdeasBtn, generateIdeasBtn);
+    
+    const addManualIdeaBtnRef = newAddManualIdeaBtn;
+    const generateIdeasBtnRef = newGenerateIdeasBtn;
+    
+    if (window.selectedRecipient) {
+      recipientNameSpans.forEach(span => {
+        span.textContent = newSelect.options[newSelect.selectedIndex].text;
+      });
+      recipientDetails.style.display = 'block';
+      loadRecipientData(window.selectedRecipient);
+    }
+    
+    newSelect.addEventListener('change', function() {
       if (this.value) {
-        selectedRecipient = this.value;
+        window.selectedRecipient = this.value;
         recipientNameSpans.forEach(span => {
           span.textContent = this.options[this.selectedIndex].text;
         });
         recipientDetails.style.display = 'block';
-        loadRecipientData(selectedRecipient);
+        loadRecipientData(window.selectedRecipient);
       } else {
         recipientDetails.style.display = 'none';
-        selectedRecipient = null;
+        window.selectedRecipient = null;
       }
     });
 
@@ -321,52 +442,50 @@
 
     function displayPreviousGifts(gifts) {
       const list = document.getElementById('previous-gifts-list');
-      const statuses = ['idea', 'backlogged', 'purchased', 'delivered', 'wrapped', 'liked'];
       if (gifts.length === 0) {
-        list.innerHTML = '<p>No previous gifts recorded.</p>';
+        list.innerHTML = '<p style="color: #e5e5e5;">No previous gifts recorded.</p>';
       } else {
-        list.innerHTML = gifts.map(gift => `
-          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd;">
-            <p><strong>${gift.idea}</strong></p>
-            <p>Price: $${gift.price || 'N/A'}</p>
-            <p>Date: ${gift.gift_date || 'N/A'}</p>
-            <div style="margin-top: 8px; margin-bottom: 8px;">
-              <label style="font-size: 0.9em; margin-right: 8px;">Status:</label>
-              <select onchange="updateGiftStatus(${gift.id}, this.value, 'gift')" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; font-size: 0.9em;">
-                ${statuses.map(status => `
-                  <option value="${status}" ${gift.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
-                `).join('')}
-              </select>
+        list.innerHTML = gifts.map(gift => {
+          const isDeleted = gift.deleted_at !== null && gift.deleted_at !== undefined;
+          const textStyle = isDeleted ? 'text-decoration: line-through; color: #666;' : 'color: #e5e5e5;';
+          const bgStyle = isDeleted ? 'background-color: #0f0f0f;' : 'background-color: #1a1a1a;';
+          const deletedLabel = isDeleted ? ' <span style="color: #999; font-size: 0.8em; margin-left: 8px;">(deleted)</span>' : '';
+          
+          return `
+            <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border: 1px solid ${isDeleted ? '#333' : '#444'}; border-radius: 4px; ${bgStyle} gap: 15px;">
+              <div style="flex: 1;">
+                <p style="margin: 0; font-weight: bold; ${textStyle}">${gift.idea}${deletedLabel}</p>
+                <p style="margin: 5px 0 0 0; color: #999; font-size: 0.9em;">Date: ${gift.gift_date || 'N/A'}</p>
+              </div>
+              <div style="text-align: right; color: #999; font-size: 0.9em; white-space: nowrap;">
+                ${gift.price ? `<p style="margin: 0;">$${gift.price}</p>` : '<p style="margin: 0;">Price N/A</p>'}
+              </div>
             </div>
-            <button onclick="openEditModal('gift', ${gift.id}, '${gift.idea.replace(/'/g, "\\'")}'，${gift.price || null}, null, null)">Edit</button>
-          </div>
-        `).join('');
+          `;
+        }).join('');
       }
     }
 
     function displayFavoritedIdeas(ideas) {
       const list = document.getElementById('favorited-ideas-list');
-      const statuses = ['idea', 'backlogged', 'purchased', 'delivered', 'wrapped', 'liked'];
       if (ideas.length === 0) {
-        list.innerHTML = '<p>No saved ideas yet.</p>';
+        list.innerHTML = '<p style="color: #e5e5e5;">No saved ideas yet.</p>';
       } else {
         list.innerHTML = ideas.map(idea => `
-          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd;">
-            <p><strong>${idea.idea}</strong></p>
-            <p>Price: $${idea.estimated_price || 'N/A'}</p>
-            ${idea.link ? `<p>Link: <a href="${idea.link}" target="_blank">${idea.link}</a></p>` : ''}
-            ${idea.note ? `<p>Note: ${idea.note}</p>` : ''}
-            <div style="margin-top: 8px; margin-bottom: 8px;">
-              <label style="font-size: 0.9em; margin-right: 8px;">Status:</label>
-              <select onchange="updateGiftStatus(${idea.id}, this.value, 'idea')" style="padding: 4px 8px; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; font-size: 0.9em;">
-                ${statuses.map(status => `
-                  <option value="${status}" ${idea.status === status ? 'selected' : ''}>${status.charAt(0).toUpperCase() + status.slice(1)}</option>
-                `).join('')}
-              </select>
+          <div style="display: flex; align-items: flex-start; margin-bottom: 10px; padding: 10px; border: 1px solid #444; border-radius: 4px; background-color: #1a1a1a; gap: 15px;">
+            <div style="flex: 1;">
+              <p style="margin: 0; color: #e5e5e5; font-weight: bold;">${idea.idea}</p>
+              ${idea.link ? `<p style="margin: 5px 0 0 0; color: #999; font-size: 0.9em;">Link: <a href="${idea.link}" target="_blank" style="color: #667eea; text-decoration: none;">View</a></p>` : ''}
+              ${idea.note ? `<p style="margin: 5px 0 0 0; color: #999; font-size: 0.9em;">Note: ${idea.note}</p>` : ''}
             </div>
-            <button onclick="openEditModal('idea', ${idea.id}, '${idea.idea.replace(/'/g, "\\'")}', ${idea.estimated_price || null}, '${(idea.link || '').replace(/'/g, "\\'")}', '${(idea.note || '').replace(/'/g, "\\'")}')">Edit</button>
-            <button onclick="addGiftForRecipient(${idea.id}, ${selectedRecipient})">Add as Gift</button>
-            <button onclick="unfavoriteIdea(${idea.id})">Unfavorite</button>
+            <div style="text-align: right; color: #999; font-size: 0.9em; white-space: nowrap;">
+              ${idea.estimated_price ? `<p style="margin: 0;">$${parseFloat(idea.estimated_price).toFixed(2)}</p>` : '<p style="margin: 0;">Price N/A</p>'}
+            </div>
+            <div style="display: flex; gap: 8px; white-space: nowrap;">
+              <button onclick="openEditModal('idea', ${idea.id}, '${idea.idea.replace(/'/g, "\\'")}', ${idea.estimated_price || null}, '${(idea.link || '').replace(/'/g, "\\'")}', '${(idea.note || '').replace(/'/g, "\\'")}');" class="btn btn-outline-solid btn-sm">Edit</button>
+              <button onclick="addGiftForRecipient(${idea.id}, ${window.selectedRecipient})" class="btn btn-outline-solid btn-sm">Add as Gift</button>
+              <button onclick="unfavoriteIdea(${idea.id})" class="btn btn-outline-danger btn-sm">Remove</button>
+            </div>
           </div>
         `).join('');
       }
@@ -377,23 +496,26 @@
       if (!list) return;
       
       if (items.length === 0) {
-        list.innerHTML = '<p>No wish list items available.</p>';
+        list.innerHTML = '<p style="color: #e5e5e5;">No wish list items available.</p>';
       } else {
         list.innerHTML = items.map(item => `
-          <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; background-color: #fff9e6;">
-            <p><strong>${item.name}</strong></p>
-            ${item.description ? `<p><em>${item.description}</em></p>` : ''}
-            <p>Price: $${item.price ? Number(item.price).toFixed(2) : 'Not specified'}</p>
-            ${item.url ? `<p>Link: <a href="${item.url}" target="_blank">View Product</a></p>` : ''}
-            <button onclick="addFromWishList('${item.name.replace(/'/g, "\\'")}', ${item.price || null})">Add as Gift</button>
+          <div style="display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border: 1px solid #444; border-radius: 4px; background-color: #1a1a1a; gap: 15px;">
+            <div style="flex: 1;">
+              <p style="margin: 0; color: #e5e5e5; font-weight: bold;">${item.name}</p>
+              ${item.description ? `<p style="margin: 5px 0 0 0; color: #999; font-size: 0.9em;">${item.description}</p>` : ''}
+            </div>
+            <div style="text-align: right; color: #999; font-size: 0.9em; white-space: nowrap;">
+              ${item.price ? `<p style="margin: 0;">$${Number(item.price).toFixed(2)}</p>` : '<p style="margin: 0;">Price N/A</p>'}
+            </div>
+            <button onclick="addFromWishList('${item.name.replace(/'/g, "\\'")}', ${item.price || null})" class="btn btn-outline-solid btn-sm" style="white-space: nowrap;">Save Gift Idea</button>
           </div>
         `).join('');
       }
     }
 
-    generateIdeasBtn.addEventListener('click', function() {
-      if (!selectedRecipient) {
-        alert('Please select a recipient first');
+    generateIdeasBtnRef.addEventListener('click', function() {
+      if (!window.selectedRecipient) {
+        showAlert('Please select a recipient first', 'warning');
         return;
       }
 
@@ -403,10 +525,10 @@
       const useThemeCheckbox = document.getElementById('use-theme-checkbox');
       const useTheme = useThemeCheckbox ? useThemeCheckbox.checked : false;
 
-      generateIdeasBtn.disabled = true;
-      generateIdeasBtn.textContent = 'Generating...';
+      generateIdeasBtnRef.disabled = true;
+      generateIdeasBtnRef.textContent = 'Generating...';
 
-      fetch(`/recipients/${selectedRecipient}/generate_ideas.json`, {
+      fetch(`/recipients/${window.selectedRecipient}/generate_ideas.json`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -421,52 +543,67 @@
       })
       .then(response => response.json())
       .then(data => {
+        console.log('Generated ideas data:', data);
         displayGeneratedIdeas(data.ideas);
         document.getElementById('generated-ideas').style.display = 'block';
+        const accordion = document.getElementById('generatedIdeasList');
+        if (accordion) {
+          accordion.classList.add('show');
+        }
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error generating ideas');
+        showAlert('Error generating ideas', 'danger');
       })
       .finally(() => {
-        generateIdeasBtn.disabled = false;
-        generateIdeasBtn.textContent = 'Generate Ideas';
+        generateIdeasBtnRef.disabled = false;
+        generateIdeasBtnRef.textContent = 'Generate Ideas';
       });
     });
 
     function displayGeneratedIdeas(ideas) {
       const list = document.getElementById('ideas-list');
-      list.innerHTML = ideas.map((idea, index) => `
-        <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #ddd;">
-          <p><strong>Idea ${index + 1}:</strong> ${idea}</p>
-          <button onclick="saveIdeaForLater(${selectedRecipient}, '${idea.replace(/'/g, "\\'")}')">Save for Later</button>
-          <button onclick="addGiftDirectly(${selectedRecipient}, '${idea.replace(/'/g, "\\'")}')">Add as Gift</button>
-        </div>
-      `).join('');
+      list.innerHTML = ideas.map((ideaObj, index) => {
+        let ideaText = typeof ideaObj === 'string' ? ideaObj : ideaObj.idea;
+        let price = typeof ideaObj === 'string' ? null : ideaObj.estimated_price;
+        
+        const cleanIdea = ideaText.replace(/\*\*/g, '').replace(/^[\d]+\.\s*/, '');
+        const priceDisplay = price ? `$${parseFloat(price).toFixed(2)}` : 'Price: N/A';
+        
+        return `
+          <div style="margin-bottom: 15px; padding: 15px; border: 1px solid #444; border-radius: 4px; background-color: #1a1a1a;">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 10px;">
+              <div style="flex: 1;">
+                <p style="margin: 0 0 5px 0; color: #e5e5e5;"><strong>Idea ${index + 1}:</strong> ${cleanIdea}</p>
+                <p style="margin: 0; color: #999; font-size: 0.9em;">Estimated Price: ${priceDisplay}</p>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button onclick="saveIdeaForLater(${window.selectedRecipient}, '${cleanIdea.replace(/'/g, "\\'")}', ${price || 'null'});" class="btn btn-outline-solid btn-sm">Save for Later</button>
+              <button onclick="addGiftDirectly(${window.selectedRecipient}, '${cleanIdea.replace(/'/g, "\\'")}', ${price || 'null'});" class="btn btn-outline-solid btn-sm">Add as Gift</button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    addManualIdeaBtn.addEventListener('click', function() {
-      if (!selectedRecipient) {
-        alert('Please select a recipient first');
+    addManualIdeaBtnRef.addEventListener('click', function() {
+      if (!window.selectedRecipient) {
+        showAlert('Please select a recipient first', 'warning');
         return;
       }
 
-      const idea = manualIdeaInput.value.trim();
+      const ideaText = manualIdeaInput.value.trim();
       const price = document.getElementById('manual-price').value;
       const link = document.getElementById('manual-link').value.trim();
       const note = document.getElementById('manual-note').value.trim();
       
-      if (!idea) {
-        alert('Please enter a gift idea');
+      if (!ideaText) {
+        showAlert('Please enter a gift idea', 'warning');
         return;
       }
 
-      window.saveManualIdea(selectedRecipient, idea, price, link, note);
-      manualIdeaInput.value = '';
-      document.getElementById('manual-price').value = '';
-      document.getElementById('manual-link').value = '';
-      document.getElementById('manual-note').value = '';
-      document.getElementById('note-char-count').textContent = '0/255';
+      window.saveManualIdea(window.selectedRecipient, ideaText, price, link, note);
     });
 
     document.getElementById('manual-note').addEventListener('input', function() {
@@ -477,7 +614,7 @@
       document.getElementById('edit-note-char-count').textContent = `${this.value.length}/255`;
     });
 
-    window.saveIdeaForLater = function(recipientId, idea) {
+    window.saveIdeaForLater = function(recipientId, idea, price) {
       fetch(`/recipients/${recipientId}/gift_ideas`, {
         method: 'POST',
         headers: {
@@ -487,19 +624,20 @@
         body: JSON.stringify({
           gift_idea: {
             idea: idea,
+            estimated_price: price || null,
             favorited: true
           }
         })
       })
       .then(response => response.json())
       .then(data => {
-        alert('Idea saved for later!');
+        showAlert('Idea saved for later!', 'success');
         loadRecipientData(recipientId);
         loadAllCurrentGifts();
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error saving idea');
+        showAlert('Error saving idea', 'danger');
       });
     };
 
@@ -522,13 +660,18 @@
       })
       .then(response => response.json())
       .then(data => {
-        alert('Idea saved for later!');
+        showAlert('Gift Idea added to Saved Gifts', 'success');
+        manualIdeaInput.value = '';
+        document.getElementById('manual-price').value = '';
+        document.getElementById('manual-link').value = '';
+        document.getElementById('manual-note').value = '';
+        document.getElementById('note-char-count').textContent = '0/255';
         loadRecipientData(recipientId);
         loadAllCurrentGifts();
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error saving idea');
+        showAlert('Error saving idea', 'danger');
       });
     };
 
@@ -547,29 +690,87 @@
           }
         })
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(data => {
+            throw new Error(JSON.stringify(data.errors || 'Unknown error'));
+          });
+        }
+        return response.json();
+      })
       .then(data => {
-        alert('Gift added!');
+        showAlert('Gift added!', 'success');
         loadRecipientData(recipientId);
         loadAllCurrentGifts();
       })
       .catch(error => {
-        console.error('Error:', error);
-        alert('Error adding gift');
+        console.error('Error adding gift:', error);
+        showAlert('Error adding gift: ' + error.message, 'danger');
       });
     };
 
     window.addGiftForRecipient = function(ideaId, recipientId) {
-      fetch(`/gift_ideas/${ideaId}`)
-        .then(response => response.json())
-        .then(data => {
-          addGiftDirectly(recipientId, data.idea);
-          unfavoriteIdea(ideaId);
+      console.log('Adding gift for recipient:', recipientId, 'Idea:', ideaId);
+      
+      if (!recipientId) {
+        showAlert('Please select a recipient first', 'warning');
+        return;
+      }
+      
+      fetch(`/gift_ideas/${ideaId}/add_as_gift`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          recipient_id: recipientId
         })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error adding gift');
-        });
+      })
+      .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+          return response.json().then(data => {
+            console.error('Error response:', data);
+            throw new Error(JSON.stringify(data.errors || data.error || 'Unknown error'));
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Gift created:', data);
+        showAlert('Gift added!', 'success');
+        if (window.selectedRecipient) {
+          loadRecipientData(window.selectedRecipient);
+          const giftDiv = document.getElementById(`gifts-for-${recipientId}`);
+          if (giftDiv) {
+            giftDiv.innerHTML = `
+              <div style="display: flex; align-items: flex-start; gap: 15px;">
+                <div style="flex: 1;">
+                  <p style="margin: 0; font-weight: bold; color: #e5e5e5;">${data.idea}</p>
+                  <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #999;">Date: ${data.gift_date || 'N/A'}</p>
+                  <div style="margin-top: 8px;">
+                    <label style="font-size: 0.9em; margin-right: 8px; color: #999;">Status:</label>
+                    <select onchange="updateGiftStatus(${data.id}, this.value, 'gift')" style="padding: 4px 8px; border: 1px solid #444; border-radius: 3px; cursor: pointer; font-size: 0.85em; background-color: #2a2a2a; color: #e5e5e5;">
+                      <option value="idea" selected>Idea</option>
+                      <option value="backlogged">Backlogged</option>
+                      <option value="purchased">Purchased</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="wrapped">Wrapped</option>
+                      <option value="liked">Liked</option>
+                    </select>
+                  </div>
+                </div>
+                <button onclick="removeGift(${data.id})" class="btn btn-outline-danger btn-sm" style="white-space: nowrap;">Remove</button>
+              </div>
+            `;
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error adding gift:', error);
+        showAlert('Error adding gift: ' + error.message, 'danger');
+      });
     };
 
     window.unfavoriteIdea = function(ideaId) {
@@ -586,23 +787,76 @@
         })
       })
       .then(() => {
-        if (selectedRecipient) {
-          loadRecipientData(selectedRecipient);
+        if (window.selectedRecipient) {
+          loadRecipientData(window.selectedRecipient);
         }
         loadAllCurrentGifts();
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Error unfavoriting idea');
+        showAlert('Error unfavoriting idea', 'danger');
       });
+    };
+
+    window.removeGift = function(giftId) {
+      const modal = document.getElementById('confirmRemoveModal');
+      let confirmBtn = document.getElementById('confirmRemoveBtn');
+      
+      const handleConfirm = function() {
+        fetch(`/gifts_for_recipients/${giftId}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          }
+        })
+        .then(() => {
+          showAlert('Gift removed!', 'success');
+          const modalInstance = bootstrap.Modal.getInstance(modal);
+          if (modalInstance) modalInstance.hide();
+          sessionStorage.setItem('refreshEventsList', 'true');
+          loadAllCurrentGifts();
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showAlert('Error removing gift', 'danger');
+        });
+      };
+      
+      const newBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+      newBtn.addEventListener('click', handleConfirm);
+      new bootstrap.Modal(modal).show();
     };
 
     window.addFromWishList = function(itemName, itemPrice) {
       if (!selectedRecipient) {
-        alert('Please select a recipient first');
+        showAlert('Please select a recipient first', 'warning');
         return;
       }
-      addGiftDirectly(selectedRecipient, itemName, itemPrice);
+      
+      fetch(`/recipients/${selectedRecipient}/gift_ideas`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          gift_idea: {
+            idea: itemName,
+            estimated_price: itemPrice || null,
+            favorited: true
+          }
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        showAlert('Wish list item added to Saved Gift Ideas!', 'success');
+        loadRecipientData(selectedRecipient);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showAlert('Error adding wish list item', 'danger');
+      });
     };
 
     window.openEditModal = function(type, itemId, idea, price, link, note) {
@@ -647,7 +901,7 @@
       const note = document.getElementById('edit-note').value.trim();
       
       if (!idea) {
-        alert('Please enter a gift idea');
+        showAlert('Please enter a gift idea', 'warning');
         return;
       }
 
@@ -669,16 +923,16 @@
         })
         .then(response => response.json())
         .then(data => {
-          alert('Idea updated!');
+          showAlert('Idea updated!', 'success');
           closeEditModal();
-          if (selectedRecipient) {
-            loadRecipientData(selectedRecipient);
+          if (window.selectedRecipient) {
+            loadRecipientData(window.selectedRecipient);
           }
           loadAllCurrentGifts();
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Error updating idea');
+          showAlert('Error updating idea', 'danger');
         });
       }
     };
@@ -701,8 +955,8 @@
       })
       .then(response => response.json())
       .then(data => {
-        if (selectedRecipient) {
-          loadRecipientData(selectedRecipient);
+        if (window.selectedRecipient) {
+          loadRecipientData(window.selectedRecipient);
         }
       })
       .catch(error => {
@@ -717,7 +971,6 @@
       }
     });
 
-    // Load current gifts last, after all setup is complete
     loadAllCurrentGifts();
   }
 

@@ -62,7 +62,7 @@ class ContactsController < ApplicationController
     query = params[:q].to_s.downcase
     contacts = current_user.contact_users.where("LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ?", "%#{query}%", "%#{query}%")
     
-    render json: { contacts: contacts.map { |u| u.attributes.slice('id', 'first_name', 'last_name', 'occupation', 'hobbies', 'likes', 'dislikes', 'date_of_birth').merge(contact_user_id: u.id) } }
+    render json: { contacts: contacts.map { |u| { id: u.id, first_name: u.first_name, last_name: u.last_name, occupation: u.occupation, hobbies: u.hobbies, likes: u.likes, dislikes: u.dislikes, date_of_birth: u.date_of_birth } } }
   end
 
   private

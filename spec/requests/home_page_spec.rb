@@ -18,17 +18,17 @@ RSpec.describe 'Home Page', type: :request do
     it 'displays the home page successfully' do
       get root_path
       expect(response).to be_successful
-      expect(response.body).to include('Welcome to Gift Wise')
+      expect(response.body).to include('Welcome back')
     end
 
     it 'shows the user greeting with first name' do
       get root_path
-      expect(response.body).to include("Hello, #{user.first_name}!")
+      expect(response.body).to include("Welcome back, #{user.first_name}!")
     end
 
     it 'displays the quick gift generator section' do
       get root_path
-      expect(response.body).to include('Quick Gift Generation')
+      expect(response.body).to include('Gift Idea Generator')
     end
 
     it 'renders the correct template' do
@@ -48,7 +48,7 @@ RSpec.describe 'Home Page', type: :request do
     describe 'upcoming events this month' do
       it 'displays upcoming events section' do
         get root_path
-        expect(response.body).to include('Upcoming Events This Month')
+        expect(response.body).to include('Upcoming Events')
       end
 
       it 'shows events where user is the creator' do
@@ -77,7 +77,7 @@ RSpec.describe 'Home Page', type: :request do
 
       it 'shows no events message when there are no upcoming events' do
         get root_path
-        expect(response.body).to include('No upcoming events this month.')
+        expect(response.body).to include('No upcoming events this month')
       end
 
       it 'displays event details correctly' do
@@ -100,14 +100,14 @@ RSpec.describe 'Home Page', type: :request do
     it 'shows correct user first name for different users' do
       post session_path, params: { email: user.email, password: 'request123' }
       get root_path
-      expect(response.body).to include("Hello, #{user.first_name}!")
-      expect(response.body).not_to include("Hello, #{user_two.first_name}!")
+      expect(response.body).to include("Welcome back, #{user.first_name}!")
+      expect(response.body).not_to include("Welcome back, #{user_two.first_name}!")
 
       delete session_path
 
       post session_path, params: { email: user_two.email, password: 'another123' }
       get root_path
-      expect(response.body).to include("Hello, #{user_two.first_name}!")
+      expect(response.body).to include("Welcome back, #{user_two.first_name}!")
       expect(response.body).not_to include("Hello, #{user.first_name}!")
     end
 

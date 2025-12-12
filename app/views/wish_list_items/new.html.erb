@@ -1,5 +1,33 @@
-<h1>Add Item to Wish List</h1>
+<div class="home-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1 class="display-4 fw-bold text-white mb-3">
+            Add to Wish List
+          </h1>
+          <p class="lead text-white-50 mb-4">Add an item you'd love to receive</p>
+          <div class="button-group">
+            <%= link_to "Back to Wish List", wish_list_items_path, class: "btn btn-outline-solid" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<%= render "form", wish_list_item: @wish_list_item %>
-
-<%= link_to "Back to Wish List", wish_list_items_path %>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-6">
+        <div class="card shadow-sm border-0" style="background-color: #2a2a2a;">
+          <div class="card-header" style="background-color: #667eea; border: none;">
+            <h2 class="mb-0 text-white">Item Details</h2>
+          </div>
+          <div class="card-body" style="background-color: #2a2a2a; padding: 2rem;">
+            <%= render "form", wish_list_item: @wish_list_item %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,11 +1,9 @@
 <% if @contact.save %>
-  // Update the note display in the table
   document.getElementById('note-<%= @contact.id %>').textContent = '<%= @contact.note %>';
   
-  // Close the modal
-  document.getElementById('note-modal').style.display = 'none';
-  document.getElementById('note-modal').innerHTML = '';
+  const modal = bootstrap.Modal.getInstance(document.getElementById('noteModal-<%= @contact.id %>'));
+  if (modal) {
+    modal.hide();
+  }
 <% else %>
-  // Show validation errors
-  document.getElementById('note-modal').innerHTML = '<%= escape_javascript(render(partial: "edit_note_form", locals: { contact: @contact })) %>';
 <% end %>

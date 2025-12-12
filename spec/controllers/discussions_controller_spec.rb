@@ -162,9 +162,9 @@ RSpec.describe DiscussionsController, type: :controller do
         message = data['messages'].first
         expect(message).to have_key('id')
         expect(message).to have_key('content')
-        expect(message).to have_key('user_name')
-        expect(message).to have_key('is_own')
-        expect(message).to have_key('timestamp')
+        expect(message).to have_key('user')
+        expect(message).to have_key('is_own_message')
+        expect(message).to have_key('created_at')
       end
 
       it 'marks own messages correctly' do
@@ -173,7 +173,7 @@ RSpec.describe DiscussionsController, type: :controller do
         get :messages_feed, params: { event_id: event.id, thread_type: 'public', after_message_id: msg.id - 1 }, format: :json
         
         data = JSON.parse(response.body)
-        expect(data['messages'].first['is_own']).to eq(true)
+        expect(data['messages'].first['is_own_message']).to eq(true)
       end
 
       it 'marks other users messages correctly' do
@@ -182,7 +182,7 @@ RSpec.describe DiscussionsController, type: :controller do
         get :messages_feed, params: { event_id: event.id, thread_type: 'public', after_message_id: msg.id - 1 }, format: :json
         
         data = JSON.parse(response.body)
-        expect(data['messages'].first['is_own']).to eq(false)
+        expect(data['messages'].first['is_own_message']).to eq(false)
       end
     end
 

@@ -1,36 +1,58 @@
 <%= form_with(model: @wish_list_item, local: true) do |form| %>
   <% if @wish_list_item.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@wish_list_item.errors.count, "error") %> prohibited this wish list item from being saved:</h2>
-      <ul>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong><%= pluralize(@wish_list_item.errors.count, "error") %> prohibited this item from being saved:</strong>
+      <ul class="mb-0 mt-2">
         <% @wish_list_item.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
       </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= form.label :name %>
-    <%= form.text_field :name, required: true %>
+  <div class="form-group mb-3">
+    <%= form.label :name, "Item Name", class: "form-label" %>
+    <%= form.text_field :name, required: true, class: "form-control", placeholder: "e.g., Wireless Headphones" %>
   </div>
 
-  <div class="field">
-    <%= form.label :description %>
-    <%= form.text_area :description, rows: 5 %>
+  <div class="form-group mb-3">
+    <%= form.label :description, "Description", class: "form-label" %>
+    <%= form.text_area :description, rows: 4, class: "form-control", placeholder: "Describe what you want..." %>
   </div>
 
-  <div class="field">
-    <%= form.label :url %>
-    <%= form.url_field :url, placeholder: "https://example.com" %>
+  <div class="form-group mb-3">
+    <%= form.label :url, "Product Link (Optional)", class: "form-label" %>
+    <%= form.url_field :url, class: "form-control", placeholder: "https://example.com/product" %>
   </div>
 
-  <div class="field">
-    <%= form.label :price %>
-    <%= form.number_field :price, step: 0.01, min: 0 %>
+  <div class="form-group mb-4">
+    <%= form.label :price, "Price (Optional)", class: "form-label" %>
+    <div class="input-group">
+      <span class="input-group-text">$</span>
+      <%= form.number_field :price, step: 0.01, min: 0, class: "form-control", placeholder: "0.00" %>
+    </div>
   </div>
 
-  <div class="actions">
-    <%= form.submit %>
+  <div class="d-grid">
+    <%= form.submit class: "btn btn-outline-solid btn-lg" %>
   </div>
 <% end %>
+
+<style>
+  .form-control,
+  .input-group-text {
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    background-color: #1a1a1a !important;
+    border-color: #667eea !important;
+    color: #e5e5e5 !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .form-control::placeholder {
+    color: #666;
+  }
+</style>

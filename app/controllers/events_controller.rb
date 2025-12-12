@@ -35,6 +35,29 @@ class EventsController < ApplicationController
     @event.creator_id = current_user.id
     if @event.save
       @event.attendees << current_user unless @event.attendees.include?(current_user)
+      
+      if params[:event][:attendee_ids].present?
+        attendee_ids = params[:event][:attendee_ids].reject(&:blank?)
+        attendee_ids.each do |user_id|
+          user = User.find_by(id: user_id)
+          @event.attendees << user if user && !@event.attendees.include?(user)
+        end
+      end
+      
+      if params[:event][:recipient_data].present?
+        recipient_data_list = params[:event][:recipient_data].reject(&:blank?)
+        recipient_data_list.each do |data_json|
+          begin
+            data = JSON.parse(data_json)
+            @event.recipients.create!(
+              first_name: data['first_name'],
+              last_name: data['last_name']
+            )
+          rescue JSON::ParserError
+          end
+        end
+      end
+      
       redirect_to events_path, notice: 'Event was successfully created.'
     else
       render :new, status: :unprocessable_content

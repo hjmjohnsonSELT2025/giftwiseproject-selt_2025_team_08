@@ -57,14 +57,17 @@ Rails.application.routes.draw do
   end
 
   # Gift Ideas
-  resources :gift_ideas, only: [:show, :update]
-  resources :gifts_for_recipients, only: [:update]
+  resources :gift_ideas, only: [:show, :update] do
+    member do
+      post :add_as_gift
+    end
+  end
+  resources :gifts_for_recipients, only: [:update, :destroy]
   resources :contacts, only: [:index, :new, :create, :destroy] do
     collection do
       get :search
     end
     member do
-      get :edit_note
       patch :update_note
     end
   end

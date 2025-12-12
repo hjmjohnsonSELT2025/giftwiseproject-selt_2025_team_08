@@ -1,5 +1,9 @@
 import "@hotwired/turbo-rails"
-import "@hotwired/stimulus"
 import "@hotwired/stimulus-loading"
-import "./controllers/event_form_controller.js"
 import "./discussion_polling.js"
+
+import { Application } from "@hotwired/stimulus"
+import EventFormController from "./controllers/event_form_controller.js"
+
+const application = Application.start()
+application.register("event-form", EventFormController)

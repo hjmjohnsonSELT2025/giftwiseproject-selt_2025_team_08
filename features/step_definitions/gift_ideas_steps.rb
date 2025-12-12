@@ -373,7 +373,7 @@ Then('I should see {string} but not {string} in the saved ideas') do |idea1, ide
   expect(idea_2).to be_nil
 end
 
-When('I click "Add as Gift" on {string}') do |idea_name|
+When('I click "Save Gift Idea" on {string}') do |idea_name|
   recipient = @selected_recipient || Recipient.find_by(event_id: @event.id)
   user = User.find_by(email: @current_user_email)
   
@@ -437,4 +437,20 @@ When('I click "Save for Later" on the first idea') do
 end
 
 Then('I should see the "Generated Gift Ideas" section appear') do
+end
+
+When('I click "Add as Gift" on {string}') do |idea_name|
+  recipient = @selected_recipient || Recipient.find_by(event_id: @event.id)
+  user = User.find_by(email: @current_user_email)
+  
+  gift_idea = GiftIdea.find_by(recipient_id: recipient.id, user_id: user.id, idea: idea_name)
+  if gift_idea
+    GiftForRecipient.create!(
+      recipient_id: recipient.id,
+      user_id: user.id,
+      idea: gift_idea.idea,
+      price: gift_idea.estimated_price,
+      gift_date: Date.today
+    )
+  end
 end

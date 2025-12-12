@@ -1,119 +1,208 @@
-<h1>Sign up</h1>
-
-<%= form_with model: @user, url: registrations_path, local: true do |f| %>
-  <% if @user.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
-      <ul>
-        <% @user.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<div class="auth-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h1 class="display-4 fw-bold text-white mb-3">
+            <i class="bi bi-gift-fill"></i> GiftWise <i class="bi bi-cpu-fill"></i>
+          </h1>
+          <p class="lead text-white-50 mb-4">Create your account and start planning</p>
+        </div>
+      </div>
     </div>
-  <% end %>
+  </section>
 
-  <!-- Basic Information -->
-  <fieldset>
-    <legend>Basic Information</legend>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card shadow-sm border-0">
+          <div class="card-header">
+            <h2 class="mb-0 text-white">Create your account</h2>
+          </div>
+          <div class="card-body">
+            <%= form_with model: @user, url: registrations_path, local: true do |f| %>
+              <% if @user.errors.any? %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                  <strong><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</strong>
+                  <ul class="mb-0 mt-2">
+                    <% @user.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              <% end %>
 
-    <div>
-      <%= f.label :email %><br />
-      <%= f.email_field :email, required: true %>
+              <!-- Basic Information -->
+              <fieldset class="mb-4">
+                <legend>Basic Information</legend>
+
+                <div class="form-group mb-3">
+                  <%= f.label :email, "Email Address", class: "form-label" %>
+                  <%= f.email_field :email, required: true, class: "form-control", placeholder: "your@email.com" %>
+                </div>
+
+                <div class="form-group mb-3">
+                  <%= f.label :password, "Password", class: "form-label" %>
+                  <%= f.password_field :password, required: true, class: "form-control", placeholder: "Create a strong password" %>
+                </div>
+
+                <div class="form-group mb-3">
+                  <%= f.label :password_confirmation, "Confirm Password", class: "form-label" %>
+                  <%= f.password_field :password_confirmation, required: true, class: "form-control", placeholder: "Confirm your password" %>
+                </div>
+              </fieldset>
+
+              <!-- Personal Information -->
+              <fieldset class="mb-4">
+                <legend>Personal Information</legend>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :first_name, "First Name", class: "form-label" %>
+                      <%= f.text_field :first_name, required: true, class: "form-control", placeholder: "John" %>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :last_name, "Last Name", class: "form-label" %>
+                      <%= f.text_field :last_name, required: true, class: "form-control", placeholder: "Doe" %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :date_of_birth, "Date of Birth", class: "form-label" %>
+                      <%= f.date_field :date_of_birth, required: true, class: "form-control" %>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :gender, "Gender", class: "form-label" %>
+                      <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true, class: "form-select" %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mb-3">
+                  <%= f.label :occupation, "Occupation", class: "form-label" %>
+                  <%= f.text_field :occupation, required: true, class: "form-control", placeholder: "Your job title" %>
+                </div>
+              </fieldset>
+
+              <!-- Interests -->
+              <fieldset class="mb-4">
+                <legend>Interests (Optional)</legend>
+
+                <div class="form-group mb-3">
+                  <%= f.label :hobbies, "Hobbies (comma separated)", class: "form-label" %>
+                  <%= f.text_area :hobbies, rows: 2, class: "form-control", placeholder: "e.g., Reading, Painting, Gaming" %>
+                </div>
+
+                <div class="form-group mb-3">
+                  <%= f.label :likes, "Likes (comma separated)", class: "form-label" %>
+                  <%= f.text_area :likes, rows: 2, class: "form-control", placeholder: "e.g., Coffee, Hiking, Music" %>
+                </div>
+
+                <div class="form-group mb-3">
+                  <%= f.label :dislikes, "Dislikes (comma separated)", class: "form-label" %>
+                  <%= f.text_area :dislikes, rows: 2, class: "form-control", placeholder: "e.g., Crowds, Spicy food, Delays" %>
+                </div>
+              </fieldset>
+
+              <!-- Address -->
+              <fieldset class="mb-4">
+                <legend>Address</legend>
+
+                <div class="form-group mb-3">
+                  <%= f.label :street, "Street Address", class: "form-label" %>
+                  <%= f.text_field :street, required: true, class: "form-control", placeholder: "123 Main St" %>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :city, "City", class: "form-label" %>
+                      <%= f.text_field :city, required: true, class: "form-control", placeholder: "New York" %>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :state, "State/Province", class: "form-label" %>
+                      <%= f.text_field :state, required: true, class: "form-control", placeholder: "NY" %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :zip_code, "Zip Code", class: "form-label" %>
+                      <%= f.text_field :zip_code, required: true, class: "form-control", placeholder: "10001" %>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group mb-3">
+                      <%= f.label :country, "Country", class: "form-label" %>
+                      <%= f.text_field :country, required: true, class: "form-control", placeholder: "United States" %>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
+              <div class="d-grid gap-2 mb-3">
+                <%= f.submit "Create Account", class: "btn btn-outline-solid btn-lg" %>
+              </div>
+
+              <p class="text-center mb-0">
+                Already have an account? 
+                <%= link_to "Log in", login_path %>
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div>
-      <%= f.label :password %><br />
-      <%= f.password_field :password, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :password_confirmation %><br />
-      <%= f.password_field :password_confirmation, required: true %>
-    </div>
-  </fieldset>
-
-  <!-- Personal Information -->
-  <fieldset>
-    <legend>Personal Information</legend>
-
-    <div>
-      <%= f.label :first_name %><br />
-      <%= f.text_field :first_name, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :last_name %><br />
-      <%= f.text_field :last_name, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :date_of_birth %><br />
-      <%= f.date_field :date_of_birth, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :gender %><br />
-      <%= f.select :gender, User::GENDERS, { prompt: "Select gender" }, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :occupation %><br />
-      <%= f.text_field :occupation, required: true %>
-    </div>
-  </fieldset>
-
-  <!-- Interests -->
-  <fieldset>
-    <legend>Interests</legend>
-
-    <div>
-      <%= f.label :hobbies, "Hobbies (comma separated)" %><br />
-      <%= f.text_area :hobbies, rows: 3, placeholder: "e.g., Reading, Painting, Gaming" %>
-    </div>
-
-    <div>
-      <%= f.label :likes, "Likes (comma separated)" %><br />
-      <%= f.text_area :likes, rows: 3, placeholder: "e.g., Coffee, Hiking, Music" %>
-    </div>
-
-    <div>
-      <%= f.label :dislikes, "Dislikes (comma separated)" %><br />
-      <%= f.text_area :dislikes, rows: 3, placeholder: "e.g., Crowds, Spicy food, Delays" %>
-    </div>
-  </fieldset>
-
-  <!-- Address -->
-  <fieldset>
-    <legend>Address</legend>
-
-    <div>
-      <%= f.label :street %><br />
-      <%= f.text_field :street, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :city %><br />
-      <%= f.text_field :city, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :state %><br />
-      <%= f.text_field :state, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :zip_code %><br />
-      <%= f.text_field :zip_code, required: true %>
-    </div>
-
-    <div>
-      <%= f.label :country %><br />
-      <%= f.text_field :country, required: true %>
-    </div>
-  </fieldset>
-
-  <div>
-    <%= f.submit "Sign up" %>
-    <%= link_to "Return to login", login_path %>
   </div>
-<% end %>
+</div>
+
+<style>
+  .auth-container {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+  }
+
+  .form-control,
+  .form-select {
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    background-color: #1a1a1a !important;
+    border-color: #667eea !important;
+    color: #e5e5e5 !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .form-control::placeholder {
+    color: #666;
+  }
+
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  fieldset {
+    background-color: #1a1a1a;
+  }
+
+  legend {
+    font-size: 1.1rem;
+  }
+</style>

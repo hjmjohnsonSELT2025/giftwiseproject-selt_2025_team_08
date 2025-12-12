@@ -35,13 +35,13 @@ RSpec.describe 'Contacts', type: :request do
 
       it 'renders the search input for contacts' do
         get contacts_path
-        expect(response.body).to include('Search Contacts')
+        expect(response.body).to include('Search')
         expect(response.body).to include('contacts-search')
       end
 
       it 'has an Add Contact button' do
         get contacts_path
-        expect(response.body).to include('Add Contact')
+        expect(response.body).to include('Add a New Contact')
         expect(response.body).to include(new_contact_path)
       end
 
@@ -85,7 +85,7 @@ RSpec.describe 'Contacts', type: :request do
       it 'returns success and displays add contact page' do
         get new_contact_path
         expect(response).to be_successful
-        expect(response.body).to include('Add Contact')
+        expect(response.body).to include('Add New Contact')
       end
 
       it 'displays search input for users' do
@@ -97,9 +97,8 @@ RSpec.describe 'Contacts', type: :request do
       it 'displays available users to add' do
         third_user
         get new_contact_path
-        expect(response.body).to include('users-table')
+        expect(response.body).to include('users-list')
         expect(response.body).to include(third_user.first_name)
-        expect(response.body).to include(third_user.email)
       end
 
       it 'excludes current user from the list' do

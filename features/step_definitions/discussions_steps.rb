@@ -21,7 +21,7 @@ When('I navigate to the event discussions page without specifying thread type') 
 end
 
 Then('I should see the discussion container') do
-  expect(page).to have_selector('.discussion-container')
+  expect(page).to have_selector('.messages-area') rescue expect(page).to have_selector('#messages-container')
 end
 
 Then('I should see the thread type {string}') do |thread_type_label|

@@ -1,23 +1,80 @@
-<h1>Reset your password</h1>
+<div class="auth-container">
+  <!-- Welcome Section -->
+  <section class="welcome-section py-5 mb-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h1 class="display-4 fw-bold text-white mb-3">
+            <i class="bi bi-gift-fill"></i> GiftWise <i class="bi bi-cpu-fill"></i>
+          </h1>
+          <p class="lead text-white-50 mb-4">Create a new password</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<%= form_with url: password_reset_path(token: params[:token]), method: :patch, local: true do %>
-  <div>
-    <%= label_tag :password, "New password" %><br />
-    <%= password_field_tag :password, nil, required: true, minlength: 6, autofocus: true %>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5">
+        <div class="card shadow-sm border-0">
+          <div class="card-header">
+            <h2 class="mb-0 text-white">Reset your password</h2>
+          </div>
+          <div class="card-body">
+            <%= form_with url: password_reset_path(token: params[:token]), method: :patch, local: true do %>
+              <div class="form-group mb-3">
+                <%= label_tag :password, "New Password", class: "form-label" %>
+                <%= password_field_tag :password, nil, required: true, minlength: 6, autofocus: true, class: "form-control", placeholder: "Enter your new password" %>
+              </div>
+
+              <div class="form-group mb-4">
+                <%= label_tag :password_confirmation, "Confirm Password", class: "form-label" %>
+                <%= password_field_tag :password_confirmation, nil, required: true, minlength: 6, class: "form-control", placeholder: "Confirm your new password" %>
+              </div>
+
+              <div class="d-grid">
+                <%= submit_tag "Update password", class: "btn btn-outline-solid btn-lg" %>
+              </div>
+            <% end %>
+
+            <hr>
+
+            <p class="text-center mb-2">
+              <%= link_to "Back to log in", login_path %>
+            </p>
+            <p class="text-center mb-0">
+              <%= link_to "Request a new link", new_password_reset_path %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <div>
-    <%= label_tag :password_confirmation, "Confirm new password" %><br />
-    <%= password_field_tag :password_confirmation, nil, required: true, minlength: 6 %>
-  </div>
+<style>
+  .auth-container {
+    min-height: 100vh;
+    background-color: #1a1a1a;
+  }
 
-  <div>
-    <%= submit_tag "Update password" %>
-  </div>
-<% end %>
+  .form-control {
+    transition: all 0.3s ease;
+  }
 
-<p>
-  <%= link_to "Back to log in", login_path %>
-  |
-  <%= link_to "Request a new link", new_password_reset_path %>
-  </p>
+  .form-control:focus {
+    background-color: #1a1a1a !important;
+    border-color: #667eea !important;
+    color: #e5e5e5 !important;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  .form-control::placeholder {
+    color: #666;
+  }
+
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+</style>
