@@ -8,6 +8,8 @@ class Event < ApplicationRecord
 
   THEMES = ['Birthday', 'Wedding', 'Anniversary', 'Holiday', 'Graduation', 'Baby Shower', 'Retirement', 'General'].freeze
 
+  THEMES = ['Birthday', 'Wedding', 'Anniversary', 'Holiday', 'Graduation', 'Baby Shower', 'Retirement', 'General'].freeze
+
   validates :name, presence: true
   validates :start_at, presence: true
   validates :end_at, presence: true
