@@ -166,10 +166,14 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_12_030530) do
     t.index ["user_id"], name: "index_wish_list_items_on_user_id"
   end
 
+  add_foreign_key "contacts", "users"
+  add_foreign_key "contacts", "users", column: "contact_user_id"
   add_foreign_key "discussion_messages", "discussions"
   add_foreign_key "discussion_messages", "users"
   add_foreign_key "discussions", "events"
   add_foreign_key "email_notification_preferences", "users"
+  add_foreign_key "event_attendees", "events"
+  add_foreign_key "event_attendees", "users"
   add_foreign_key "events", "users", column: "creator_id"
   add_foreign_key "gift_ideas", "recipients"
   add_foreign_key "gift_ideas", "users"
